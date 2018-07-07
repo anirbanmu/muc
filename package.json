@@ -10,7 +10,9 @@
     "express": "node server.js"
   },
   "dependencies": {
+    "axios": "^0.18.0",
     "express": "^4.16.3",
+    "qs": "^6.5.2",
     "raw-loader": "^0.5.1",
     "vue": "^2.5.16"
   },
