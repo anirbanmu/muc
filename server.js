@@ -22,6 +22,7 @@ app.get('*', (req, res) => {
   res.redirect('/');
 });
 
-app.listen(8081, () => {
-  console.log('API listening on port 8081');
+const port = process.env.PORT || 8081;
+app.listen(port, () => {
+  console.log('Listening on port ' + port);
 });

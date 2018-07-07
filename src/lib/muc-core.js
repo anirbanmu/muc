@@ -7,8 +7,20 @@ class MucCore {
   }
 
   static generateApiTokens() {
-    return SpotifyApi.getToken(process.env.SPOTIFY_CLIENT_ID, process.env.SPOTIFY_CLIENT_SECRET).then(token => {
-      return { spotify: token };
+    const tokenRequests = [
+      {
+        type: 'spotify',
+        promise: SpotifyApi.getToken(process.env.SPOTIFY_CLIENT_ID, process.env.SPOTIFY_CLIENT_SECRET)
+      }
+    ];
+
+    const promises = Promise.all(tokenRequests.map(t => t.promise));
+    return promises.then(tokens => {
+      let tokenMap = {};
+      tokens.forEach((t, i) => {
+        tokenMap[tokenRequests[i].type] = t;
+      });
+      return tokenMap;
     });
   }
 }
