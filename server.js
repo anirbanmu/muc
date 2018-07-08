@@ -1,6 +1,6 @@
 'use strict';
 
-const MucCore = require('./src/lib/muc-core')
+const MucCore = require('./src/lib/muc-core');
 
 const express = require('express');
 const app = express();
