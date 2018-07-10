@@ -14,6 +14,7 @@ app.get('/', (req, res) => {
   MucCore.generateApiTokens().then(tokens => {
     res.render('index', { API_TOKENS_JSON: JSON.stringify(tokens) });
   }).catch(r => {
+    console.log(r);
     res.status(500).send('something went wrong');
   });
 });
