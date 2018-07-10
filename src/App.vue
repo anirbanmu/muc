@@ -1,5 +1,18 @@
 <template>
   <div id="app">
+    <section class="hero is-dark">
+      <div class="hero-body has-text-centered">
+        <div class="container">
+          <h1 class="title">
+            Muc
+          </h1>
+          <h2 class="subtitle">
+            Music URL converter
+          </h2>
+        </div>
+      </div>
+    </section>
+
     <img src="./assets/logo.png">
     <HelloWorld msg="Welcome to Your Vue.js App"/>
   </div>
@@ -7,11 +20,17 @@
 
 <script>
 import HelloWorld from './components/HelloWorld.vue';
+import MucCore from './lib/muc-core';
 
 export default {
   name: 'app',
+  props: ['apiTokens'],
   components: {
     HelloWorld,
+  },
+  created() {
+    this.api = new MucCore(this.apiTokens);
+    console.log(this.api);
   },
 };
 </script>
