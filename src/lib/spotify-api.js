@@ -7,7 +7,7 @@ const SPOTIFY_AUTHORIZATION_URI = 'https://accounts.spotify.com/api/token';
 const SPOTIFY_BASE_URI = 'https://api.spotify.com/v1';
 const SPOTIFY_SEARCH_URI = SPOTIFY_BASE_URI + '/search';
 
-class SpotifyApi {
+export default class SpotifyApi {
   constructor(apiToken) {
     this.apiToken = apiToken;
   }
@@ -51,5 +51,3 @@ class SpotifyApi {
     return axios.post(SPOTIFY_AUTHORIZATION_URI, qs.stringify(params), { headers: headers }).then(r => r.data.access_token);
   }
 }
-
-module.exports = SpotifyApi;

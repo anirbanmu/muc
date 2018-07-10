@@ -1,8 +1,8 @@
 'use strict';
 
-const SpotifyApi = require('./spotify-api');
+import SpotifyApi from './spotify-api';
 
-class MucCore {
+export default class MucCore {
   constructor(apiTokens) {
     this.spotifyApi = new SpotifyApi(apiTokens.spotify);
   }
@@ -16,6 +16,9 @@ class MucCore {
     const lower = uri.toLowerCase();
     if (lower.includes('spotify')) {
       return this.spotifyApi.getUriDetails(uri);
+    }
+    else {
+      throw new Error('bad URI');
     }
   }
 
@@ -57,5 +60,3 @@ class MucCore {
     });
   }
 }
-
-module.exports = MucCore;
