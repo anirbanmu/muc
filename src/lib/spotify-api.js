@@ -19,16 +19,11 @@ export default class SpotifyApi {
   async getUriDetails(uri) {
     const parsed = SpotifyApi._parseIdAndType(uri);
     const apiUri = SPOTIFY_BASE_URI + '/' + parsed[1] + 's/' + parsed[2];
-    return axios.request({ url: apiUri, headers: this.headers() }).then(r => {
-      return {
-        name: r.data.name,
-        artistName: r.data.artists.length > 0 ? r.data.artists[0].name : null
-      }
-    });
+    return axios.request({ url: apiUri, headers: this.headers() }).then(r => r.data);
   }
 
   async search(query) {
-    const params = { q: query.artistName + ' ' + query.name, type: 'track', limit: 1 };
+    const params = { q: query, type: 'track', limit: 1 };
     return axios.request({ url: SPOTIFY_SEARCH_URI, headers: this.headers(), params: params}).then(r => {
       const found = r.data.tracks.total > 0 ? r.data.tracks.items[0] : null;
       return found;
