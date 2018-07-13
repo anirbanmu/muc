@@ -5,7 +5,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
+    "lint": "vue-cli-service lint --fix",
     "build-watch": "vue-cli-service build --watch",
     "express": "node server.js"
   },
@@ -22,7 +22,7 @@
     "@vue/cli-plugin-babel": "^3.0.0-beta.15",
     "@vue/cli-plugin-eslint": "^3.0.0-beta.15",
     "@vue/cli-service": "^3.0.0-beta.15",
-    "@vue/eslint-config-airbnb": "^3.0.0-rc.3",
+    "@vue/eslint-config-prettier": "^3.0.0-rc.3",
     "node-sass": "^4.9.0",
     "sass-loader": "^7.0.1",
     "vue-cli-plugin-buefy": "^0.2.3",

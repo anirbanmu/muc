@@ -1,7 +1,6 @@
-'use strict';
+"use strict";
 
-require = require('esm')(module);
-const MucCore = require('./src/lib/muc-core').default;
+const MucCore = require("esm")(module)("./src/lib/muc-core").default;
 
 async function matchesForUri(uri) {
   const tokens = await MucCore.generateApiTokens();
@@ -12,16 +11,17 @@ async function matchesForUri(uri) {
 async function main(uri) {
   const matches = await matchesForUri(uri);
   matches.forEach(m => {
-    switch(m.type) {
-      case 'spotify':
+    switch (m.type) {
+      case "spotify": {
         console.log(m.item.external_urls);
         break;
+      }
     }
   });
 }
 
 if (process.argv.length < 3) {
-  console.log('ERROR: Please provide a URL to convert');
+  console.log("ERROR: Please provide a URL to convert");
   process.exit(-1);
 }
 

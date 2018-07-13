@@ -1,6 +1,6 @@
-'use strict';
+"use strict";
 
-import SpotifyApi from './spotify-api';
+import SpotifyApi from "./spotify-api";
 
 export default class MucCore {
   constructor(apiTokens) {
@@ -15,28 +15,31 @@ export default class MucCore {
 
   async getUriData(uri) {
     const lower = uri.toLowerCase();
-    if (lower.includes('spotify')) {
+    if (lower.includes("spotify")) {
       const spotifyData = await this.spotifyApi.getUriDetails(uri);
-      return { data: spotifyData, type: 'spotify' };
-    }
-    else {
-      throw new Error('bad URI');
+      return { data: spotifyData, type: "spotify" };
+    } else {
+      throw new Error("bad URI");
     }
   }
 
   buildQueryData(uriData) {
-    switch(uriData.type) {
-      case 'spotify':
-        const artist = uriData.data.artists.length > 0 ? uriData.data.artists[0].name + ' ' : null;
+    switch (uriData.type) {
+      case "spotify": {
+        const artist =
+          uriData.data.artists.length > 0
+            ? uriData.data.artists[0].name + " "
+            : null;
         return artist + uriData.data.name;
+      }
     }
   }
 
   async getMatches(searchData) {
     const searchRequests = [
       {
-        type: 'spotify',
-        promise: this.spotifyApi.search(searchData).catch(e => null)
+        type: "spotify",
+        promise: this.spotifyApi.search(searchData).catch(() => null)
       }
     ];
 
@@ -55,8 +58,11 @@ export default class MucCore {
   static generateApiTokens() {
     const tokenRequests = [
       {
-        type: 'spotify',
-        promise: SpotifyApi.getToken(process.env.SPOTIFY_CLIENT_ID, process.env.SPOTIFY_CLIENT_SECRET)
+        type: "spotify",
+        promise: SpotifyApi.getToken(
+          process.env.SPOTIFY_CLIENT_ID,
+          process.env.SPOTIFY_CLIENT_SECRET
+        )
       }
     ];
 

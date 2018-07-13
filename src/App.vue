@@ -19,25 +19,25 @@
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue';
-import MucCore from './lib/muc-core';
+import HelloWorld from "./components/HelloWorld.vue";
+import MucCore from "./lib/muc-core";
 
 export default {
-  name: 'app',
-  props: ['apiTokens'],
+  name: "app",
+  props: ["apiTokens"],
   components: {
-    HelloWorld,
+    HelloWorld
   },
   created() {
     this.api = new MucCore(this.apiTokens);
     console.log(this.api);
-  },
+  }
 };
 </script>
 
 <style lang="scss">
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
