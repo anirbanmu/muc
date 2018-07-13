@@ -9,8 +9,7 @@ export default class MucCore {
 
   async getUriMatches(uri) {
     const uriData = await this.getUriData(uri);
-    const query = this.buildQueryData(uriData);
-    return this.getMatches(query);
+    return this.getMatches(uriData);
   }
 
   async getUriData(uri) {
@@ -23,23 +22,12 @@ export default class MucCore {
     }
   }
 
-  buildQueryData(uriData) {
-    switch (uriData.type) {
-      case "spotify": {
-        const artist =
-          uriData.data.artists.length > 0
-            ? uriData.data.artists[0].name + " "
-            : null;
-        return artist + uriData.data.name;
-      }
-    }
-  }
-
-  async getMatches(searchData) {
+  async getMatches(uriData) {
+    const query = MucCore.buildQueryData(uriData);
     const searchRequests = [
       {
         type: "spotify",
-        promise: this.spotifyApi.search(searchData).catch(() => null)
+        promise: this.spotifyApi.search(query).catch(() => null)
       }
     ];
 
@@ -53,6 +41,18 @@ export default class MucCore {
       });
       return final;
     });
+  }
+
+  static buildQueryData(uriData) {
+    switch (uriData.type) {
+      case "spotify": {
+        const artist =
+          uriData.data.artists.length > 0
+            ? uriData.data.artists[0].name + " "
+            : null;
+        return artist + uriData.data.name;
+      }
+    }
   }
 
   static generateApiTokens() {
