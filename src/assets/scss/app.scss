@@ -26,3 +26,13 @@ $colors: map-merge($colors, $addColors);
 @import "~buefy/src/scss/buefy";
 
 // 4. Provide custom buefy overrides and site styles here
+html {
+  height: 100%;
+}
+html, body {
+  height: 100%;
+  background: hsl(0, 0%, 96%);
+  background: linear-gradient(#ff7675,#e84393);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}

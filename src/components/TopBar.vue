@@ -1,5 +1,5 @@
 <template>
-  <div id="top" class="navbar has-shadow">
+  <div id="top" class="navbar">
     <div class="navbar-brand">
       <div class="navbar-item">Muc</div>
     </div>
