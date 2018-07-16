@@ -16,6 +16,11 @@ async function main(uri) {
         console.log(m.item.external_urls);
         break;
       }
+      case "youtube": {
+        const link = `https://www.youtube.com/watch?v=${m.item.id.videoId}`;
+        console.log({ youtube: link });
+        break;
+      }
     }
   });
 }

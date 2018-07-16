@@ -1,10 +1,12 @@
 "use strict";
 
 import SpotifyApi from "./spotify-api";
+import YoutubeApi from "./youtube-api";
 
 export default class MucCore {
   constructor(apiTokens) {
     this.spotifyApi = new SpotifyApi(apiTokens.spotify);
+    this.youtubeApi = new YoutubeApi(apiTokens.youtube);
   }
 
   async getUriMatches(uri) {
@@ -17,6 +19,9 @@ export default class MucCore {
     if (lower.includes("spotify")) {
       const spotifyData = await this.spotifyApi.getUriDetails(uri);
       return { data: spotifyData, type: "spotify" };
+    } else if (/youtu\.{0,1}be/.test(lower)) {
+      const youtubeData = await this.youtubeApi.getUriDetails(uri);
+      return { data: youtubeData, type: "youtube" };
     } else {
       throw new Error("bad URI");
     }
@@ -28,6 +33,10 @@ export default class MucCore {
       {
         type: "spotify",
         promise: this.spotifyApi.search(query).catch(() => null)
+      },
+      {
+        type: "youtube",
+        promise: this.youtubeApi.search(query).catch(() => null)
       }
     ];
 
@@ -52,6 +61,9 @@ export default class MucCore {
             : null;
         return artist + uriData.data.name;
       }
+      case "youtube": {
+        return uriData.title;
+      }
     }
   }
 
@@ -63,6 +75,10 @@ export default class MucCore {
           process.env.SPOTIFY_CLIENT_ID,
           process.env.SPOTIFY_CLIENT_SECRET
         )
+      },
+      {
+        type: "youtube",
+        promise: YoutubeApi.getToken(process.env.YOUTUBE_API_KEY)
       }
     ];
 
