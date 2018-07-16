@@ -62,7 +62,7 @@ export default class MucCore {
         return artist + uriData.data.name;
       }
       case "youtube": {
-        return uriData.title;
+        return uriData.data.snippet.title;
       }
     }
   }
