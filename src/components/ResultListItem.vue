@@ -6,8 +6,7 @@
 export default {
   name: "resultListItem",
   props: ["result"],
-  components: {
-  }
+  components: {}
 };
 </script>
 

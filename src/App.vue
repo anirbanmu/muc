@@ -48,14 +48,16 @@ export default {
       this.api
         .getUriData(this.query)
         .then(queryData => {
-          this.api
-            .getMatches(queryData)
-            .then(matches => {
-              let results = matches.map((r) => {
-                return Object.assign({ id: monotonicId() }, r);
-              });
-              this.results.unshift({ id: monotonicId(), queryData: queryData, results: results});
-            })
+          this.api.getMatches(queryData).then(matches => {
+            let results = matches.map(r => {
+              return Object.assign({ id: monotonicId() }, r);
+            });
+            this.results.unshift({
+              id: monotonicId(),
+              queryData: queryData,
+              results: results
+            });
+          });
         })
         .catch(() => {
           this.results.unshift({ id: monotonicId(), error: true });

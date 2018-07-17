@@ -12,7 +12,7 @@
 
 <script>
 import UriInfo from "./UriInfo.vue";
-import ResultListItem from "./ResultListItem.vue"
+import ResultListItem from "./ResultListItem.vue";
 
 export default {
   name: "resultcard",
