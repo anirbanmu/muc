@@ -2,8 +2,8 @@
   <div id="app">
     <TopBar/>
 
-    <div class="container">
-      <div class="section">
+    <div class="section">
+      <div class="container">
         <b-field>
           <b-input placeholder="URL to convert..." type="search" icon="magnify" expanded v-model.trim="query" @keyup.enter.native="search"></b-input>
           <p class="control">
@@ -13,7 +13,10 @@
       </div>
     </div>
 
-    <ResultCard v-for="r in results" v-bind:key="r.id" v-bind:result-data="r"/>
+    <div class="container">
+        <ResultCard v-for="r in results" v-bind:key="r.id" v-bind:result-data="r"/>
+    </div>
+
   </div>
 </template>
 

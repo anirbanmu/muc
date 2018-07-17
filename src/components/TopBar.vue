@@ -1,7 +1,7 @@
 <template>
   <div id="top" class="navbar">
     <div class="navbar-brand">
-      <div class="navbar-item">Muc</div>
+      <div class="navbar-item title is-4">Muc</div>
     </div>
     <div class="navbar-menu navbar-end">
       <div class="navbar-item">Music</div>

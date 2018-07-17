@@ -1,15 +1,11 @@
 <template>
-  <div id="result-card" class="container">
-    <div class="section">
-      <div class="card">
-        <template v-if="!resultData.error">
-          <UriInfo v-bind:uri-data="resultData.uriData"/>
-        </template>
-        <template v-else>
-          <p>Something went wrong :(</p>
-        </template>
-      </div>
-    </div>
+  <div id="result-card" class="card">
+    <template v-if="!resultData.error">
+      <UriInfo v-bind:uri-data="resultData.uriData"/>
+    </template>
+    <template v-else>
+      <p>Something went wrong :(</p>
+    </template>
   </div>
 </template>
 
