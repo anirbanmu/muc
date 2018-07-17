@@ -13,11 +13,11 @@ async function main(uri) {
   matches.forEach(m => {
     switch (m.type) {
       case "spotify": {
-        console.log(m.item.external_urls);
+        console.log(m.data.external_urls);
         break;
       }
       case "youtube": {
-        const link = `https://www.youtube.com/watch?v=${m.item.id.videoId}`;
+        const link = `https://www.youtube.com/watch?v=${m.data.id.videoId}`;
         console.log({ youtube: link });
         break;
       }

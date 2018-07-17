@@ -1,6 +1,6 @@
 <template>
-  <SpotifyUriInfo v-if="uriData.type === 'spotify'" v-bind:info="uriData.data"/>
-  <YoutubeQueryInfo v-else-if="uriData.type === 'youtube'" v-bind:info="uriData.data"/>
+  <SpotifyUriInfo v-if="queryData.type === 'spotify'" v-bind:info="queryData.data"/>
+  <YoutubeQueryInfo v-else-if="queryData.type === 'youtube'" v-bind:info="queryData.data"/>
 </template>
 
 <script>
@@ -9,7 +9,7 @@ import YoutubeQueryInfo from "./YoutubeQueryInfo.vue";
 
 export default {
   name: "uriInfo",
-  props: ["uriData"],
+  props: ["queryData"],
   components: {
     SpotifyUriInfo,
     YoutubeQueryInfo

@@ -45,7 +45,7 @@ export default class MucCore {
       let final = [];
       results.forEach((r, i) => {
         if (r !== null) {
-          final.push({ type: searchRequests[i].type, item: r });
+          final.push({ type: searchRequests[i].type, data: r });
         }
       });
       return final;

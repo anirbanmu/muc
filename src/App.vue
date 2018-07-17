@@ -14,7 +14,7 @@
     </div>
 
     <div class="container">
-        <ResultCard v-for="r in results" v-bind:key="r.id" v-bind:result-data="r"/>
+      <ResultCard v-for="r in results" v-bind:key="r.id" v-bind:result-data="r"/>
     </div>
 
   </div>
@@ -24,6 +24,7 @@
 import TopBar from "./components/TopBar.vue";
 import ResultCard from "./components/ResultCard.vue";
 import MucCore from "./lib/muc-core";
+import monotonicId from "./lib/monotonic-numeric-id";
 
 export default {
   name: "app",
@@ -46,15 +47,19 @@ export default {
     search() {
       this.api
         .getUriData(this.query)
-        .then(uriData => {
-          this.results.unshift({ id: this.nextId(), uriData: uriData });
+        .then(queryData => {
+          this.api
+            .getMatches(queryData)
+            .then(matches => {
+              let results = matches.map((r) => {
+                return Object.assign({ id: monotonicId() }, r);
+              });
+              this.results.unshift({ id: monotonicId(), queryData: queryData, results: results});
+            })
         })
         .catch(() => {
-          this.results.unshift({ id: this.nextId(), error: true });
+          this.results.unshift({ id: monotonicId(), error: true });
         });
-    },
-    nextId() {
-      return this.results.length > 0 ? this.results[0].id + 1 : 0;
     }
   }
 };
