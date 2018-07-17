@@ -1,5 +1,9 @@
 <template>
-  <p>{{ info }}</p>
+  <div class="level-item has-text-centered">
+    <a :href="info.external_urls.spotify">
+      <i class="fab fa-spotify fa-5x"/>
+    </a>
+  </div>
 </template>
 
 <script>
@@ -9,5 +13,5 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
 </style>
