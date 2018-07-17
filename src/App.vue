@@ -45,8 +45,11 @@ export default {
   },
   methods: {
     search() {
+      const query = this.query;
+      // this.infoToast(`Loading data for ${query}...`);
+
       this.api
-        .getUriData(this.query)
+        .getUriData(query)
         .then(queryData => {
           this.api.getMatches(queryData).then(matches => {
             let results = matches.map(r => {
@@ -60,8 +63,24 @@ export default {
           });
         })
         .catch(() => {
-          this.results.unshift({ id: monotonicId(), error: true });
+          this.dangerToast(`Something went wrong! Is ${query} correct?`);
         });
+    },
+    infoToast(msg) {
+      this.$toast.open({
+        duration: 2000,
+        message: msg,
+        type: 'is-info',
+        queue: false
+      });
+    },
+    dangerToast(msg) {
+      this.$toast.open({
+        duration: 2000,
+        message: msg,
+        type: 'is-danger',
+        queue: false
+      });
     }
   }
 };

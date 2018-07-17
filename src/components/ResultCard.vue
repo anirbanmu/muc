@@ -1,16 +1,11 @@
 <template>
   <div id="result-card" class="card">
-    <template v-if="!resultData.error">
-      <UriInfo v-bind:query-data="resultData.queryData"/>
-      <div class="card-content">
-        <div class="level">
-          <ResultListItem v-for="r in resultData.results" v-bind:key="r.id" v-bind:result="r"/>
-        </div>
+    <UriInfo v-bind:query-data="resultData.queryData"/>
+    <div class="card-content">
+      <div class="level">
+        <ResultListItem v-for="r in resultData.results" v-bind:key="r.id" v-bind:result="r"/>
       </div>
-    </template>
-    <template v-else>
-      <p>Something went wrong :(</p>
-    </template>
+    </div>
   </div>
 </template>
 
