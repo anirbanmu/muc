@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <b-loading :is-full-page="true" :active.sync="isLoading" :can-cancel="false"/>
     <TopBar/>
 
     <div class="section">
@@ -14,7 +15,7 @@
     </div>
 
     <div class="container">
-      <ResultCard v-for="r in results" v-bind:key="r.id" v-bind:result-data="r"/>
+      <ResultCard v-for="r in results" v-if="!r.isLoading" v-bind:key="r.id" v-bind:result-data="r"/>
     </div>
 
   </div>
@@ -32,8 +33,14 @@ export default {
   data() {
     return {
       query: "",
-      results: []
+      results: [],
+      loadingCount: 0
     };
+  },
+  computed: {
+    isLoading() {
+      return this.loadingCount > 0;
+    }
   },
   components: {
     TopBar,
@@ -44,8 +51,26 @@ export default {
     console.log(this.api);
   },
   methods: {
+    replaceResult(newResult) {
+      const index = this.results.findIndex(r => r.id == newResult.id);
+      this.results.splice(index, 1, newResult);
+    },
+    deleteResult(id) {
+      const index = this.results.findIndex(r => r.id == id);
+      this.results.splice(index, 1);
+    },
+    loadingStarted() {
+      this.loadingCount = this.loadingCount + 1;
+    },
+    loadingComplete() {
+      this.loadingCount = this.loadingCount - 1;
+    },
     search() {
       const query = this.query;
+      const baseResult = { id: monotonicId(), originalQuery: query };
+
+      this.loadingStarted();
+      this.results.unshift(Object.assign({ isLoading: true }, baseResult));
       // this.infoToast(`Loading data for ${query}...`);
 
       this.api
@@ -55,14 +80,22 @@ export default {
             let results = matches.map(r => {
               return Object.assign({ id: monotonicId() }, r);
             });
-            this.results.unshift({
-              id: monotonicId(),
-              queryData: queryData,
-              results: results
-            });
+            this.replaceResult(
+              Object.assign(
+                {
+                  queryData: queryData,
+                  results: results
+                },
+                baseResult
+              )
+            );
+            this.loadingComplete();
+            console.log(this.results);
           });
         })
         .catch(() => {
+          this.deleteResult(baseResult.id);
+          this.loadingComplete();
           this.dangerToast(`Something went wrong! Is ${query} correct?`);
         });
     },
@@ -70,7 +103,7 @@ export default {
       this.$toast.open({
         duration: 2000,
         message: msg,
-        type: 'is-info',
+        type: "is-info",
         queue: false
       });
     },
@@ -78,7 +111,7 @@ export default {
       this.$toast.open({
         duration: 2000,
         message: msg,
-        type: 'is-danger',
+        type: "is-danger",
         queue: false
       });
     }
