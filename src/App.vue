@@ -48,7 +48,6 @@ export default {
   },
   created() {
     this.api = new MucCore(this.apiTokens);
-    console.log(this.api);
   },
   methods: {
     replaceResult(newResult) {
@@ -90,7 +89,6 @@ export default {
               )
             );
             this.loadingComplete();
-            console.log(this.results);
           });
         })
         .catch(() => {
