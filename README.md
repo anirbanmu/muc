@@ -21,7 +21,7 @@ The backend requires API keys to be set so that the respective APIs can be used.
 
 After having set the environment variables, you can start the backend server locally with:
 
-    `yarn express`
+    yarn express
 
 You should now be able to access the application locally @ http://localhost:8081
 
