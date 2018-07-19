@@ -30,14 +30,8 @@ export default class MucCore {
   async getMatches(uriData) {
     const query = MucCore.buildQueryData(uriData);
     const searchRequests = [
-      {
-        type: "spotify",
-        promise: this.spotifyApi.search(query).catch(() => null)
-      },
-      {
-        type: "youtube",
-        promise: this.youtubeApi.search(query).catch(() => null)
-      }
+      MucCore.buildSearchPromise("spotify", this.spotifyApi, query, uriData),
+      MucCore.buildSearchPromise("youtube", this.youtubeApi, query, uriData)
     ];
 
     const promises = Promise.all(searchRequests.map(s => s.promise));
@@ -50,6 +44,16 @@ export default class MucCore {
       });
       return final;
     });
+  }
+
+  static buildSearchPromise(apiType, api, queryString, queryData) {
+    return {
+      type: apiType,
+      promise:
+        queryData.type == apiType
+          ? Promise.resolve(queryData.data)
+          : api.search(queryString).catch(() => null)
+    };
   }
 
   static buildQueryData(uriData) {

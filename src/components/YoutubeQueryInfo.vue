@@ -20,7 +20,7 @@ export default {
       return this.info.snippet;
     },
     videoLink() {
-      return `http://www.youtube.com/watch?v=${this.info.id}`;
+      return `https://www.youtube.com/watch?v=${this.info.id}`;
     }
   }
 };

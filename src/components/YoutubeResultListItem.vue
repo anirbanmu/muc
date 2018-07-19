@@ -12,7 +12,9 @@ export default {
   props: ["info"],
   methods: {
     link() {
-      return `https://www.youtube.com/watch?v=${this.info.id.videoId}`;
+      return `https://www.youtube.com/watch?v=${
+        this.info.id.videoId ? this.info.id.videoId : this.info.id
+      }`;
     }
   }
 };

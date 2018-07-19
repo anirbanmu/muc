@@ -17,8 +17,8 @@ export default class SpotifyApi {
   }
 
   async getUriDetails(uri) {
-    const parsed = SpotifyApi._parseIdAndType(uri);
-    const apiUri = SPOTIFY_BASE_URI + "/" + parsed[1] + "s/" + parsed[2];
+    const trackId = SpotifyApi._parseId(uri);
+    const apiUri = `${SPOTIFY_BASE_URI}/tracks/${trackId}`;
     return axios
       .request({ url: apiUri, headers: this.headers() })
       .then(r => r.data);
@@ -38,13 +38,13 @@ export default class SpotifyApi {
       });
   }
 
-  static _parseIdAndType(uri) {
-    const re = /(track|album)[:|/]([0-9A-Za-z=]+)/;
+  static _parseId(uri) {
+    const re = /track[:/]([0-9A-Za-z=]+)/;
     const parsed = re.exec(uri);
     if (parsed === null) {
       throw new Error("bad URI");
     }
-    return parsed;
+    return parsed[1];
   }
 
   static getToken(clientId, clientSecret) {

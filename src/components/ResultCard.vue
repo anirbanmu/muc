@@ -1,5 +1,5 @@
 <template>
-  <div id="result-card" class="card">
+  <div class="card rounded-card">
     <UriInfo v-bind:query-data="resultData.queryData"/>
     <div class="card-content">
       <div class="level">
@@ -24,4 +24,7 @@ export default {
 </script>
 
 <style lang="scss">
+.rounded-card {
+  border-radius: 0.2em;
+}
 </style>

@@ -17,7 +17,9 @@ async function main(uri) {
         break;
       }
       case "youtube": {
-        const link = `https://www.youtube.com/watch?v=${m.data.id.videoId}`;
+        const link = `https://www.youtube.com/watch?v=${
+          m.data.id.videoId ? m.data.id.videoId : m.data.id
+        }`;
         console.log({ youtube: link });
         break;
       }
