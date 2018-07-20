@@ -6,9 +6,9 @@
     <div class="section">
       <div class="container">
         <b-field>
-          <b-input placeholder="URL to convert..." type="search" icon="magnify" expanded v-model.trim="query" @keyup.enter.native="search"></b-input>
+          <b-input placeholder="URL to convert..." type="search" icon="magnify" expanded v-model.trim="query" @keyup.enter.native="search(query)"></b-input>
           <p class="control">
-            <button class="button is-primary" @click="search">Convert</button>
+            <button class="button is-primary" @click="search(query)">Convert</button>
           </p>
         </b-field>
       </div>
@@ -29,7 +29,7 @@ import monotonicId from "./lib/monotonic-numeric-id";
 
 export default {
   name: "app",
-  props: ["apiTokens"],
+  props: ["apiTokens", "queries"],
   data() {
     return {
       query: "",
@@ -48,6 +48,9 @@ export default {
   },
   created() {
     this.api = new MucCore(this.apiTokens);
+    this.queries.forEach(q => this.search(q.trim()));
+    if (this.queries.length > 0)
+      this.query = this.queries[this.queries.length - 1];
   },
   methods: {
     replaceResult(newResult) {
@@ -64,13 +67,11 @@ export default {
     loadingComplete() {
       this.loadingCount = this.loadingCount - 1;
     },
-    search() {
-      const query = this.query;
+    search(query) {
       const baseResult = { id: monotonicId(), originalQuery: query };
 
       this.loadingStarted();
       this.results.unshift(Object.assign({ isLoading: true }, baseResult));
-      // this.infoToast(`Loading data for ${query}...`);
 
       this.api
         .getUriData(query)
