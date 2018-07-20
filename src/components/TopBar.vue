@@ -11,9 +11,9 @@
 
     <div class="navbar-item is-expanded">
       <b-field class="search-expanded">
-        <b-input placeholder="URL to convert..." type="search" icon="magnify" expanded v-model.trim="query" @keyup.enter.native="search(query)"></b-input>
+        <b-input placeholder="URL to convert..." type="search" icon="magnify" expanded v-model.trim="query" @keyup.enter.native="$emit('search', query)"></b-input>
         <p class="control">
-          <button class="button is-primary" @click="search(query)">Convert</button>
+          <button class="button is-primary" @click="$emit('search', query)">Convert</button>
         </p>
       </b-field>
     </div>
@@ -22,7 +22,16 @@
 
 <script>
 export default {
-  name: "topbar"
+  name: "topbar",
+  props: ["initialQueryValue"],
+  data() {
+    return {
+      query: ""
+    };
+  },
+  created() {
+    this.query = this.initialQueryValue;
+  }
 };
 </script>
 
@@ -37,6 +46,6 @@ export default {
   width: 100%;
 }
 .navbar-brand {
-  justify-content: start;
+  justify-content: space-between;
 }
 </style>

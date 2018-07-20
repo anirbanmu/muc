@@ -6,21 +6,12 @@
       <AboutModal/>
     </b-modal>
 
-    <TopBar v-on:about="aboutModalActive = true"/>
+    <TopBar v-bind:initial-query-value="initialQuery" v-on:about="aboutModalActive = true" v-on:search="search"/>
 
     <div class="section">
-      <div class="container">
-        <b-field>
-          <b-input placeholder="URL to convert..." type="search" icon="magnify" expanded v-model.trim="query" @keyup.enter.native="search(query)"></b-input>
-          <p class="control">
-            <button class="button is-primary" @click="search(query)">Convert</button>
-          </p>
-        </b-field>
+      <div id="results-container" class="container">
+        <ResultCard v-for="r in results" v-if="!r.isLoading" v-bind:key="r.id" v-bind:result-data="r"/>
       </div>
-    </div>
-
-    <div id="results-container" class="container">
-      <ResultCard v-for="r in results" v-if="!r.isLoading" v-bind:key="r.id" v-bind:result-data="r"/>
     </div>
 
   </div>
@@ -47,6 +38,11 @@ export default {
   computed: {
     isLoading() {
       return this.loadingCount > 0;
+    },
+    initialQuery() {
+      return this.queries.length > 0
+        ? this.queries[this.queries.length - 1]
+        : "";
     }
   },
   components: {
@@ -57,8 +53,6 @@ export default {
   created() {
     this.api = new MucCore(this.apiTokens);
     this.queries.forEach(q => this.search(q.trim()));
-    if (this.queries.length > 0)
-      this.query = this.queries[this.queries.length - 1];
   },
   methods: {
     replaceResult(newResult) {
