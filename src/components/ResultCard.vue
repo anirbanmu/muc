@@ -24,7 +24,4 @@ export default {
 </script>
 
 <style lang="scss">
-.rounded-card {
-  border-radius: 0.2em;
-}
 </style>
