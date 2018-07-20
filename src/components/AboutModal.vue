@@ -4,7 +4,7 @@
       <div class="level">
         <div class="level-item">
           <div>
-            <p class="title">Muc</p>
+            <p class="is-size-1 has-text-weight-light">MUC</p>
             <p class="heading">Music URL converter</p>
           </div>
         </div>
