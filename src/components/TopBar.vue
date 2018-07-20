@@ -1,5 +1,5 @@
 <template>
-  <nav id="top" class="navbar is-dark">
+  <nav id="top" class="navbar is-dark is-fixed-top">
     <div class="navbar-brand">
       <p class="navbar-item has-text-weight-light is-size-3">MUC</p>
       <p class="navbar-item is-size-7">Music</p>
