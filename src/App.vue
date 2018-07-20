@@ -1,7 +1,12 @@
 <template>
   <div id="app">
     <b-loading :is-full-page="true" :active.sync="isLoading" :can-cancel="false"/>
-    <TopBar/>
+
+    <b-modal :active.sync="aboutModalActive" scroll="keep">
+      <AboutModal/>
+    </b-modal>
+
+    <TopBar v-on:about="aboutModalActive = true"/>
 
     <div class="section">
       <div class="container">
@@ -23,6 +28,7 @@
 
 <script>
 import TopBar from "./components/TopBar.vue";
+import AboutModal from "./components/AboutModal.vue";
 import ResultCard from "./components/ResultCard.vue";
 import MucCore from "./lib/muc-core";
 import monotonicId from "./lib/monotonic-numeric-id";
@@ -34,7 +40,8 @@ export default {
     return {
       query: "",
       results: [],
-      loadingCount: 0
+      loadingCount: 0,
+      aboutModalActive: false
     };
   },
   computed: {
@@ -44,6 +51,7 @@ export default {
   },
   components: {
     TopBar,
+    AboutModal,
     ResultCard
   },
   created() {

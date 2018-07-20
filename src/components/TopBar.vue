@@ -6,7 +6,9 @@
     <div class="navbar-menu navbar-end">
       <div class="navbar-item">Music</div>
       <div class="navbar-item">Blog</div>
-      <div class="navbar-item">About</div>
+      <div class="navbar-item">
+        <a @click="$emit('about')">About</a>
+      </div>
     </div>
   </div>
 </template>
