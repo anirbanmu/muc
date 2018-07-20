@@ -1,9 +1,8 @@
 import Vue from "vue";
 import Buefy from "buefy";
 import App from "./App.vue";
+import qs from "qs";
 import "./assets/scss/app.scss";
-
-const qs = require("qs");
 
 Vue.use(Buefy);
 
