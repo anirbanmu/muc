@@ -1,5 +1,5 @@
 <template>
-  <nav id="top" class="navbar is-dark is-fixed-top">
+  <nav id="top" class="navbar is-dark">
     <div class="navbar-brand">
       <p class="navbar-item has-text-weight-light is-size-3">MUC</p>
       <p class="navbar-item is-size-7">Music</p>
@@ -41,6 +41,8 @@ export default {
 }
 .navbar {
   background-color: hsla(0, 0%, 21%, 0.9) !important;
+  position: sticky;
+  top: 0;
 }
 .search-expanded {
   width: 100%;
