@@ -6,11 +6,11 @@
       <AboutModal/>
     </b-modal>
 
-    <TopBar v-bind:initial-query-value="initialQuery" v-on:about="aboutModalActive = true" v-on:search="search"/>
+    <TopBar :initial-query-value="initialQuery" @about="aboutModalActive = true" @search="search"/>
 
     <div class="section">
       <div id="results-container" class="container">
-        <ResultCard v-for="r in results" v-if="!r.isLoading" v-bind:key="r.id" v-bind:result-data="r"/>
+        <ResultCard v-for="r in results" v-if="!r.isLoading" :key="r.id" :result-data="r"/>
       </div>
     </div>
 

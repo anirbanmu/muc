@@ -1,6 +1,6 @@
 <template>
-  <SpotifyResultListItem v-if="result.type === 'spotify'" v-bind:info="result.data"/>
-  <YoutubeResultListItem v-else-if="result.type === 'youtube'" v-bind:info="result.data"/>
+  <SpotifyResultListItem v-if="result.type === 'spotify'" :info="result.data"/>
+  <YoutubeResultListItem v-else-if="result.type === 'youtube'" :info="result.data"/>
 </template>
 
 <script>

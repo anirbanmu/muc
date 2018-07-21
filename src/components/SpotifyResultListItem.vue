@@ -7,7 +7,7 @@
         </a>
       </div>
 
-      <ResultListItemButtonBar v-bind:link="link"/>
+      <ResultListItemButtonBar :link="link"/>
     </div>
   </div>
 </template>

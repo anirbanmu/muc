@@ -1,6 +1,6 @@
 <template>
-  <SpotifyUriInfo v-if="queryData.type === 'spotify'" v-bind:info="queryData.data"/>
-  <YoutubeQueryInfo v-else-if="queryData.type === 'youtube'" v-bind:info="queryData.data"/>
+  <SpotifyUriInfo v-if="queryData.type === 'spotify'" :info="queryData.data"/>
+  <YoutubeQueryInfo v-else-if="queryData.type === 'youtube'" :info="queryData.data"/>
 </template>
 
 <script>

@@ -26,11 +26,8 @@ export default {
   props: ["initialQueryValue"],
   data() {
     return {
-      query: ""
+      query: this.initialQueryValue
     };
-  },
-  created() {
-    this.query = this.initialQueryValue;
   }
 };
 </script>
