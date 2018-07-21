@@ -13,7 +13,7 @@
       <b-field class="search-expanded">
         <b-input placeholder="URL to convert..." type="search" icon="magnify" expanded v-model.trim="query" @keyup.enter.native="$emit('search', query)"></b-input>
         <p class="control">
-          <button class="button is-primary" @click="$emit('search', query)">Convert</button>
+          <a class="button is-primary" @click="$emit('search', query)">Convert</a>
         </p>
       </b-field>
     </div>

@@ -1,16 +1,27 @@
 <template>
   <div class="level-item has-text-centered">
-    <a :href="link()">
-      <i class="fab fa-youtube fa-5x"/>
-    </a>
+    <div>
+      <div>
+        <a :href="link">
+          <i class="fab fa-youtube fa-5x"/>
+        </a>
+      </div>
+
+      <ResultListItemButtonBar v-bind:link="link"/>
+    </div>
   </div>
 </template>
 
 <script>
+import ResultListItemButtonBar from "./ResultListItemButtonBar.vue";
+
 export default {
   name: "youtubeResultListItem",
+  components: {
+    ResultListItemButtonBar
+  },
   props: ["info"],
-  methods: {
+  computed: {
     link() {
       return `https://www.youtube.com/watch?v=${
         this.info.id.videoId ? this.info.id.videoId : this.info.id
