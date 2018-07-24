@@ -1,9 +1,9 @@
 <template>
-  <div class="card rounded-card">
-    <UriInfo v-bind:query-data="resultData.queryData"/>
+  <div class="card rounded result-card">
+    <UriInfo :query-data="resultData.queryData"/>
     <div class="card-content">
       <div class="level">
-        <ResultListItem v-for="r in resultData.results" v-bind:key="r.id" v-bind:result="r"/>
+        <ResultListItem v-for="r in resultData.results" :key="r.id" :result="r"/>
       </div>
     </div>
   </div>
@@ -24,4 +24,9 @@ export default {
 </script>
 
 <style lang="scss">
+@import "../assets/scss/variables";
+
+.result-card {
+  background-color: $dark-grey-transclucent !important;
+}
 </style>

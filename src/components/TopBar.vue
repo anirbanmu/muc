@@ -13,7 +13,7 @@
       <b-field class="search-expanded">
         <b-input placeholder="URL to convert..." type="search" icon="magnify" expanded v-model.trim="query" @keyup.enter.native="$emit('search', query)"></b-input>
         <p class="control">
-          <button class="button is-primary" @click="$emit('search', query)">Convert</button>
+          <a class="button is-primary" @click="$emit('search', query)">Convert</a>
         </p>
       </b-field>
     </div>
@@ -26,21 +26,20 @@ export default {
   props: ["initialQueryValue"],
   data() {
     return {
-      query: ""
+      query: this.initialQueryValue
     };
-  },
-  created() {
-    this.query = this.initialQueryValue;
   }
 };
 </script>
 
 <style scoped lang="scss">
+@import "../assets/scss/variables";
+
 #top {
   border-bottom: solid;
 }
 .navbar {
-  background-color: hsla(0, 0%, 21%, 0.9) !important;
+  background-color: $dark-grey-transclucent !important;
   position: sticky;
   top: 0;
 }

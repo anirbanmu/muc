@@ -2,11 +2,11 @@
   <div>
     <header class="card-header">
       <div class="card-header-title">
-        <a :href="artist().external_urls.spotify">{{ artist().name }}</a>
+        <a :href="artist.external_urls.spotify">{{ artist.name }}</a>
         <span class="preserve-whitespace"> - </span>
-        <a :href="track().external_urls.spotify">{{ track().name }}</a>
+        <a :href="track.external_urls.spotify">{{ track.name }}</a>
       </div>
-      <a class="card-header-icon" :href="track().external_urls.spotify">
+      <a class="card-header-icon" :href="track.external_urls.spotify">
         <b-icon pack="fab" icon="spotify"/>
       </a>
     </header>
@@ -17,7 +17,7 @@
 export default {
   name: "spotifyUriInfo",
   props: ["info"],
-  methods: {
+  computed: {
     artist() {
       return this.info.artists[0];
     },

@@ -2,9 +2,9 @@
   <div>
     <header class="card-header">
       <div class="card-header-title">
-        <a :href="videoLink()">{{ snippet().title }}</a>
+        <a :href="videoLink">{{ snippet.title }}</a>
       </div>
-      <a class="card-header-icon" :href="videoLink()">
+      <a class="card-header-icon" :href="videoLink">
         <b-icon pack="fab" icon="youtube"/>
       </a>
     </header>
@@ -15,7 +15,7 @@
 export default {
   name: "youtubeQueryInfo",
   props: ["info"],
-  methods: {
+  computed: {
     snippet() {
       return this.info.snippet;
     },
