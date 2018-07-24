@@ -1,9 +1,10 @@
 <template>
-  <div class="buttons has-addons is-centered">
-    <a class="button is-text is-small" v-clipboard:copy="link">
-      <span class="icon is-small">
+  <div class="button-bar buttons has-addons is-centered">
+    <a class="button is-small is-primary is-outlined" v-clipboard:copy="link">
+      <span class="icon">
         <i class="far fa-copy"></i>
       </span>
+      <span>Copy</span>
     </a>
   </div>
 </template>
@@ -16,4 +17,11 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.button-bar {
+  font-size: 0.8rem;
+  padding: 0.5rem;
+  .button-item {
+    padding: 0.2rem;
+  }
+}
 </style>

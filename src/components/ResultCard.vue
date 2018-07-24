@@ -1,5 +1,5 @@
 <template>
-  <div class="card rounded-card">
+  <div class="card rounded result-card">
     <UriInfo :query-data="resultData.queryData"/>
     <div class="card-content">
       <div class="level">
@@ -24,4 +24,9 @@ export default {
 </script>
 
 <style lang="scss">
+@import "../assets/scss/variables";
+
+.result-card {
+  background-color: $dark-grey-transclucent !important;
+}
 </style>

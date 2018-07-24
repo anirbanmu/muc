@@ -33,11 +33,13 @@ export default {
 </script>
 
 <style scoped lang="scss">
+@import "../assets/scss/variables";
+
 #top {
   border-bottom: solid;
 }
 .navbar {
-  background-color: hsla(0, 0%, 21%, 0.9) !important;
+  background-color: $dark-grey-transclucent !important;
   position: sticky;
   top: 0;
 }

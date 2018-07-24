@@ -126,4 +126,7 @@ export default {
     margin-bottom: 1em;
   }
 }
+.rounded {
+  border-radius: 0.2em;
+}
 </style>
