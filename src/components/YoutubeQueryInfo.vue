@@ -2,9 +2,9 @@
   <div>
     <header class="card-header">
       <div class="card-header-title">
-        <a :href="videoLink">{{ snippet.title }}</a>
+        <a :href="videoLink" target="_blank">{{ snippet.title }}</a>
       </div>
-      <a class="card-header-icon" :href="videoLink">
+      <a class="card-header-icon" :href="videoLink" target="_blank">
         <b-icon pack="fab" icon="youtube"/>
       </a>
     </header>
