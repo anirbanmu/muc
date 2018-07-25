@@ -1,5 +1,5 @@
 <template>
-  <div class="card rounded-card has-text-centered">
+  <div id="about-modal" class="card rounded has-text-centered has-text-light">
     <div class="card-content">
       <div class="level">
         <div class="level-item">
@@ -37,4 +37,9 @@ export default {
 </script>
 
 <style lang="scss">
+@import "../assets/scss/variables";
+
+#about-modal {
+  background-color: opacify($dark-grey-transclucent, 1) !important;
+}
 </style>
