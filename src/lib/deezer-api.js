@@ -17,16 +17,7 @@ export default class DeezerApi {
     const deezerUri = `${DEEZER_TRACK_URI}/${id}`;
 
     if (isBrowser) {
-      const params = { output: "jsonp" };
-      return new Promise(function(resolve, reject) {
-        jsonp(`${deezerUri}&${qs.stringify(params)}`, null, (error, data) => {
-          if (error || data.error) {
-            reject(new Error("bad URI"));
-          } else {
-            resolve(data);
-          }
-        });
-      });
+      return DeezerApi._getUriDetailsJsonp(deezerUri);
     }
 
     return axios.get(deezerUri).then(r => {
@@ -35,39 +26,57 @@ export default class DeezerApi {
     });
   }
 
+  static _getUriDetailsJsonp(uri) {
+    return new Promise(function(resolve, reject) {
+      jsonp(`${uri}&output=jsonp`, null, (error, data) => {
+        if (error || data.error) {
+          reject(new Error("bad URI"));
+        } else {
+          resolve(data);
+        }
+      });
+    });
+  }
+
   async search(query) {
-    const baseParams = {
+    const params = {
       q: query,
       limit: 1
     };
 
     if (isBrowser) {
-      const params = Object.assign({ output: "jsonp" }, baseParams);
-      return new Promise(function(resolve, reject) {
-        jsonp(
-          `${DEEZER_TRACK_SEARCH_URI}?${qs.stringify(params)}`,
-          null,
-          (error, data) => {
-            if (error) {
-              reject(new Error("bad URI"));
-            } else {
-              const found = data.error || data.total < 1 ? null : data.data[0];
-              resolve(found);
-            }
-          }
-        );
-      });
+      return DeezerApi._searchJsonp(params);
     }
 
     return axios
       .request({
         url: DEEZER_TRACK_SEARCH_URI,
-        params: baseParams
+        params: params
       })
       .then(r => {
         const found = r.data.error || r.data.total < 1 ? null : r.data.data[0];
         return found;
       });
+  }
+
+  static _searchJsonp(params) {
+    const queryString = qs.stringify(
+      Object.assign({ output: "jsonp" }, params)
+    );
+    return new Promise(function(resolve, reject) {
+      jsonp(
+        `${DEEZER_TRACK_SEARCH_URI}?${queryString}`,
+        null,
+        (error, data) => {
+          if (error) {
+            reject(new Error("bad URI"));
+          } else {
+            const found = data.error || data.total < 1 ? null : data.data[0];
+            resolve(found);
+          }
+        }
+      );
+    });
   }
 
   static _parseId(uri) {
