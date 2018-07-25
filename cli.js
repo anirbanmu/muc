@@ -23,6 +23,10 @@ async function main(uri) {
         console.log({ youtube: link });
         break;
       }
+      case "deezer": {
+        console.log({ deezer: m.data.link });
+        break;
+      }
     }
   });
 }
