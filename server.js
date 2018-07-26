@@ -10,6 +10,17 @@ app.use([/^(.*)\.ejs$/, "/"], express.static(__dirname + "/dist"));
 app.set("views", __dirname + "/dist/templates");
 app.set("view engine", "ejs");
 
+app.get("/api/refresh-tokens", (req, res) => {
+  MucCore.generateApiTokens()
+    .then(tokens => {
+      res.json(tokens);
+    })
+    .catch(r => {
+      console.log(r);
+      res.status(500).send();
+    });
+});
+
 app.get("/", (req, res) => {
   MucCore.generateApiTokens()
     .then(tokens => {
