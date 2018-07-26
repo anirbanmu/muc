@@ -18,11 +18,15 @@
 </template>
 
 <script>
+const axios = require("axios");
+
 import TopBar from "./components/TopBar.vue";
 import AboutModal from "./components/AboutModal.vue";
 import ResultCard from "./components/ResultCard.vue";
 import MucCore from "./lib/muc-core";
 import monotonicId from "./lib/monotonic-numeric-id";
+
+const refreshTokenInterval = 45 * 60 * 1000;
 
 export default {
   name: "app",
@@ -53,6 +57,7 @@ export default {
   created() {
     this.api = new MucCore(this.apiTokens);
     this.queries.forEach(q => this.search(q.trim()));
+    setTimeout(() => this.refreshTokens(), refreshTokenInterval);
   },
   methods: {
     replaceResult(newResult) {
@@ -115,6 +120,15 @@ export default {
         type: "is-danger",
         queue: false
       });
+    },
+    refreshTokens() {
+      axios
+        .get("/api/refresh-tokens")
+        .then(r => {
+          this.api = new MucCore(r.data);
+          setTimeout(() => this.refreshTokens(), refreshTokenInterval);
+        })
+        .catch(() => {});
     }
   }
 };
