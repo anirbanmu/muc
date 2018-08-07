@@ -2,8 +2,8 @@
   <nav id="top" class="navbar is-dark">
     <div class="navbar-brand">
       <p class="navbar-item has-text-weight-light is-size-3">MUC</p>
-      <p class="navbar-item is-size-7">Music</p>
-      <p class="navbar-item is-size-7">Blog</p>
+      <!-- <p class="navbar-item is-size-7">Music</p> -->
+      <!-- <p class="navbar-item is-size-7">Blog</p> -->
       <p class="navbar-item is-size-7">
         <a @click="$emit('about')">About</a>
       </p>
