@@ -3,12 +3,14 @@
 import SpotifyApi from "./spotify-api";
 import YoutubeApi from "./youtube-api";
 import DeezerApi from "./deezer-api";
+import ItunesApi from "./itunes-api";
 
 export default class MucCore {
   constructor(apiTokens) {
     this.spotifyApi = new SpotifyApi(apiTokens.spotify);
     this.youtubeApi = new YoutubeApi(apiTokens.youtube);
     this.deezerApi = new DeezerApi();
+    this.itunesApi = new ItunesApi();
   }
 
   async getUriMatches(uri) {
@@ -27,6 +29,9 @@ export default class MucCore {
     } else if (lower.includes("deezer")) {
       const deezerData = await this.deezerApi.getUriDetails(uri);
       return { data: deezerData, type: "deezer" };
+    } else if (lower.includes("itunes")) {
+      const itunesData = await this.itunesApi.getUriDetails(uri);
+      return { data: itunesData, type: "itunes" };
     } else {
       throw new Error("bad URI");
     }
@@ -37,7 +42,8 @@ export default class MucCore {
     const searchRequests = [
       MucCore.buildSearchPromise("spotify", this.spotifyApi, query, uriData),
       MucCore.buildSearchPromise("youtube", this.youtubeApi, query, uriData),
-      MucCore.buildSearchPromise("deezer", this.deezerApi, query, uriData)
+      MucCore.buildSearchPromise("deezer", this.deezerApi, query, uriData),
+      MucCore.buildSearchPromise("itunes", this.itunesApi, query, uriData)
     ];
 
     const promises = Promise.all(searchRequests.map(s => s.promise));
@@ -76,6 +82,9 @@ export default class MucCore {
       }
       case "deezer": {
         return `${uriData.data.artist.name} ${uriData.data.title}`;
+      }
+      case "itunes": {
+        return `${uriData.data.artistName} ${uriData.data.trackName}`;
       }
     }
   }
