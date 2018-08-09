@@ -1,13 +1,15 @@
 <template>
-  <SpotifyUriInfo v-if="queryData.type === 'spotify'" :info="queryData.data"/>
-  <YoutubeQueryInfo v-else-if="queryData.type === 'youtube'" :info="queryData.data"/>
-  <DeezerQueryInfo v-else-if="queryData.type === 'deezer'" :info="queryData.data"/>
+  <SpotifyUriInfo v-if="queryData.type === 'spotify'" :info="data"/>
+  <YoutubeQueryInfo v-else-if="queryData.type === 'youtube'" :info="data"/>
+  <DeezerQueryInfo v-else-if="queryData.type === 'deezer'" :info="data"/>
+  <ItunesQueryInfo v-else-if="queryData.type === 'itunes'" :info="data"/>
 </template>
 
 <script>
 import SpotifyUriInfo from "./SpotifyUriInfo.vue";
 import YoutubeQueryInfo from "./YoutubeQueryInfo.vue";
 import DeezerQueryInfo from "./DeezerQueryInfo.vue";
+import ItunesQueryInfo from "./ItunesQueryInfo.vue";
 
 export default {
   name: "uriInfo",
@@ -15,7 +17,13 @@ export default {
   components: {
     SpotifyUriInfo,
     YoutubeQueryInfo,
-    DeezerQueryInfo
+    DeezerQueryInfo,
+    ItunesQueryInfo
+  },
+  computed: {
+    data() {
+      return this.queryData.data;
+    }
   }
 };
 </script>

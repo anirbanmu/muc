@@ -27,6 +27,9 @@ async function main(uri) {
         console.log({ deezer: m.data.link });
         break;
       }
+      case "itunes": {
+        console.log({ itunes: m.data.trackViewUrl });
+      }
     }
   });
 }

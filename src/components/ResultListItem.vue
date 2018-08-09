@@ -1,13 +1,15 @@
 <template>
-  <SpotifyResultListItem v-if="result.type === 'spotify'" :info="result.data"/>
-  <YoutubeResultListItem v-else-if="result.type === 'youtube'" :info="result.data"/>
-  <DeezerResultListItem v-else-if="result.type === 'deezer'" :info="result.data"/>
+  <SpotifyResultListItem v-if="result.type === 'spotify'" :info="data"/>
+  <YoutubeResultListItem v-else-if="result.type === 'youtube'" :info="data"/>
+  <DeezerResultListItem v-else-if="result.type === 'deezer'" :info="data"/>
+  <ItunesResultListItem v-else-if="result.type === 'itunes'" :info="data"/>
 </template>
 
 <script>
 import SpotifyResultListItem from "./SpotifyResultListItem.vue";
 import YoutubeResultListItem from "./YoutubeResultListItem.vue";
 import DeezerResultListItem from "./DeezerResultListItem.vue";
+import ItunesResultListItem from "./ItunesResultListItem.vue";
 
 export default {
   name: "resultListItem",
@@ -15,7 +17,13 @@ export default {
   components: {
     SpotifyResultListItem,
     YoutubeResultListItem,
-    DeezerResultListItem
+    DeezerResultListItem,
+    ItunesResultListItem
+  },
+  computed: {
+    data() {
+      return this.result.data;
+    }
   }
 };
 </script>
