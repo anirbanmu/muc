@@ -3,6 +3,11 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <% if (GOOGLE_SITE_VERIFICATION_CODE) { %>
+      <meta name="google-site-verification" content="<%= GOOGLE_SITE_VERIFICATION_CODE %>" />
+    <% } %>
+
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="icon" href="/favicon.ico">
     <link rel="stylesheet" href="//cdn.materialdesignicons.com/2.0.46/css/materialdesignicons.min.css">

@@ -24,7 +24,10 @@ app.get("/api/refresh-tokens", (req, res) => {
 app.get("/", (req, res) => {
   MucCore.generateApiTokens()
     .then(tokens => {
-      res.render("index", { API_TOKENS_JSON: JSON.stringify(tokens) });
+      res.render("index", {
+        API_TOKENS_JSON: JSON.stringify(tokens),
+        GOOGLE_SITE_VERIFICATION_CODE: process.env.GOOGLE_SITE_VERIFICATION_CODE
+      });
     })
     .catch(r => {
       console.log(r);
