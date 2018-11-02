@@ -11,7 +11,7 @@
 
     <div class="navbar-item is-expanded">
       <b-field class="search-expanded">
-        <b-input placeholder="URL to convert..." type="search" icon="magnify" expanded v-model.trim="query" @keyup.enter.native="$emit('search', query)"></b-input>
+        <b-input placeholder="Try an URI from Spotify, YouTube, Apple Music or Deezer to convert..." type="search" icon="magnify" expanded v-model.trim="query" @keyup.enter.native="$emit('search', query)"></b-input>
         <p class="control">
           <a class="button is-primary" @click="$emit('search', query)">Convert</a>
         </p>
