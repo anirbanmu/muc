@@ -10,8 +10,12 @@
         </div>
       </div>
       <div class="level">
-        <a class="level-item" href="https://github.com/anirbanmu/muc" target="_blank">
-          <i class="fab fa-github fa-5x"/>
+        <a
+          class="level-item"
+          href="https://github.com/anirbanmu/muc"
+          target="_blank"
+        >
+          <i class="fab fa-github fa-5x" />
         </a>
       </div>
       <div class="level">
@@ -19,9 +23,10 @@
           <div>
             <p class="heading">Built by</p>
             <p>
-              <a href="http://anirbanmu.com/" target="_blank">Anirban</a>
-              &
-              <a href="https://www.instagram.com/thedickbaker" target="_blank">Dickbaker</a>
+              <a href="http://anirbanmu.com/" target="_blank">Anirban</a> &
+              <a href="https://www.instagram.com/thedickbaker" target="_blank"
+                >Dickbaker</a
+              >
             </p>
           </div>
         </div>

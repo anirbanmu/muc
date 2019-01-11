@@ -36,3 +36,17 @@ html, body {
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
+.space-after::after {
+  content: " ";
+  white-space: pre;
+}
+.space-before::before {
+  content: " ";
+  white-space: pre;
+}
+.preserve-whitespace {
+  white-space: pre;
+}
+.whitesmoke {
+  color: whitesmoke;
+}

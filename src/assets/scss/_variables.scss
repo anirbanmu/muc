@@ -153,7 +153,9 @@ $size-medium: $size-5 !default;
 $size-large: $size-4 !default;
 
 // Custom
+$primary-darkened-1: darken($primary, 1%);
+$primary-darkened-2: darken($primary, 2%);
 $link: $primary;
-$link-hover: darken($primary, 2%);
+$link-hover: $primary-darkened-2;
 
 $dark-grey-transclucent: hsla(0, 0%, 21%, 0.9);
