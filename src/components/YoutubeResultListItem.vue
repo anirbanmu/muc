@@ -2,12 +2,10 @@
   <div class="level-item has-text-centered">
     <div>
       <div>
-        <a :href="link" target="_blank">
-          <i class="fab fa-youtube fa-5x"/>
-        </a>
+        <a :href="link" target="_blank"> <i class="fab fa-youtube fa-5x" /> </a>
       </div>
 
-      <ResultListItemButtonBar :link="link"/>
+      <ResultListItemButtonBar :link="link" />
     </div>
   </div>
 </template>
@@ -31,5 +29,4 @@ export default {
 };
 </script>
 
-<style lang="scss">
-</style>
+<style lang="scss"></style>

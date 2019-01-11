@@ -1,19 +1,31 @@
 <template>
   <div id="app">
-    <b-loading :is-full-page="true" :active.sync="isLoading" :can-cancel="false"/>
+    <b-loading
+      :is-full-page="true"
+      :active.sync="isLoading"
+      :can-cancel="false"
+    />
 
     <b-modal :active.sync="aboutModalActive" scroll="keep">
-      <AboutModal/>
+      <AboutModal />
     </b-modal>
 
-    <TopBar :initial-query-value="initialQuery" @about="aboutModalActive = true" @search="search"/>
+    <TopBar
+      :initial-query-value="initialQuery"
+      @about="aboutModalActive = true"
+      @search="search"
+    />
 
     <div class="section">
       <div id="results-container" class="container">
-        <ResultCard v-for="r in results" v-if="!r.isLoading" :key="r.id" :result-data="r"/>
+        <ResultCard
+          v-for="r in results"
+          v-if="!r.isLoading"
+          :key="r.id"
+          :result-data="r"
+        />
       </div>
     </div>
-
   </div>
 </template>
 

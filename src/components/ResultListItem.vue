@@ -1,8 +1,8 @@
 <template>
-  <SpotifyResultListItem v-if="result.type === 'spotify'" :info="data"/>
-  <YoutubeResultListItem v-else-if="result.type === 'youtube'" :info="data"/>
-  <DeezerResultListItem v-else-if="result.type === 'deezer'" :info="data"/>
-  <ItunesResultListItem v-else-if="result.type === 'itunes'" :info="data"/>
+  <SpotifyResultListItem v-if="result.type === 'spotify'" :info="data" />
+  <YoutubeResultListItem v-else-if="result.type === 'youtube'" :info="data" />
+  <DeezerResultListItem v-else-if="result.type === 'deezer'" :info="data" />
+  <ItunesResultListItem v-else-if="result.type === 'itunes'" :info="data" />
 </template>
 
 <script>
@@ -28,5 +28,4 @@ export default {
 };
 </script>
 
-<style lang="scss">
-</style>
+<style lang="scss"></style>

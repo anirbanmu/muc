@@ -3,14 +3,14 @@
     <div>
       <div class="link-container">
         <a :href="link" target="_blank">
-          <i class="fa fa-music fa-5x is-invisible"/>
+          <i class="fa fa-music fa-5x is-invisible" />
           <div class="logo-container">
-            <img src="../assets/deezer-logo.svg"/>
+            <img src="../assets/deezer-logo.svg" />
           </div>
         </a>
       </div>
 
-      <ResultListItemButtonBar :link="link"/>
+      <ResultListItemButtonBar :link="link" />
     </div>
   </div>
 </template>

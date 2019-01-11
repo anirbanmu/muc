@@ -7,7 +7,7 @@
         <a :href="info.trackViewUrl" target="_blank">{{ info.trackName }}</a>
       </div>
       <a class="card-header-icon" :href="info.trackViewUrl" target="_blank">
-        <b-icon pack="fab" icon="apple"/>
+        <b-icon pack="fab" icon="apple" />
       </a>
     </header>
   </div>

@@ -1,8 +1,8 @@
 <template>
-  <SpotifyUriInfo v-if="queryData.type === 'spotify'" :info="data"/>
-  <YoutubeQueryInfo v-else-if="queryData.type === 'youtube'" :info="data"/>
-  <DeezerQueryInfo v-else-if="queryData.type === 'deezer'" :info="data"/>
-  <ItunesQueryInfo v-else-if="queryData.type === 'itunes'" :info="data"/>
+  <SpotifyUriInfo v-if="queryData.type === 'spotify'" :info="data" />
+  <YoutubeQueryInfo v-else-if="queryData.type === 'youtube'" :info="data" />
+  <DeezerQueryInfo v-else-if="queryData.type === 'deezer'" :info="data" />
+  <ItunesQueryInfo v-else-if="queryData.type === 'itunes'" :info="data" />
 </template>
 
 <script>
@@ -28,5 +28,4 @@ export default {
 };
 </script>
 
-<style lang="scss">
-</style>
+<style lang="scss"></style>

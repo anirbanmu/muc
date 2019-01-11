@@ -5,7 +5,7 @@
         <a :href="videoLink" target="_blank">{{ snippet.title }}</a>
       </div>
       <a class="card-header-icon" :href="videoLink" target="_blank">
-        <b-icon pack="fab" icon="youtube"/>
+        <b-icon pack="fab" icon="youtube" />
       </a>
     </header>
   </div>
@@ -26,5 +26,4 @@ export default {
 };
 </script>
 
-<style lang="scss">
-</style>
+<style lang="scss"></style>

@@ -1,9 +1,13 @@
 <template>
   <div class="card rounded result-card">
-    <UriInfo :query-data="resultData.queryData"/>
+    <UriInfo :query-data="resultData.queryData" />
     <div class="card-content">
       <div class="level">
-        <ResultListItem v-for="r in resultData.results" :key="r.id" :result="r"/>
+        <ResultListItem
+          v-for="r in resultData.results"
+          :key="r.id"
+          :result="r"
+        />
       </div>
     </div>
   </div>
