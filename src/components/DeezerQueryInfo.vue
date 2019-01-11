@@ -1,15 +1,11 @@
 <template>
-  <div>
-    <header class="card-header">
-      <div class="card-header-title">
-        <a :href="artist.link" target="_blank">{{ artist.name }}</a>
-        <span class="preserve-whitespace"> - </span>
-        <a :href="track.link" target="_blank" class="space-after">{{
-          track.title
-        }}</a>
-        <SourceTag :link="track.link" text="Deezer" />
-      </div>
-    </header>
+  <div class="card-header-title">
+    <a :href="artist.link" target="_blank">{{ artist.name }}</a>
+    <span class="preserve-whitespace"> - </span>
+    <a :href="track.link" target="_blank" class="space-after">{{
+      track.title
+    }}</a>
+    <SourceTag :link="track.link" text="Deezer" />
   </div>
 </template>
 

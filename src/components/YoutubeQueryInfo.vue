@@ -1,13 +1,9 @@
 <template>
-  <div>
-    <header class="card-header">
-      <div class="card-header-title">
-        <a :href="videoLink" target="_blank" class="space-after">{{
-          snippet.title
-        }}</a>
-        <SourceTag :link="videoLink" text="YouTube" />
-      </div>
-    </header>
+  <div class="card-header-title">
+    <a :href="videoLink" target="_blank" class="space-after">{{
+      snippet.title
+    }}</a>
+    <SourceTag :link="videoLink" text="YouTube" />
   </div>
 </template>
 
