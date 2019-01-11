@@ -79,7 +79,7 @@ export default class MucCore {
       }
       case "youtube": {
         return uriData.data.snippet.title
-          .replace(/[[|(].*?official.*?[\]|)]/gi, "")
+          .replace(/(\[.*?official.*?])|(\(.*?official.*?\))/gi, "")
           .trim();
       }
       case "itunes": {
