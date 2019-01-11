@@ -6,24 +6,24 @@
           artist.name
         }}</a>
         <span class="preserve-whitespace"> - </span>
-        <a :href="track.external_urls.spotify" target="_blank">{{
-          track.name
-        }}</a>
+        <a
+          :href="track.external_urls.spotify"
+          target="_blank"
+          class="space-after"
+          >{{ track.name }}</a
+        >
+        <SourceTag :link="track.external_urls.spotify" text="Spotify" />
       </div>
-      <a
-        class="card-header-icon"
-        :href="track.external_urls.spotify"
-        target="_blank"
-      >
-        <b-icon pack="fab" icon="spotify" />
-      </a>
     </header>
   </div>
 </template>
 
 <script>
+import SourceTag from "./SourceTag.vue";
+
 export default {
   name: "spotifyUriInfo",
+  components: { SourceTag },
   props: ["info"],
   computed: {
     artist() {
@@ -36,8 +36,4 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
-.preserve-whitespace {
-  white-space: pre;
-}
-</style>
+<style scoped lang="scss"></style>

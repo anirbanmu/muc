@@ -2,18 +2,21 @@
   <div>
     <header class="card-header">
       <div class="card-header-title">
-        <a :href="videoLink" target="_blank">{{ snippet.title }}</a>
+        <a :href="videoLink" target="_blank" class="space-after">{{
+          snippet.title
+        }}</a>
+        <SourceTag :link="videoLink" text="YouTube" />
       </div>
-      <a class="card-header-icon" :href="videoLink" target="_blank">
-        <b-icon pack="fab" icon="youtube" />
-      </a>
     </header>
   </div>
 </template>
 
 <script>
+import SourceTag from "./SourceTag.vue";
+
 export default {
   name: "youtubeQueryInfo",
+  components: { SourceTag },
   props: ["info"],
   computed: {
     snippet() {

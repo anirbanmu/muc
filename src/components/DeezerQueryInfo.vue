@@ -4,18 +4,21 @@
       <div class="card-header-title">
         <a :href="artist.link" target="_blank">{{ artist.name }}</a>
         <span class="preserve-whitespace"> - </span>
-        <a :href="track.link" target="_blank">{{ track.title }}</a>
+        <a :href="track.link" target="_blank" class="space-after">{{
+          track.title
+        }}</a>
+        <SourceTag :link="track.link" text="Deezer" />
       </div>
-      <a class="card-header-icon" :href="track.link" target="_blank">
-        <span>Deezer</span>
-      </a>
     </header>
   </div>
 </template>
 
 <script>
+import SourceTag from "./SourceTag.vue";
+
 export default {
   name: "deezerQueryInfo",
+  components: { SourceTag },
   props: ["info"],
   computed: {
     artist() {
@@ -28,8 +31,4 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
-.preserve-whitespace {
-  white-space: pre;
-}
-</style>
+<style scoped lang="scss"></style>
