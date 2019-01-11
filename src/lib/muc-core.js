@@ -78,7 +78,9 @@ export default class MucCore {
         return artist + uriData.data.name;
       }
       case "youtube": {
-        return uriData.data.snippet.title;
+        return uriData.data.snippet.title
+          .replace(/[[|(].*?official.*?[\]|)]/gi, "")
+          .trim();
       }
       case "itunes": {
         return `${uriData.data.artistName} ${uriData.data.trackName}`;
