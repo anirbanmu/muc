@@ -3,7 +3,7 @@
     <a :href="artist.external_urls.spotify" target="_blank">{{
       artist.name
     }}</a>
-    <span class="preserve-whitespace"> - </span>
+    <span class="preserve-whitespace whitesmoke"> - </span>
     <a
       :href="track.external_urls.spotify"
       target="_blank"

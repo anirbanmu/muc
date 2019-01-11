@@ -1,7 +1,7 @@
 <template>
   <div class="card-header-title">
     <a :href="info.artistViewUrl" target="_blank">{{ info.artistName }}</a>
-    <span class="preserve-whitespace"> - </span>
+    <span class="preserve-whitespace whitesmoke"> - </span>
     <a :href="info.trackViewUrl" target="_blank" class="space-after">{{
       info.trackName
     }}</a>
