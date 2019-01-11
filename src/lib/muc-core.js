@@ -20,19 +20,18 @@ export default class MucCore {
 
   async getUriData(uri) {
     const lower = uri.toLowerCase();
-    const baseData = { originalUri: uri };
     if (lower.includes("spotify")) {
       const spotifyData = await this.spotifyApi.getUriDetails(uri);
-      return { ...baseData, data: spotifyData, type: "spotify" };
+      return { data: spotifyData, type: "spotify" };
     } else if (/youtu\.{0,1}be/.test(lower)) {
       const youtubeData = await this.youtubeApi.getUriDetails(uri);
-      return { ...baseData, data: youtubeData, type: "youtube" };
+      return { data: youtubeData, type: "youtube" };
     } else if (lower.includes("itunes")) {
       const itunesData = await this.itunesApi.getUriDetails(uri);
-      return { ...baseData, data: itunesData, type: "itunes" };
+      return { data: itunesData, type: "itunes" };
     } else if (lower.includes("deezer")) {
       const deezerData = await this.deezerApi.getUriDetails(uri);
-      return { ...baseData, data: deezerData, type: "deezer" };
+      return { data: deezerData, type: "deezer" };
     } else {
       throw new Error("bad URI");
     }
