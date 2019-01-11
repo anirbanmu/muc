@@ -14,5 +14,6 @@ export default {
 <style scoped lang="scss">
 .tag {
   font-size: 0.6em;
+  height: 1.5rem;
 }
 </style>
