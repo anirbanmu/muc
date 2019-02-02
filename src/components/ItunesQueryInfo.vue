@@ -10,12 +10,12 @@
 </template>
 
 <script>
-import SourceTag from "./SourceTag.vue";
+import SourceTag from './SourceTag.vue';
 
 export default {
-  name: "itunesQueryInfo",
+  name: 'itunesQueryInfo',
   components: { SourceTag },
-  props: ["info"]
+  props: ['info']
 };
 </script>
 

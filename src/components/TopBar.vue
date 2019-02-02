@@ -29,8 +29,8 @@
 
 <script>
 export default {
-  name: "topbar",
-  props: ["initialQueryValue"],
+  name: 'topbar',
+  props: ['initialQueryValue'],
   data() {
     return {
       query: this.initialQueryValue
@@ -40,7 +40,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import "../assets/scss/variables";
+@import '../assets/scss/variables';
 
 #top {
   border-bottom: solid;

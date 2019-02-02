@@ -6,14 +6,14 @@
 </template>
 
 <script>
-import SpotifyResultListItem from "./SpotifyResultListItem.vue";
-import YoutubeResultListItem from "./YoutubeResultListItem.vue";
-import DeezerResultListItem from "./DeezerResultListItem.vue";
-import ItunesResultListItem from "./ItunesResultListItem.vue";
+import SpotifyResultListItem from './SpotifyResultListItem.vue';
+import YoutubeResultListItem from './YoutubeResultListItem.vue';
+import DeezerResultListItem from './DeezerResultListItem.vue';
+import ItunesResultListItem from './ItunesResultListItem.vue';
 
 export default {
-  name: "resultListItem",
-  props: ["result"],
+  name: 'resultListItem',
+  props: ['result'],
   components: {
     SpotifyResultListItem,
     YoutubeResultListItem,

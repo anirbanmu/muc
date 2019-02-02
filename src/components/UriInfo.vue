@@ -6,14 +6,14 @@
 </template>
 
 <script>
-import SpotifyUriInfo from "./SpotifyUriInfo.vue";
-import YoutubeQueryInfo from "./YoutubeQueryInfo.vue";
-import DeezerQueryInfo from "./DeezerQueryInfo.vue";
-import ItunesQueryInfo from "./ItunesQueryInfo.vue";
+import SpotifyUriInfo from './SpotifyUriInfo.vue';
+import YoutubeQueryInfo from './YoutubeQueryInfo.vue';
+import DeezerQueryInfo from './DeezerQueryInfo.vue';
+import ItunesQueryInfo from './ItunesQueryInfo.vue';
 
 export default {
-  name: "uriInfo",
-  props: ["queryData"],
+  name: 'uriInfo',
+  props: ['queryData'],
   components: {
     SpotifyUriInfo,
     YoutubeQueryInfo,

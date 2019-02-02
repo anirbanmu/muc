@@ -10,12 +10,12 @@
 </template>
 
 <script>
-import SourceTag from "./SourceTag.vue";
+import SourceTag from './SourceTag.vue';
 
 export default {
-  name: "deezerQueryInfo",
+  name: 'deezerQueryInfo',
   components: { SourceTag },
-  props: ["info"],
+  props: ['info'],
   computed: {
     artist() {
       return this.info.artist;

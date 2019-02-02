@@ -11,14 +11,14 @@
 </template>
 
 <script>
-import ResultListItemButtonBar from "./ResultListItemButtonBar.vue";
+import ResultListItemButtonBar from './ResultListItemButtonBar.vue';
 
 export default {
-  name: "youtubeResultListItem",
+  name: 'youtubeResultListItem',
   components: {
     ResultListItemButtonBar
   },
-  props: ["info"],
+  props: ['info'],
   computed: {
     link() {
       return `https://www.youtube.com/watch?v=${

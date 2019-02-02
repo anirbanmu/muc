@@ -8,12 +8,12 @@
 </template>
 
 <script>
-import SourceTag from "./SourceTag.vue";
+import SourceTag from './SourceTag.vue';
 
 export default {
-  name: "youtubeQueryInfo",
+  name: 'youtubeQueryInfo',
   components: { SourceTag },
-  props: ["info"],
+  props: ['info'],
   computed: {
     snippet() {
       return this.info.snippet;

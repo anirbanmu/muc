@@ -37,12 +37,12 @@
 
 <script>
 export default {
-  name: "aboutModal"
+  name: 'aboutModal'
 };
 </script>
 
 <style lang="scss">
-@import "../assets/scss/variables";
+@import '../assets/scss/variables';
 
 #about-modal {
   background-color: opacify($dark-grey-transclucent, 1) !important;

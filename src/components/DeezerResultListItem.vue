@@ -16,14 +16,14 @@
 </template>
 
 <script>
-import ResultListItemButtonBar from "./ResultListItemButtonBar.vue";
+import ResultListItemButtonBar from './ResultListItemButtonBar.vue';
 
 export default {
-  name: "deezerResultListItem",
+  name: 'deezerResultListItem',
   components: {
     ResultListItemButtonBar
   },
-  props: ["info"],
+  props: ['info'],
   computed: {
     link() {
       return this.info.link;

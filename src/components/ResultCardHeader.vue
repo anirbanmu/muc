@@ -10,11 +10,11 @@
 </template>
 
 <script>
-import UriInfo from "./UriInfo.vue";
+import UriInfo from './UriInfo.vue';
 
 export default {
-  name: "resultCardHeader",
-  props: ["resultData"],
+  name: 'resultCardHeader',
+  props: ['resultData'],
   components: {
     UriInfo
   },
@@ -29,7 +29,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import "../assets/scss/variables";
+@import '../assets/scss/variables';
 
 .card-header {
   color: darken($primary, 5%);

@@ -1,11 +1,11 @@
-"use strict";
+'use strict';
 
-const axios = require("axios");
-const qs = require("qs");
+const axios = require('axios');
+const qs = require('qs');
 
-const YOUTUBE_BASE_URI = "https://www.googleapis.com/youtube/v3";
-const YOUTUBE_VIDEOS_URI = YOUTUBE_BASE_URI + "/videos";
-const YOUTUBE_SEARCH_URI = YOUTUBE_BASE_URI + "/search";
+const YOUTUBE_BASE_URI = 'https://www.googleapis.com/youtube/v3';
+const YOUTUBE_VIDEOS_URI = YOUTUBE_BASE_URI + '/videos';
+const YOUTUBE_SEARCH_URI = YOUTUBE_BASE_URI + '/search';
 
 export default class YoutubeApi {
   constructor(apiKey) {
@@ -21,10 +21,10 @@ export default class YoutubeApi {
     return axios
       .request({
         url: YOUTUBE_VIDEOS_URI,
-        params: this.addKey({ id: id, part: "snippet" })
+        params: this.addKey({ id: id, part: 'snippet' })
       })
       .then(r => {
-        if (r.data.items.length < 1) throw new Error("bad URI");
+        if (r.data.items.length < 1) throw new Error('bad URI');
         return r.data.items[0];
       });
   }
@@ -32,9 +32,9 @@ export default class YoutubeApi {
   async search(query) {
     const params = this.addKey({
       q: query,
-      type: "video",
+      type: 'video',
       maxResults: 1,
-      part: "snippet"
+      part: 'snippet'
     });
     return axios
       .request({
@@ -52,18 +52,18 @@ export default class YoutubeApi {
     if (id) return id;
     id = YoutubeApi._parseShortLinkId(uri);
     if (id) return id;
-    throw new Error("bad URI");
+    throw new Error('bad URI');
   }
 
   static _parseRegularLinkId(uri) {
-    const queryString = uri.split("?", 2);
+    const queryString = uri.split('?', 2);
     if (queryString.length == 2) {
       return qs.parse(queryString[1]).v;
     }
   }
 
   static _parseShortLinkId(uri) {
-    const parts = uri.split("youtu.be/", 2);
+    const parts = uri.split('youtu.be/', 2);
     if (parts.length == 2) {
       return parts[1];
     }
