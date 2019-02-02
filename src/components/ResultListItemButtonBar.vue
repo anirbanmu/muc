@@ -8,8 +8,8 @@
 
 <script>
 export default {
-  name: "resultListItemButtonBar",
-  props: ["link"]
+  name: 'resultListItemButtonBar',
+  props: ['link']
 };
 </script>
 

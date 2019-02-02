@@ -1,15 +1,15 @@
-"use strict";
+'use strict';
 
-import { isBrowser } from "browser-or-node";
+import { isBrowser } from 'browser-or-node';
 
 // Using jsonp on browsers because deezer doesn't work with CORS
-const jsonp = require("jsonp");
-const axios = require("axios");
-const qs = require("qs");
+const jsonp = require('jsonp');
+const axios = require('axios');
+const qs = require('qs');
 
-const DEEZER_BASE_URI = "https://api.deezer.com";
-const DEEZER_TRACK_URI = DEEZER_BASE_URI + "/track";
-const DEEZER_TRACK_SEARCH_URI = DEEZER_BASE_URI + "/search/track";
+const DEEZER_BASE_URI = 'https://api.deezer.com';
+const DEEZER_TRACK_URI = DEEZER_BASE_URI + '/track';
+const DEEZER_TRACK_SEARCH_URI = DEEZER_BASE_URI + '/search/track';
 
 export default class DeezerApi {
   async getUriDetails(uri) {
@@ -21,7 +21,7 @@ export default class DeezerApi {
     }
 
     return axios.get(deezerUri).then(r => {
-      if (r.data.error) throw new Error("bad URI");
+      if (r.data.error) throw new Error('bad URI');
       return r.data;
     });
   }
@@ -30,7 +30,7 @@ export default class DeezerApi {
     return new Promise(function(resolve, reject) {
       jsonp(`${uri}&output=jsonp`, null, (error, data) => {
         if (error || data.error) {
-          reject(new Error("bad URI"));
+          reject(new Error('bad URI'));
         } else {
           resolve(data);
         }
@@ -61,7 +61,7 @@ export default class DeezerApi {
 
   static _searchJsonp(params) {
     const queryString = qs.stringify(
-      Object.assign({ output: "jsonp" }, params)
+      Object.assign({ output: 'jsonp' }, params)
     );
     return new Promise(function(resolve, reject) {
       jsonp(
@@ -69,7 +69,7 @@ export default class DeezerApi {
         null,
         (error, data) => {
           if (error) {
-            reject(new Error("bad URI"));
+            reject(new Error('bad URI'));
           } else {
             const found = data.error || data.total < 1 ? null : data.data[0];
             resolve(found);
@@ -83,7 +83,7 @@ export default class DeezerApi {
     const re = /track\/(\d+)/;
     const parsed = re.exec(uri);
     if (parsed === null) {
-      throw new Error("bad URI");
+      throw new Error('bad URI');
     }
     return parsed[1];
   }

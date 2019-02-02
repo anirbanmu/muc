@@ -1,15 +1,15 @@
-"use strict";
+'use strict';
 
-import { isBrowser } from "browser-or-node";
+import { isBrowser } from 'browser-or-node';
 
 // Using jsonp on browsers because itunes doesn't work with CORS
-const jsonp = require("jsonp");
-const axios = require("axios");
-const qs = require("qs");
+const jsonp = require('jsonp');
+const axios = require('axios');
+const qs = require('qs');
 
-const ITUNES_BASE_URI = "https://itunes.apple.com";
-const ITUNES_LOOKUP_URI = ITUNES_BASE_URI + "/lookup";
-const ITUNES_SEARCH_URI = ITUNES_BASE_URI + "/search";
+const ITUNES_BASE_URI = 'https://itunes.apple.com';
+const ITUNES_LOOKUP_URI = ITUNES_BASE_URI + '/lookup';
+const ITUNES_SEARCH_URI = ITUNES_BASE_URI + '/search';
 
 export default class ItunesApi {
   async getUriDetails(uri) {
@@ -26,7 +26,7 @@ export default class ItunesApi {
         params: params
       })
       .then(r => {
-        if (r.data.resultCount < 1) throw new Error("bad URI");
+        if (r.data.resultCount < 1) throw new Error('bad URI');
         return r.data.results[0];
       });
   }
@@ -36,7 +36,7 @@ export default class ItunesApi {
     return new Promise(function(resolve, reject) {
       jsonp(`${ITUNES_LOOKUP_URI}?${queryString}`, null, (error, data) => {
         if (error || data.resultCount < 1) {
-          reject(new Error("bad URI"));
+          reject(new Error('bad URI'));
         } else {
           resolve(data.results[0]);
         }
@@ -48,8 +48,8 @@ export default class ItunesApi {
     const params = {
       term: query,
       limit: 1,
-      media: "music",
-      entity: "song"
+      media: 'music',
+      entity: 'song'
     };
 
     if (isBrowser) {
@@ -73,7 +73,7 @@ export default class ItunesApi {
     return new Promise(function(resolve, reject) {
       jsonp(`${ITUNES_SEARCH_URI}?${queryString}`, null, (error, data) => {
         if (error) {
-          reject(new Error("bad URI"));
+          reject(new Error('bad URI'));
         } else {
           const found = data.resultCount < 1 ? null : data.results[0];
           resolve(found);
@@ -86,7 +86,7 @@ export default class ItunesApi {
     const re = /album\/.+i=(\d+)/;
     const parsed = re.exec(uri);
     if (parsed === null) {
-      throw new Error("bad URI");
+      throw new Error('bad URI');
     }
     return parsed[1];
   }

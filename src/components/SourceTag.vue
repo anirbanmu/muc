@@ -6,8 +6,8 @@
 
 <script>
 export default {
-  name: "sourceTag",
-  props: ["link", "text"]
+  name: 'sourceTag',
+  props: ['link', 'text']
 };
 </script>
 

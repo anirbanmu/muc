@@ -30,22 +30,22 @@
 </template>
 
 <script>
-const axios = require("axios");
+const axios = require('axios');
 
-import TopBar from "./components/TopBar.vue";
-import AboutModal from "./components/AboutModal.vue";
-import ResultCard from "./components/ResultCard.vue";
-import MucCore from "./lib/muc-core";
-import monotonicId from "./lib/monotonic-numeric-id";
+import TopBar from './components/TopBar.vue';
+import AboutModal from './components/AboutModal.vue';
+import ResultCard from './components/ResultCard.vue';
+import MucCore from './lib/muc-core';
+import monotonicId from './lib/monotonic-numeric-id';
 
 const refreshTokenInterval = 45 * 60 * 1000;
 
 export default {
-  name: "app",
-  props: ["apiTokens", "queries"],
+  name: 'app',
+  props: ['apiTokens', 'queries'],
   data() {
     return {
-      query: "",
+      query: '',
       results: [],
       loadingCount: 0,
       aboutModalActive: false
@@ -58,7 +58,7 @@ export default {
     initialQuery() {
       return this.queries.length > 0
         ? this.queries[this.queries.length - 1]
-        : "";
+        : '';
     }
   },
   components: {
@@ -121,7 +121,7 @@ export default {
       this.$toast.open({
         duration: 2000,
         message: msg,
-        type: "is-info",
+        type: 'is-info',
         queue: false
       });
     },
@@ -129,13 +129,13 @@ export default {
       this.$toast.open({
         duration: 2000,
         message: msg,
-        type: "is-danger",
+        type: 'is-danger',
         queue: false
       });
     },
     refreshTokens() {
       axios
-        .get("/api/refresh-tokens")
+        .get('/api/refresh-tokens')
         .then(r => {
           this.api = new MucCore(r.data);
           setTimeout(() => this.refreshTokens(), refreshTokenInterval);

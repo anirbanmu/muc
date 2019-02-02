@@ -14,12 +14,12 @@
 </template>
 
 <script>
-import ResultCardHeader from "./ResultCardHeader.vue";
-import ResultListItem from "./ResultListItem.vue";
+import ResultCardHeader from './ResultCardHeader.vue';
+import ResultListItem from './ResultListItem.vue';
 
 export default {
-  name: "resultcard",
-  props: ["resultData"],
+  name: 'resultcard',
+  props: ['resultData'],
   components: {
     ResultCardHeader,
     ResultListItem
@@ -28,7 +28,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import "../assets/scss/variables";
+@import '../assets/scss/variables';
 
 .result-card {
   background-color: $dark-grey-transclucent !important;
