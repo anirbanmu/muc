@@ -1,6 +1,6 @@
 "use strict";
 
-const MucCore = require("esm")(module)("./src/lib/muc-core").default;
+const MucCore = require("esm")(module)("./src/lib/muc-core");
 
 async function matchesForUri(uri) {
   const tokens = await MucCore.generateApiTokens();
