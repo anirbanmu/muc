@@ -20,9 +20,7 @@ export default {
   },
   computed: {
     selfLink() {
-      return `${window.location.protocol}//${window.location.host}/?queries[]=${
-        this.resultData.originalQuery
-      }`;
+      return `${window.location.protocol}//${window.location.host}/?queries[]=${this.resultData.originalQuery}`;
     }
   }
 };
