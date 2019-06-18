@@ -26,7 +26,7 @@ export default class MucCore {
     } else if (/youtu\.{0,1}be/.test(lower)) {
       const youtubeData = await this.youtubeApi.getUriDetails(uri);
       return { data: youtubeData, type: 'youtube' };
-    } else if (lower.includes('itunes')) {
+    } else if (lower.includes('itunes') || lower.includes('music.apple')) {
       const itunesData = await this.itunesApi.getUriDetails(uri);
       return { data: itunesData, type: 'itunes' };
     } else if (lower.includes('deezer')) {
