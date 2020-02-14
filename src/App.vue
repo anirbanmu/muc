@@ -18,12 +18,7 @@
 
     <div class="section">
       <div id="results-container" class="container">
-        <ResultCard
-          v-for="r in results"
-          v-if="!r.isLoading"
-          :key="r.id"
-          :result-data="r"
-        />
+        <ResultCard v-for="r in loadedResults" :key="r.id" :result-data="r" />
       </div>
     </div>
   </div>
@@ -59,6 +54,9 @@ export default {
       return this.queries.length > 0
         ? this.queries[this.queries.length - 1]
         : '';
+    },
+    loadedResults() {
+      return this.results.filter(r => !r.isLoading);
     }
   },
   components: {
