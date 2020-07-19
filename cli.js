@@ -10,7 +10,7 @@ async function matchesForUri(uri) {
 
 async function main(uri) {
   const matches = await matchesForUri(uri);
-  matches.forEach(m => {
+  matches.forEach((m) => {
     switch (m.type) {
       case 'spotify': {
         console.log(m.data.external_urls);
@@ -39,4 +39,4 @@ if (process.argv.length < 3) {
   process.exit(-1);
 }
 
-main(process.argv[2]).catch(e => console.log(e));
+main(process.argv[2]).catch((e) => console.log(e));

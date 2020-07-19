@@ -21,7 +21,7 @@ export default class SpotifyApi {
     const apiUri = `${SPOTIFY_BASE_URI}/tracks/${trackId}`;
     return axios
       .request({ url: apiUri, headers: this.headers() })
-      .then(r => r.data);
+      .then((r) => r.data);
   }
 
   async search(query) {
@@ -32,7 +32,7 @@ export default class SpotifyApi {
         headers: this.headers(),
         params: params
       })
-      .then(r => {
+      .then((r) => {
         const found = r.data.tracks.total > 0 ? r.data.tracks.items[0] : null;
         return found;
       });
@@ -58,6 +58,6 @@ export default class SpotifyApi {
       .post(SPOTIFY_AUTHORIZATION_URI, qs.stringify(params), {
         headers: headers
       })
-      .then(r => r.data.access_token);
+      .then((r) => r.data.access_token);
   }
 }

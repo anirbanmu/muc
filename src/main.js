@@ -18,7 +18,7 @@ const queriesValue = qs.parse(location.search.slice(1)).queries;
 const queries = Array.isArray(queriesValue) ? queriesValue : [];
 
 new Vue({
-  render: h =>
+  render: (h) =>
     h(App, {
       props: { apiTokens, queries }
     })

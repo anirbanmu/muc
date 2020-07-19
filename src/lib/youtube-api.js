@@ -23,7 +23,7 @@ export default class YoutubeApi {
         url: YOUTUBE_VIDEOS_URI,
         params: this.addKey({ id: id, part: 'snippet' })
       })
-      .then(r => {
+      .then((r) => {
         if (r.data.items.length < 1) throw new Error('bad URI');
         return r.data.items[0];
       });
@@ -41,7 +41,7 @@ export default class YoutubeApi {
         url: YOUTUBE_SEARCH_URI,
         params: params
       })
-      .then(r => {
+      .then((r) => {
         const found = r.data.items.length > 0 ? r.data.items[0] : null;
         return found;
       });

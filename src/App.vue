@@ -56,7 +56,7 @@ export default {
         : '';
     },
     loadedResults() {
-      return this.results.filter(r => !r.isLoading);
+      return this.results.filter((r) => !r.isLoading);
     }
   },
   components: {
@@ -66,16 +66,16 @@ export default {
   },
   created() {
     this.api = new MucCore(this.apiTokens);
-    this.queries.forEach(q => this.search(q.trim()));
+    this.queries.forEach((q) => this.search(q.trim()));
     setTimeout(() => this.refreshTokens(), refreshTokenInterval);
   },
   methods: {
     replaceResult(newResult) {
-      const index = this.results.findIndex(r => r.id == newResult.id);
+      const index = this.results.findIndex((r) => r.id == newResult.id);
       this.results.splice(index, 1, newResult);
     },
     deleteResult(id) {
-      const index = this.results.findIndex(r => r.id == id);
+      const index = this.results.findIndex((r) => r.id == id);
       this.results.splice(index, 1);
     },
     loadingStarted() {
@@ -92,9 +92,9 @@ export default {
 
       this.api
         .getUriData(query)
-        .then(queryData => {
-          this.api.getMatches(queryData).then(matches => {
-            let results = matches.map(r => {
+        .then((queryData) => {
+          this.api.getMatches(queryData).then((matches) => {
+            let results = matches.map((r) => {
               return Object.assign({ id: monotonicId() }, r);
             });
             this.replaceResult(
@@ -116,7 +116,7 @@ export default {
         });
     },
     infoToast(msg) {
-      this.$toast.open({
+      this.$buefy.toast.open({
         duration: 2000,
         message: msg,
         type: 'is-info',
@@ -124,7 +124,7 @@ export default {
       });
     },
     dangerToast(msg) {
-      this.$toast.open({
+      this.$buefy.toast.open({
         duration: 2000,
         message: msg,
         type: 'is-danger',
@@ -134,7 +134,7 @@ export default {
     refreshTokens() {
       axios
         .get('/api/refresh-tokens')
-        .then(r => {
+        .then((r) => {
           this.api = new MucCore(r.data);
           setTimeout(() => this.refreshTokens(), refreshTokenInterval);
         })

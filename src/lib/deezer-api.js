@@ -20,14 +20,14 @@ export default class DeezerApi {
       return DeezerApi._getUriDetailsJsonp(deezerUri);
     }
 
-    return axios.get(deezerUri).then(r => {
+    return axios.get(deezerUri).then((r) => {
       if (r.data.error) throw new Error('bad URI');
       return r.data;
     });
   }
 
   static _getUriDetailsJsonp(uri) {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
       jsonp(`${uri}&output=jsonp`, null, (error, data) => {
         if (error || data.error) {
           reject(new Error('bad URI'));
@@ -53,7 +53,7 @@ export default class DeezerApi {
         url: DEEZER_TRACK_SEARCH_URI,
         params: params
       })
-      .then(r => {
+      .then((r) => {
         const found = r.data.error || r.data.total < 1 ? null : r.data.data[0];
         return found;
       });
@@ -63,7 +63,7 @@ export default class DeezerApi {
     const queryString = qs.stringify(
       Object.assign({ output: 'jsonp' }, params)
     );
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
       jsonp(
         `${DEEZER_TRACK_SEARCH_URI}?${queryString}`,
         null,
