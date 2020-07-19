@@ -12,10 +12,10 @@ app.set('view engine', 'ejs');
 
 app.get('/api/refresh-tokens', (req, res) => {
   MucCore.generateApiTokens()
-    .then(tokens => {
+    .then((tokens) => {
       res.json(tokens);
     })
-    .catch(r => {
+    .catch((r) => {
       console.log(r);
       res.status(500).send();
     });
@@ -23,12 +23,12 @@ app.get('/api/refresh-tokens', (req, res) => {
 
 app.get('/', (req, res) => {
   MucCore.generateApiTokens()
-    .then(tokens => {
+    .then((tokens) => {
       res.render('index', {
         API_TOKENS_JSON: JSON.stringify(tokens)
       });
     })
-    .catch(r => {
+    .catch((r) => {
       console.log(r);
       res.status(500).send('something went wrong');
     });

@@ -25,7 +25,7 @@ export default class ItunesApi {
         url: ITUNES_LOOKUP_URI,
         params: params
       })
-      .then(r => {
+      .then((r) => {
         if (r.data.resultCount < 1) throw new Error('bad URI');
         return r.data.results[0];
       });
@@ -33,7 +33,7 @@ export default class ItunesApi {
 
   static _getUriDetailsJsonp(params) {
     const queryString = qs.stringify(params);
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
       jsonp(`${ITUNES_LOOKUP_URI}?${queryString}`, null, (error, data) => {
         if (error || data.resultCount < 1) {
           reject(new Error('bad URI'));
@@ -61,7 +61,7 @@ export default class ItunesApi {
         url: ITUNES_SEARCH_URI,
         params: params
       })
-      .then(r => {
+      .then((r) => {
         const found = r.data.resultCount < 1 ? null : r.data.results[0];
         return found;
       });
@@ -70,7 +70,7 @@ export default class ItunesApi {
   static _searchJsonp(params) {
     const queryString = qs.stringify(params);
 
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
       jsonp(`${ITUNES_SEARCH_URI}?${queryString}`, null, (error, data) => {
         if (error) {
           reject(new Error('bad URI'));

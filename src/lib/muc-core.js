@@ -46,8 +46,8 @@ export default class MucCore {
       MucCore.buildSearchPromise('deezer', this.deezerApi, query, uriData)
     ];
 
-    const promises = Promise.all(searchRequests.map(s => s.promise));
-    return promises.then(results => {
+    const promises = Promise.all(searchRequests.map((s) => s.promise));
+    return promises.then((results) => {
       let final = [];
       results.forEach((r, i) => {
         if (r !== null) {
@@ -106,8 +106,8 @@ export default class MucCore {
       }
     ];
 
-    const promises = Promise.all(tokenRequests.map(t => t.promise));
-    return promises.then(tokens => {
+    const promises = Promise.all(tokenRequests.map((t) => t.promise));
+    return promises.then((tokens) => {
       let tokenMap = {};
       tokens.forEach((t, i) => {
         tokenMap[tokenRequests[i].type] = t;
