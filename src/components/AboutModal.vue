@@ -23,7 +23,7 @@
           href="https://github.com/anirbanmu/muc"
           target="_blank"
         >
-          <i class="fab fa-github fa-5x" />
+          <font-awesome-icon :icon="['fab', 'github']" size="5x" />
         </a>
       </div>
       <div class="level">

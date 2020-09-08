@@ -3,7 +3,11 @@
     <div>
       <div class="link-container">
         <a :href="link" target="_blank">
-          <i class="fa fa-music fa-5x is-invisible" />
+          <font-awesome-icon
+            :icon="['far', 'copy']"
+            size="5x"
+            class="is-invisible"
+          />
           <div class="logo-container">
             <img src="../assets/deezer-logo.svg" />
           </div>

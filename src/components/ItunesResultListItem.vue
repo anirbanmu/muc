@@ -2,7 +2,9 @@
   <div class="level-item has-text-centered">
     <div>
       <div>
-        <a :href="link" target="_blank"> <i class="fab fa-apple fa-5x" /> </a>
+        <a :href="link" target="_blank">
+          <font-awesome-icon :icon="['fab', 'apple']" size="5x" />
+        </a>
       </div>
 
       <ResultListItemButtonBar :link="link" />

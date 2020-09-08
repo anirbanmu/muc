@@ -1,7 +1,8 @@
 <template>
   <div class="button-bar buttons has-addons is-centered">
     <a class="button is-small is-primary is-outlined" v-clipboard:copy="link">
-      <span class="icon"> <i class="far fa-copy"></i> </span> <span>Copy</span>
+      <span class="icon"> <font-awesome-icon :icon="['far', 'copy']" /> </span>
+      <span>Copy</span>
     </a>
   </div>
 </template>

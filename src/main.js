@@ -1,11 +1,25 @@
 import Vue from 'vue';
-import Buefy from 'buefy';
-import VueClipboard from 'vue-clipboard2';
 import App from './App.vue';
 import qs from 'qs';
 import './assets/scss/app.scss';
 
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { faCopy } from '@fortawesome/free-regular-svg-icons';
+import {
+  faGithub,
+  faApple,
+  faSpotify,
+  faYoutube
+} from '@fortawesome/free-brands-svg-icons';
+
+library.add(faCopy, faGithub, faApple, faSpotify, faYoutube);
+Vue.component('font-awesome-icon', FontAwesomeIcon);
+
+import Buefy from 'buefy';
 Vue.use(Buefy);
+
+import VueClipboard from 'vue-clipboard2';
 Vue.use(VueClipboard);
 
 Vue.config.productionTip = false;
