@@ -5,15 +5,15 @@
         <div class="level-item">
           <div>
             <p class="is-size-1 has-text-weight-light">MUC</p>
-            <p class="heading">Music URL converter</p>
+            <p class="heading">Music URI converter</p>
           </div>
         </div>
       </div>
       <div class="level">
         <div class="level-item">
           <p>
-            Cross-convert Spotify, YouTube, Apple Music & Deezer URIs to easily
-            share in a platform agnostic way.
+            Cross-convert Spotify, YouTube, Apple Music & Deezer URIs/links to
+            easily share them in a platform agnostic way.
           </p>
         </div>
       </div>
