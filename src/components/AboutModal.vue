@@ -10,6 +10,14 @@
         </div>
       </div>
       <div class="level">
+        <div class="level-item">
+          <p>
+            Cross-convert Spotify, YouTube, Apple Music & Deezer URIs to easily
+            share in a platform agnostic way.
+          </p>
+        </div>
+      </div>
+      <div class="level">
         <a
           class="level-item"
           href="https://github.com/anirbanmu/muc"
