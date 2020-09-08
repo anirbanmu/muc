@@ -5,6 +5,15 @@ const MucCore = require('esm')(module)('./src/lib/muc-core').default;
 const express = require('express');
 const app = express();
 
+const compression = require('compression');
+app.use(compression());
+
+const env = process.env.NODE_ENV || 'development';
+if (env === 'production') {
+  const enforce = require('express-sslify');
+  app.use(enforce.HTTPS({ trustProtoHeader: true }));
+}
+
 app.use([/^(.*)\.ejs$/, '/'], express.static(__dirname + '/dist'));
 
 app.set('views', __dirname + '/dist/templates');
