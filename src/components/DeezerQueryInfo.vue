@@ -5,16 +5,22 @@
     <a :href="track.link" target="_blank" class="space-after">{{
       track.title
     }}</a>
-    <SourceTag :link="track.link" text="Deezer" />
+    <div class="link-container">
+      <a :href="track.link" target="_blank">
+        <span class="tag is-dark is-invisible">
+          <a :href="track.link" target="_blank">Deezer</a>
+        </span>
+        <div class="logo-container">
+          <img src="../assets/Deezer_Logo_RVB_White.svg" />
+        </div>
+      </a>
+    </div>
   </div>
 </template>
 
 <script>
-import SourceTag from './SourceTag.vue';
-
 export default {
   name: 'deezerQueryInfo',
-  components: { SourceTag },
   props: ['info'],
   computed: {
     artist() {
@@ -27,4 +33,16 @@ export default {
 };
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.link-container {
+  position: relative;
+  left: 0;
+  top: 0;
+}
+.logo-container {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+}
+</style>

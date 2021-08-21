@@ -9,7 +9,7 @@
             class="is-invisible"
           />
           <div class="logo-container">
-            <img src="../assets/deezer-logo.svg" />
+            <img src="../assets/Deezer_Logo_RVB_White.svg" />
           </div>
         </a>
       </div>

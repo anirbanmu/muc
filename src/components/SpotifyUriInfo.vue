@@ -4,22 +4,19 @@
       artist.name
     }}</a>
     <span class="preserve-whitespace whitesmoke"> - </span>
-    <a
-      :href="track.external_urls.spotify"
-      target="_blank"
-      class="space-after"
-      >{{ track.name }}</a
-    >
-    <SourceTag :link="track.external_urls.spotify" text="Spotify" />
+    <a :href="track.external_urls.spotify" target="_blank">{{ track.name }}</a>
+    <span class="preserve-whitespace whitesmoke"> (</span>
+    <a :href="album.external_urls.spotify" target="_blank">{{ album.name }}</a>
+    <span class="preserve-whitespace whitesmoke space-after">)</span>
+    <a :href="track.uri" target="_blank">
+      <font-awesome-icon :icon="['fab', 'spotify']" size="1x" />
+    </a>
   </div>
 </template>
 
 <script>
-import SourceTag from './SourceTag.vue';
-
 export default {
   name: 'spotifyUriInfo',
-  components: { SourceTag },
   props: ['info'],
   computed: {
     artist() {
@@ -27,6 +24,9 @@ export default {
     },
     track() {
       return this.info;
+    },
+    album() {
+      return this.info.album;
     }
   }
 };
