@@ -2,9 +2,8 @@
   <div class="card-header-title">
     <a :href="artist.link" target="_blank">{{ artist.name }}</a>
     <span class="preserve-whitespace whitesmoke"> - </span>
-    <a :href="track.link" target="_blank" class="space-after">{{
-      track.title
-    }}</a>
+    <a :href="track.link" target="_blank">{{ track.title }}</a>
+    <span class="preserve-whitespace whitesmoke is-invisible">e</span>
     <div class="link-container">
       <a :href="track.link" target="_blank">
         <span class="tag is-dark is-invisible">
@@ -43,6 +42,6 @@ export default {
   position: absolute;
   left: 0;
   top: 0;
-  width: 100%;
+  width: 80%;
 }
 </style>
