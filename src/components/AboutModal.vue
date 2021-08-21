@@ -39,6 +39,47 @@
           </div>
         </div>
       </div>
+      <div class="level">
+        <div class="level-item">
+          <div>
+            <p class="heading">APIs used</p>
+            <ul>
+              <li>
+                <a
+                  href="https://developer.spotify.com/documentation/web-api/"
+                  target="_blank"
+                  >Spotify API</a
+                >
+              </li>
+              <li>
+                <a
+                  href="https://affiliate.itunes.apple.com/resources/documentation/itunes-store-web-service-search-api"
+                  target="_blank"
+                  >iTunes Search API
+                </a>
+              </li>
+              <li>
+                <a href="https://developers.deezer.com/api" target="_blank"
+                  >Deezer API</a
+                >
+              </li>
+              <li>
+                <a
+                  href="https://developers.google.com/youtube/v3/"
+                  target="_blank"
+                  >YouTube Data API</a
+                >
+                <span class="is-size-7">
+                  (by using this app you also agree to be bound by
+                  <a href="https://www.youtube.com/t/terms" target="_blank"
+                    >YouTube's Terms of Service</a
+                  >)</span
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
