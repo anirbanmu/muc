@@ -8,7 +8,7 @@
     <span class="preserve-whitespace whitesmoke"> (</span>
     <a :href="album.external_urls.spotify" target="_blank">{{ album.name }}</a>
     <span class="preserve-whitespace whitesmoke space-after">)</span>
-    <a :href="track.uri" target="_blank">
+    <a :href="track.external_urls.spotify" target="_blank">
       <font-awesome-icon :icon="['fab', 'spotify']" size="1x" />
     </a>
   </div>
