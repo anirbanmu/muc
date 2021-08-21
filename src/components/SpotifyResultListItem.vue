@@ -23,7 +23,7 @@ export default {
   props: ['info'],
   computed: {
     link() {
-      return this.info.external_urls.spotify;
+      return this.info.uri;
     }
   }
 };
