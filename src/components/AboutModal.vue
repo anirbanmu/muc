@@ -80,6 +80,24 @@
           </div>
         </div>
       </div>
+      <div class="level">
+        <div class="level-item">
+          <div>
+            <p class="heading">Privacy</p>
+            <p>MUC does not collect or log any personal information.</p>
+            <p>
+              MUC only processes the links you enter via the APIs mentined
+              above.
+            </p>
+            <p class="is-size-7">
+              Due to usage of the YouTube Data API, we're required to link to
+              <a href="http://www.google.com/policies/privacy" target="_blank"
+                >Google Privacy Policy</a
+              >.
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
