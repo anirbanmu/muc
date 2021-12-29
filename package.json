@@ -50,7 +50,7 @@
     "not ie <= 8"
   ],
   "engines": {
-    "node": "^15.0",
+    "node": "^16.13",
     "yarn": "^1.22"
   },
   "heroku-run-build-script": true
