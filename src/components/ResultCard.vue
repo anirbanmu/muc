@@ -18,7 +18,7 @@ import ResultCardHeader from './ResultCardHeader.vue';
 import ResultListItem from './ResultListItem.vue';
 
 export default {
-  name: 'resultcard',
+  name: 'result-card',
   props: ['resultData'],
   components: {
     ResultCardHeader,
