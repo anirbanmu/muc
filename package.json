@@ -10,10 +10,10 @@
     "express": "node server.js"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.36",
-    "@fortawesome/free-brands-svg-icons": "^5.15.4",
-    "@fortawesome/free-regular-svg-icons": "^5.15.4",
-    "@fortawesome/vue-fontawesome": "2.0.6",
+    "@fortawesome/fontawesome-svg-core": "^6.1.2",
+    "@fortawesome/free-brands-svg-icons": "^6.1.2",
+    "@fortawesome/free-regular-svg-icons": "^6.1.2",
+    "@fortawesome/vue-fontawesome": "2.0.8",
     "axios": "^0.24.0",
     "browser-or-node": "^2.0.0",
     "compression": "^1.7.4",

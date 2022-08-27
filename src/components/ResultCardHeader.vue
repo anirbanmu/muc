@@ -3,9 +3,7 @@
     <header class="card-header">
       <UriInfo :query-data="resultData.queryData" />
       <a class="card-header-icon" v-clipboard:copy="selfLink">
-        <span class="icon">
-          <font-awesome-icon :icon="['far', 'copy']" size="xs" />
-        </span>
+        <font-awesome-icon :icon="['far', 'copy']" size="xs" />
       </a>
     </header>
   </div>
