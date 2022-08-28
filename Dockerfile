@@ -38,13 +38,19 @@ COPY --chown=${USER}:${USER} --from=runtime-node-modules /src/package.json /src/
 COPY --chown=${USER}:${USER} --from=runtime-node-modules /src/node_modules/ /src/node_modules/
 
 # Copy built dist
-COPY --chown=${USER}:${USER} --from=vue-builder /src/dist/ /src/dist/
+ARG DIST_DIR_ARG="/dist"
+ENV DIST_DIR_ARG ${DIST_DIR_ARG}
+COPY --chown=${USER}:${USER} --from=vue-builder /src/dist/ ${DIST_DIR_ARG}/
+
+# Move templates out of dist so that it is servable outright
+ARG EJS_TEMPLATE_DIR_ARG="/src/ejs_templates"
+ENV EJS_TEMPLATE_DIR ${EJS_TEMPLATE_DIR_ARG}
+RUN mkdir ${EJS_TEMPLATE_DIR_ARG} \
+    && mv ${DIST_DIR_ARG}/templates/* ${EJS_TEMPLATE_DIR_ARG} \
+    && rm -rf ${DIST_DIR_ARG}/templates \
+    && chown -R ${USER}:${USER} ${EJS_TEMPLATE_DIR_ARG}
 
 USER ${USER}
 
-# Move templates out of dist so that it is servable outright
-RUN mkdir /src/ejs_templates && mv /src/dist/templates/* /src/ejs_templates && rm -rf /src/dist/templates
-
-ENV EJS_TEMPLATE_DIR "/src/ejs_templates"
 ENV PORT 8080
 ENTRYPOINT ["node", "server.js"]
