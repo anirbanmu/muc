@@ -48,7 +48,7 @@ export default class SpotifyApi {
   }
 
   static getToken(clientId, clientSecret) {
-    const base64Buffer = new Buffer(clientId + ':' + clientSecret);
+    const base64Buffer = Buffer.from(clientId + ':' + clientSecret);
     const headers = {
       'Content-Type': 'application/x-www-form-urlencoded',
       Authorization: 'Basic ' + base64Buffer.toString('base64')

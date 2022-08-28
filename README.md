@@ -46,9 +46,13 @@ After having set the environment variables, you can start the backend server loc
 
 You should now be able to access the application locally @ http://localhost:8081
 
-#### Heroku
+#### fly.io
 
-The application is ready to be deployed on Heroku. Just create a Heroku application using [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli) & push to the Heroku remote.
+The application is ready to be deployed on fly.io. Just create an app with (`flyctl`)[https://fly.io/docs/flyctl/installing/] and replace the `<APP-NAME>` in [fly.toml](fly.toml). After you've created the app & replaced the name in fly.toml:
+- `flyctl secrets set SPOTIFY_CLIENT_ID=<spotify client ID> [REQUIRED]`
+- `flyctl secrets set SPOTIFY_CLIENT_SECRET=<spotify client secret> [REQUIRED]`
+- `flyctl secrets set YOUTUBE_API_KEY=<youtube API key> [REQUIRED]`
+- `flyctl deploy --build-secret GOOGLE_SITE_VERIFICATION_CODE=<google site verification code via meta tag>` if you want the Google Site verification code in the page, else just `flyctl deploy`.
 
 ### Details
 #### Frontend

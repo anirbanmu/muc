@@ -1,5 +1,16 @@
 'use strict';
 
+const process = require('process');
+process.on('SIGINT', () => {
+  console.log('SIGINT. Exiting...');
+  process.exit(0);
+});
+
+process.on('SIGTERM', () => {
+  console.log('SIGTERM. Exiting...');
+  process.exit(0);
+});
+
 const MucCore = require('esm')(module)('./src/lib/muc-core').default;
 
 const express = require('express');
@@ -16,7 +27,7 @@ if (env === 'production') {
 
 app.use([/^(.*)\.ejs$/, '/'], express.static(__dirname + '/dist'));
 
-app.set('views', __dirname + '/dist/templates');
+app.set('views', process.env.EJS_TEMPLATE_DIR || (__dirname + '/dist/templates'));
 app.set('view engine', 'ejs');
 
 app.get('/api/refresh-tokens', (req, res) => {

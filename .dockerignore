@@ -1,0 +1,9 @@
+dist
+node_modules
+.dockerignore
+.env.*
+.gitignore
+cli.js
+Procfile
+README.md
+Dockerfile
