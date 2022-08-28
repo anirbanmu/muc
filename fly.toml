@@ -5,6 +5,9 @@ kill_signal = "SIGINT"
 kill_timeout = 5
 processes = []
 
+[build]
+  dockerfile = "Dockerfile"
+
 [env]
   PORT = "8080"
 
@@ -37,3 +40,19 @@ processes = []
     interval = "15s"
     restart_limit = 0
     timeout = "2s"
+
+  [[statics]]
+    guest_path = "/dist/css"
+    url_prefix = "/css"
+
+  [[statics]]
+    guest_path = "/dist/img"
+    url_prefix = "/img"
+
+  [[statics]]
+    guest_path = "/dist/js"
+    url_prefix = "/js"
+
+  [[statics]]
+    guest_path = "/dist/icons"
+    url_prefix = "/icons"

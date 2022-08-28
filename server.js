@@ -25,7 +25,7 @@ if (env === 'production') {
   app.use(enforce.HTTPS({ trustProtoHeader: true }));
 }
 
-app.use([/^(.*)\.ejs$/, '/'], express.static(__dirname + '/dist'));
+app.use([/^(.*)\.ejs$/, '/'], express.static(process.env.DIST_DIR_ARG || (__dirname + '/dist')));
 
 app.set('views', process.env.EJS_TEMPLATE_DIR || (__dirname + '/dist/templates'));
 app.set('view engine', 'ejs');
