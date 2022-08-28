@@ -7,3 +7,4 @@ cli.js
 Procfile
 README.md
 Dockerfile
+fly.toml
