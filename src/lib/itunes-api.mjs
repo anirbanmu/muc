@@ -3,9 +3,9 @@
 import { isBrowser } from 'browser-or-node';
 
 // Using jsonp on browsers because itunes doesn't work with CORS
-const jsonp = require('jsonp');
-const axios = require('axios');
-const qs = require('qs');
+import jsonp from 'jsonp';
+import axios from 'axios';
+import qs from 'qs';
 
 const ITUNES_BASE_URI = 'https://itunes.apple.com';
 const ITUNES_LOOKUP_URI = ITUNES_BASE_URI + '/lookup';

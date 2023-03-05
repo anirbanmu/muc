@@ -1,9 +1,9 @@
 'use strict';
 
-import SpotifyApi from './spotify-api';
-import YoutubeApi from './youtube-api';
-import DeezerApi from './deezer-api';
-import ItunesApi from './itunes-api';
+import SpotifyApi from './spotify-api.mjs';
+import YoutubeApi from './youtube-api.mjs';
+import DeezerApi from './deezer-api.mjs';
+import ItunesApi from './itunes-api.mjs';
 
 export default class MucCore {
   constructor(apiTokens) {
