@@ -12,10 +12,10 @@ It currently supports Spotify, YouTube, iTunes/Apple Music & Deezer.
 
 ### Setup
 
-- Make sure you have [Node](https://nodejs.org/en/download/package-manager/) & [yarn](https://yarnpkg.com/lang/en/docs/install) installed
+- Make sure you have [Node](https://nodejs.org/en/download/package-manager/) & [npm](https://yarnpkg.com/lang/en/docs/install) [installed](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
 - Clone the repo
 - `cd` into repo directory
-- `yarn install`
+- `npm install`
 
 #### Frontend
 
@@ -23,11 +23,11 @@ The front end must be built & ready to go before the backend can successfully se
 
 For development (will build, watch for changes & rebuild Vue.js frontend):
 
-    yarn build-watch
+    npm run build-watch
 
 For production (will build only):
 
-    yarn build
+    npm run build
 
 Built files are placed in the `./dist` directory.
 
@@ -42,7 +42,7 @@ The backend requires API keys to be set so that the respective APIs can be used.
 
 After having set the environment variables, you can start the backend server locally with:
 
-    yarn express
+    npm run express
 
 You should now be able to access the application locally @ http://localhost:8081
 
