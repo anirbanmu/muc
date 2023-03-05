@@ -3,8 +3,7 @@ node_modules
 .dockerignore
 .env.*
 .gitignore
-cli.js
-Procfile
+cli.mjs
 README.md
 Dockerfile
 fly.toml
