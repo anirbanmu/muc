@@ -30,7 +30,7 @@ const axios = require('axios');
 import TopBar from './components/TopBar.vue';
 import AboutModal from './components/AboutModal.vue';
 import ResultCard from './components/ResultCard.vue';
-import MucCore from './lib/muc-core';
+import MucCore from './lib/muc-core.mjs';
 import monotonicId from './lib/monotonic-numeric-id';
 
 const refreshTokenInterval = 45 * 60 * 1000;

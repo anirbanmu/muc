@@ -1,6 +1,11 @@
 'use strict';
 
-const process = require('process');
+import process from 'process';
+import MucCore from './src/lib/muc-core.mjs';
+import express from 'express';
+import compression from 'compression';
+import enforce from 'express-sslify';
+
 process.on('SIGINT', () => {
   console.log('SIGINT. Exiting...');
   process.exit(0);
@@ -11,23 +16,17 @@ process.on('SIGTERM', () => {
   process.exit(0);
 });
 
-const MucCore = require('esm')(module)('./src/lib/muc-core').default;
-
-const express = require('express');
 const app = express();
-
-const compression = require('compression');
 app.use(compression());
 
 const env = process.env.NODE_ENV || 'development';
 if (env === 'production') {
-  const enforce = require('express-sslify');
   app.use(enforce.HTTPS({ trustProtoHeader: true }));
 }
 
-app.use([/^(.*)\.ejs$/, '/'], express.static(process.env.DIST_DIR_ARG || (__dirname + '/dist')));
+app.use([/^(.*)\.ejs$/, '/'], express.static(process.env.DIST_DIR_ARG || ('dist')));
 
-app.set('views', process.env.EJS_TEMPLATE_DIR || (__dirname + '/dist/templates'));
+app.set('views', process.env.EJS_TEMPLATE_DIR || ('dist/templates'));
 app.set('view engine', 'ejs');
 
 app.get('/api/refresh-tokens', (req, res) => {

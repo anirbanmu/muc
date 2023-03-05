@@ -1,7 +1,7 @@
 'use strict';
 
-const axios = require('axios');
-const qs = require('qs');
+import axios from 'axios';
+import qs from 'qs';
 
 const YOUTUBE_BASE_URI = 'https://www.googleapis.com/youtube/v3';
 const YOUTUBE_VIDEOS_URI = YOUTUBE_BASE_URI + '/videos';
