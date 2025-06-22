@@ -1,0 +1,19 @@
+{
+  "name": "@muc/common",
+  "version": "1.0.0",
+  "description": "Shared utilities for MUC project.",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -b && mv dist/index.js dist/index.mjs",
+    "dev": "tsc -w"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}

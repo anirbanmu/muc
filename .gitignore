@@ -1,0 +1,53 @@
+# Node.js and npm specific ignores (root level)
+# -----------------------------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm/
+.yarn/
+.pnp/
+.pnp.js
+.pnp.cjs
+
+# Build artifacts (common for all TypeScript packages)
+# ---------------------------------------------------
+# Compiled JavaScript files, declaration files, and source maps
+# Adjust if you commit these for specific reasons (e.g., published packages)
+*.js
+*.d.ts
+*.map
+
+# TypeScript build info file
+*.tsbuildinfo
+
+# Common output directories (for compiled code, e.g., 'dist' or 'build')
+# These will apply to the root and any nested packages
+dist/
+build/
+out/
+es/
+lib/
+tmp/
+coverage/
+
+# Environment variables
+# ---------------------
+.env
+.env.*
+.env.local
+.env.*.local
+
+# Logs
+# ----
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+
+.vscode/
+
+# Vue.js specific ignores (will apply to the Vue 3 app package)
+# ------------------------------------------------------------
+# Vite's cache directory
+.vite/
