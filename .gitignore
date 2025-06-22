@@ -45,7 +45,9 @@ logs/
 npm-debug.log*
 yarn-debug.log*
 
-.vscode/
+# vscode
+.vscode/*
+!.vscode/extensions.json
 
 # Vue.js specific ignores (will apply to the Vue 3 app package)
 # ------------------------------------------------------------
