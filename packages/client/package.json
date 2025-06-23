@@ -14,7 +14,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@muc/common": "^1.0.0",
+    "@muc/common": "*",
     "vue": "^3.5.13"
   },
   "devDependencies": {
