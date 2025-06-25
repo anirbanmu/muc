@@ -5,7 +5,13 @@
   "description": "Monorepo for the MUC project.",
   "main": "index.js",
   "scripts": {
-    "build": "npm run build --workspaces",
+    "build": "npm run build:common && npm run build:client && npm run build:server",
+    "build:common": "npm run build --workspace=@muc/common",
+    "build:server": "npm run build --workspace=@muc/server",
+    "build:client": "npm run build --workspace=@muc/client",
+    "clean": "rimraf --glob \"./packages/*/dist\" \"./packages/*/node_modules/.tmp\"",
+    "clean:node-modules": "rimraf --glob \"./node_modules\" \"./packages/*/node_modules\"",
+    "clean:all": "npm run clean && npm run clean:node-modules",
     "dev": "npm run dev --workspace=server",
     "start": "npm run start --workspace=server"
   },
@@ -14,5 +20,8 @@
   "license": "ISC",
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "devDependencies": {
+    "rimraf": "^6.0.1"
+  }
 }
