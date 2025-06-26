@@ -53,3 +53,6 @@ yarn-debug.log*
 # ------------------------------------------------------------
 # Vite's cache directory
 .vite/
+
+# aider.chat
+.aider*
