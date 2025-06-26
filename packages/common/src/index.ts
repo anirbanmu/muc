@@ -1,3 +1,11 @@
 export function sharedFunction(): string {
-  return "Hello from the MUC shared component (ES2024)!";
+  return "This is a shared function.";
 }
+
+export {
+  SpotifyClient,
+  SpotifyTrack,
+  SpotifyArtist,
+  SpotifyAlbum,
+  SpotifyExternalUrls,
+} from "./spotify.js";
