@@ -1,5 +1,5 @@
 export function sharedFunction(): string {
-  return "This is a shared function.";
+  return 'This is a shared function.';
 }
 
 export {
@@ -8,4 +8,4 @@ export {
   SpotifyArtist,
   SpotifyAlbum,
   SpotifyExternalUrls,
-} from "./spotify.js";
+} from './spotify.js';
