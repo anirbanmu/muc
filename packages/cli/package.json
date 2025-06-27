@@ -1,0 +1,22 @@
+{
+  "name": "@muc/cli",
+  "version": "1.0.0",
+  "description": "CLI for MUC project.",
+  "type": "module",
+  "main": "dist/cli.js",
+  "scripts": {
+    "build": "tsc -b",
+    "start": "node dist/cli.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@muc/common": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}
