@@ -1,4 +1,4 @@
-import { SpotifyClient } from '../../common/src/spotify.js';
+import { SpotifyClient } from '@muc/common';
 
 async function main() {
   const trackUri = process.argv[2];
