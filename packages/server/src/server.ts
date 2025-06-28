@@ -7,7 +7,7 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 
-const clientDistPath = path.resolve(import.meta.dirname, '../../client/dist');
+const clientDistPath = path.resolve(__dirname, '../../client/dist');
 app.use(express.static(clientDistPath));
 
 app.get('/api/message', (req, res) => {
