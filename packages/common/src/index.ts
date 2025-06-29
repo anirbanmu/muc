@@ -9,3 +9,5 @@ export {
   SpotifyAlbum,
   SpotifyExternalUrls,
 } from './spotify.js';
+
+export { YoutubeClient, YoutubeVideoSnippet, YoutubeVideoDetails } from './youtube.js';
