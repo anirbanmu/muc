@@ -31,6 +31,20 @@ async function main() {
     console.log(`Artist(s): ${trackDetails.artists.map((artist) => artist.name).join(', ')}`);
     console.log(`Album: ${trackDetails.album.name}`);
     console.log(`Spotify URL: ${trackDetails.external_urls.spotify}`);
+
+    console.log('\n--- Testing Search Functionality ---');
+    const searchQuery = `${trackDetails.name} ${trackDetails.artists[0].name}`;
+    console.log(`Searching for: "${searchQuery}"`);
+    const searchResult = await spotifyClient.searchTracks(searchQuery);
+
+    if (searchResult) {
+      console.log(
+        `Found track by search: ${searchResult.name} by ${searchResult.artists.map((artist) => artist.name).join(', ')}`,
+      );
+      console.log(`Spotify URL (search result): ${searchResult.external_urls.spotify}`);
+    } else {
+      console.log('No track found with the given search query.');
+    }
   } catch (error) {
     console.error('An error occurred:', error instanceof Error ? error.message : error);
     process.exit(1);
