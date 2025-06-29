@@ -5,11 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "run-p type-check \"build-only {@}\" --",
+    "build": "run-p type-check \"build-only {@}\" && npm run create-index-template",
     "preview": "vite preview",
     "test:unit": "vitest",
-    "build-only": "vite build && npm run postbuild",
-    "postbuild": "tsx scripts/postbuild.ts",
+    "build-only": "vite build",
+    "create-index-template": "tsx scripts/postbuild.ts",
     "type-check": "vue-tsc --build",
     "lint": "eslint . --fix",
     "format": "prettier --write src/"
