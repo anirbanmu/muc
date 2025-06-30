@@ -11,3 +11,5 @@ export {
 } from './spotify.js';
 
 export { YoutubeClient, YoutubeVideoSnippet, YoutubeVideoDetails } from './youtube.js';
+
+export { DeezerTrack, DeezerClient } from './deezer.js';
