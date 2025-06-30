@@ -1,4 +1,4 @@
-import { SpotifyClient, YoutubeClient } from '@muc/common';
+import { SpotifyClient, YoutubeClient, DeezerClient } from '@muc/common';
 
 async function runSpotifyCli(trackUri: string) {
   const clientId = process.env.SPOTIFY_CLIENT_ID;
@@ -74,12 +74,37 @@ async function runYoutubeCli(videoUri: string) {
   }
 }
 
+async function runDeezerCli(trackUri: string) {
+  console.log('Initializing Deezer client...');
+  const deezerClient = new DeezerClient();
+
+  console.log(`Fetching details for track: ${trackUri}`);
+  const trackDetails = await deezerClient.getTrackDetails(trackUri);
+
+  console.log('\n--- Track Details ---');
+  console.log(`Title: ${trackDetails.title}`);
+  console.log(`Artist: ${trackDetails.artist.name}`);
+  console.log(`Deezer URL: ${trackDetails.link}`);
+
+  console.log('\n--- Testing Search Functionality ---');
+  const searchQuery = `${trackDetails.title} ${trackDetails.artist.name}`;
+  console.log(`Searching for: "${searchQuery}"`);
+  const searchResult = await deezerClient.searchTracks(searchQuery);
+
+  if (searchResult) {
+    console.log(`Found track by search: ${searchResult.title} by ${searchResult.artist.name}`);
+    console.log(`Deezer URL (search result): ${searchResult.link}`);
+  } else {
+    console.log('No track found with the given search query.');
+  }
+}
+
 async function main() {
   const mode = process.argv[2];
   const uri = process.argv[3];
 
   if (!mode || !uri) {
-    console.error('Usage: tsx src/cli.ts <spotify|yt> <uri>');
+    console.error('Usage: tsx src/cli.ts <spotify|yt|deezer> <uri>');
     process.exit(1);
   }
 
@@ -91,8 +116,11 @@ async function main() {
       case 'yt':
         await runYoutubeCli(uri);
         break;
+      case 'deezer':
+        await runDeezerCli(uri);
+        break;
       default:
-        console.error(`Error: Unknown mode "${mode}". Please use "spotify" or "yt".`);
+        console.error(`Error: Unknown mode "${mode}". Please use "spotify", "yt", or "deezer".`);
         process.exit(1);
     }
   } catch (error) {
