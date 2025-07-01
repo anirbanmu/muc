@@ -1,4 +1,4 @@
-import { SpotifyClient, YoutubeClient, DeezerClient } from '@muc/common';
+import { SpotifyClient, YoutubeClient, DeezerClient, ItunesClient } from '@muc/common';
 
 async function runSpotifyCli(trackUri: string) {
   const clientId = process.env.SPOTIFY_CLIENT_ID;
@@ -99,12 +99,39 @@ async function runDeezerCli(trackUri: string) {
   }
 }
 
+async function runItunesCli(trackUri: string) {
+  console.log('Initializing iTunes client...');
+  const itunesClient = new ItunesClient();
+
+  console.log(`Fetching details for track: ${trackUri}`);
+  const trackDetails = await itunesClient.getTrackDetails(trackUri);
+
+  console.log('\n--- Track Details ---');
+  console.log(`Name: ${trackDetails.trackName}`);
+  console.log(`Artist(s): ${trackDetails.artistName}`);
+  console.log(`iTunes URL: ${trackDetails.trackViewUrl}`);
+
+  console.log('\n--- Testing Search Functionality ---');
+  const searchQuery = `${trackDetails.trackName} ${trackDetails.artistName}`;
+  console.log(`Searching for: "${searchQuery}"`);
+  const searchResult = await itunesClient.searchTracks(searchQuery);
+
+  if (searchResult) {
+    console.log(
+      `Found track by search: ${searchResult.trackName} by ${searchResult.artistName}`,
+    );
+    console.log(`iTunes URL (search result): ${searchResult.trackViewUrl}`);
+  } else {
+    console.log('No track found with the given search query.');
+  }
+}
+
 async function main() {
   const mode = process.argv[2];
   const uri = process.argv[3];
 
   if (!mode || !uri) {
-    console.error('Usage: tsx src/cli.ts <spotify|yt|deezer> <uri>');
+    console.error('Usage: tsx src/cli.ts <spotify|yt|deezer|itunes> <uri>');
     process.exit(1);
   }
 
@@ -119,8 +146,13 @@ async function main() {
       case 'deezer':
         await runDeezerCli(uri);
         break;
+      case 'itunes':
+        await runItunesCli(uri);
+        break;
       default:
-        console.error(`Error: Unknown mode "${mode}". Please use "spotify", "yt", or "deezer".`);
+        console.error(
+          `Error: Unknown mode "${mode}". Please use "spotify", "yt", "deezer", or "itunes".`,
+        );
         process.exit(1);
     }
   } catch (error) {
