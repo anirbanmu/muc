@@ -56,6 +56,7 @@ async function runYoutubeCli(videoUri: string) {
   console.log('\n--- Video Details ---');
   console.log(`Title: ${videoDetails.snippet.title}`);
   console.log(`Video ID: ${videoDetails.id}`);
+  console.log(`Channel Title: ${videoDetails.snippet.channelTitle}`);
 
   console.log('\n--- Testing Search Functionality ---');
   const searchQuery = videoDetails.snippet.title;
@@ -84,6 +85,7 @@ async function runDeezerCli(trackUri: string) {
   console.log('\n--- Track Details ---');
   console.log(`Title: ${trackDetails.title}`);
   console.log(`Artist: ${trackDetails.artist.name}`);
+  console.log(`Album: ${trackDetails.album.title}`);
   console.log(`Deezer URL: ${trackDetails.link}`);
 
   console.log('\n--- Testing Search Functionality ---');
@@ -93,6 +95,7 @@ async function runDeezerCli(trackUri: string) {
 
   if (searchResult) {
     console.log(`Found track by search: ${searchResult.title} by ${searchResult.artist.name}`);
+    console.log(`Album (search result): ${searchResult.album.title}`);
     console.log(`Deezer URL (search result): ${searchResult.link}`);
   } else {
     console.log('No track found with the given search query.');
@@ -108,6 +111,7 @@ async function runItunesCli(trackUri: string) {
 
   console.log('\n--- Track Details ---');
   console.log(`Name: ${trackDetails.trackName}`);
+  console.log(`Track ID: ${trackDetails.trackId}`);
   console.log(`Artist(s): ${trackDetails.artistName}`);
   console.log(`iTunes URL: ${trackDetails.trackViewUrl}`);
 
@@ -117,9 +121,8 @@ async function runItunesCli(trackUri: string) {
   const searchResult = await itunesClient.searchTracks(searchQuery);
 
   if (searchResult) {
-    console.log(
-      `Found track by search: ${searchResult.trackName} by ${searchResult.artistName}`,
-    );
+    console.log(`Found track by search: ${searchResult.trackName} by ${searchResult.artistName}`);
+    console.log(`Track ID (search result): ${searchResult.trackId}`);
     console.log(`iTunes URL (search result): ${searchResult.trackViewUrl}`);
   } else {
     console.log('No track found with the given search query.');

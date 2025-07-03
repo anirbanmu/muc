@@ -7,6 +7,7 @@ const YOUTUBE_SEARCH_URI = YOUTUBE_BASE_URI + '/search';
 
 export interface YoutubeVideoSnippet {
   title: string;
+  channelTitle: string;
 }
 
 export interface YoutubeVideoDetails {

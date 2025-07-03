@@ -14,6 +14,7 @@ export interface ItunesTrack {
   artistViewUrl: string;
   trackName: string;
   trackViewUrl: string;
+  trackId: number;
 }
 
 interface ItunesLookupResponse {

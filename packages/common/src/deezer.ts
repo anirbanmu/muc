@@ -10,7 +10,9 @@ export interface DeezerArtist {
   link: string;
 }
 
-export interface DeezerAlbum {}
+export interface DeezerAlbum {
+  title: string;
+}
 
 export interface DeezerTrack {
   id: number;
