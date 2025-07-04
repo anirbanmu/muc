@@ -15,3 +15,16 @@ export { YoutubeClient, YoutubeVideoSnippet, YoutubeVideoDetails } from './youtu
 export { DeezerTrack, DeezerClient } from './deezer.js';
 
 export { ItunesClient, ItunesTrack } from './itunes.js';
+
+export {
+  NormalizedTrack,
+  SpotifyNormalizedTrack,
+  DeezerNormalizedTrack,
+  ItunesNormalizedTrack,
+  YoutubeNormalizedTrack,
+  AnyNormalizedTrack,
+} from './normalizedTrack.js';
+
+export { BackendMediaService } from './backendMediaService.js';
+
+export { MediaPlatform, MediaService } from './mediaService.js';

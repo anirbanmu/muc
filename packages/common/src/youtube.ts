@@ -37,6 +37,9 @@ export class YoutubeClient {
 
   public async getVideoDetails(uri: string): Promise<YoutubeVideoDetails> {
     const id = YoutubeClient.parseId(uri);
+    if (id === null) {
+      throw new Error('Invalid YouTube URI format.');
+    }
     const response = await axios.request<{ items: YoutubeVideoDetails[] }>({
       url: YOUTUBE_VIDEOS_URI,
       params: this.addKey({ id: id, part: 'snippet' }),
@@ -63,7 +66,7 @@ export class YoutubeClient {
     return response.data.items.length > 0 ? response.data.items[0] : null;
   }
 
-  private static parseId(uri: string): string {
+  private static parseId(uri: string): string | null {
     let id = YoutubeClient.parseRegularLinkId(uri);
     if (id) {
       return id;
@@ -72,10 +75,10 @@ export class YoutubeClient {
     if (id) {
       return id;
     }
-    throw new Error('Invalid YouTube URI format.');
+    return null;
   }
 
-  private static parseRegularLinkId(uri: string): string | undefined {
+  private static parseRegularLinkId(uri: string): string | null {
     const queryString = uri.split('?', 2);
     if (queryString.length === 2) {
       const parsedQs = qs.parse(queryString[1]);
@@ -83,10 +86,10 @@ export class YoutubeClient {
         return parsedQs.v;
       }
     }
-    return undefined;
+    return null;
   }
 
-  private static parseShortLinkId(uri: string): string | undefined {
+  private static parseShortLinkId(uri: string): string | null {
     const parts = uri.split('youtu.be/', 2);
     if (parts.length === 2) {
       const idWithParams = parts[1];
@@ -95,10 +98,14 @@ export class YoutubeClient {
         return id;
       }
     }
-    return undefined;
+    return null;
   }
 
   public static async getToken(apiKey: string): Promise<string> {
     return apiKey;
+  }
+
+  public static isUriParsable(uri: string): boolean {
+    return YoutubeClient.parseId(uri) !== null;
   }
 }

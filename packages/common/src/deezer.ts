@@ -31,6 +31,9 @@ export class DeezerClient {
 
   public async getTrackDetails(uri: string): Promise<DeezerTrack> {
     const id = DeezerClient.parseId(uri);
+    if (id === null) {
+      throw new Error('Invalid Deezer track URI format.');
+    }
     const deezerUri = `${DEEZER_TRACK_URI}/${id}`;
 
     if (isBrowser) {
@@ -116,12 +119,16 @@ export class DeezerClient {
     });
   }
 
-  private static parseId(uri: string): string {
+  private static parseId(uri: string): string | null {
     const re = /track\/(\d+)/;
     const parsed = re.exec(uri);
     if (parsed === null || !parsed[1]) {
-      throw new Error('Invalid Deezer track URI format.');
+      return null;
     }
     return parsed[1];
+  }
+
+  public static isUriParsable(uri: string): boolean {
+    return DeezerClient.parseId(uri) !== null;
   }
 }

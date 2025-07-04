@@ -23,6 +23,12 @@ export interface SpotifyTrack {
   external_urls: SpotifyExternalUrls;
 }
 
+export interface SpotifyClientCredentials {
+  access_token: string;
+  token_type: string;
+  expires_in: number;
+}
+
 const SPOTIFY_AUTHORIZATION_URI = 'https://accounts.spotify.com/api/token';
 const SPOTIFY_BASE_URI = 'https://api.spotify.com/v1';
 const SPOTIFY_SEARCH_URI = `${SPOTIFY_BASE_URI}/search`;
@@ -40,6 +46,9 @@ export class SpotifyClient {
 
   public async getTrackDetails(uri: string): Promise<SpotifyTrack> {
     const trackId = SpotifyClient.parseTrackId(uri);
+    if (trackId === null) {
+      throw new Error('Invalid Spotify track URI format.');
+    }
     const apiUri = `${SPOTIFY_BASE_URI}/tracks/${trackId}`;
     const response = await axios.request<SpotifyTrack>({
       url: apiUri,
@@ -61,19 +70,23 @@ export class SpotifyClient {
     return response.data.tracks.total > 0 ? response.data.tracks.items[0] : null;
   }
 
-  private static parseTrackId(uri: string): string {
+  private static parseTrackId(uri: string): string | null {
     const re = /track[:/]([0-9A-Za-z=]+)/;
     const parsed = re.exec(uri);
     if (parsed === null || !parsed[1]) {
-      throw new Error('Invalid Spotify track URI format.');
+      return null;
     }
     return parsed[1];
+  }
+
+  public static isUriParsable(uri: string): boolean {
+    return SpotifyClient.parseTrackId(uri) !== null;
   }
 
   public static async getClientCredentialsToken(
     clientId: string,
     clientSecret: string,
-  ): Promise<string> {
+  ): Promise<SpotifyClientCredentials> {
     const base64Encoded = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
 
     const headers = {
@@ -82,11 +95,11 @@ export class SpotifyClient {
     };
     const params = { grant_type: 'client_credentials' };
 
-    const response = await axios.post<{ access_token: string }>(
+    const response = await axios.post<SpotifyClientCredentials>(
       SPOTIFY_AUTHORIZATION_URI,
       qs.stringify(params),
       { headers: headers },
     );
-    return response.data.access_token;
+    return response.data;
   }
 }

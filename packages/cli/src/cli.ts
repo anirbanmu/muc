@@ -1,165 +1,77 @@
-import { SpotifyClient, YoutubeClient, DeezerClient, ItunesClient } from '@muc/common';
-
-async function runSpotifyCli(trackUri: string) {
-  const clientId = process.env.SPOTIFY_CLIENT_ID;
-  const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
-
-  if (!clientId || !clientSecret) {
-    console.error(
-      'Error: SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET environment variables must be set.',
-    );
-    process.exit(1);
-  }
-
-  console.log('Fetching Spotify client credentials token...');
-  const apiToken = await SpotifyClient.getClientCredentialsToken(clientId, clientSecret);
-  const spotifyClient = new SpotifyClient(apiToken);
-
-  console.log(`Fetching details for track: ${trackUri}`);
-  const trackDetails = await spotifyClient.getTrackDetails(trackUri);
-
-  console.log('\n--- Track Details ---');
-  console.log(`Name: ${trackDetails.name}`);
-  console.log(`Artist(s): ${trackDetails.artists.map((artist) => artist.name).join(', ')}`);
-  console.log(`Album: ${trackDetails.album.name}`);
-  console.log(`Spotify URL: ${trackDetails.external_urls.spotify}`);
-
-  console.log('\n--- Testing Search Functionality ---');
-  const searchQuery = `${trackDetails.name} ${trackDetails.artists[0].name}`;
-  console.log(`Searching for: "${searchQuery}"`);
-  const searchResult = await spotifyClient.searchTracks(searchQuery);
-
-  if (searchResult) {
-    console.log(
-      `Found track by search: ${searchResult.name} by ${searchResult.artists.map((artist) => artist.name).join(', ')}`,
-    );
-    console.log(`Spotify URL (search result): ${searchResult.external_urls.spotify}`);
-  } else {
-    console.log('No track found with the given search query.');
-  }
-}
-
-async function runYoutubeCli(videoUri: string) {
-  const apiKey = process.env.YOUTUBE_API_KEY;
-
-  if (!apiKey) {
-    console.error('Error: YOUTUBE_API_KEY environment variable must be set.');
-    process.exit(1);
-  }
-
-  console.log('Initializing YouTube client...');
-  const youtubeClient = new YoutubeClient(apiKey);
-
-  console.log(`Fetching details for video: ${videoUri}`);
-  const videoDetails = await youtubeClient.getVideoDetails(videoUri);
-
-  console.log('\n--- Video Details ---');
-  console.log(`Title: ${videoDetails.snippet.title}`);
-  console.log(`Video ID: ${videoDetails.id}`);
-  console.log(`Channel Title: ${videoDetails.snippet.channelTitle}`);
-
-  console.log('\n--- Testing Search Functionality ---');
-  const searchQuery = videoDetails.snippet.title;
-  console.log(`Searching for: "${searchQuery}"`);
-  const searchResult = await youtubeClient.searchVideos(searchQuery);
-
-  if (searchResult && searchResult.id.videoId) {
-    console.log(
-      `Found video by search: ${searchResult.snippet.title} (ID: ${searchResult.id.videoId})`,
-    );
-    console.log(
-      `YouTube URL (search result): https://www.youtube.com/watch?v=${searchResult.id.videoId}`,
-    );
-  } else {
-    console.log('No video found with the given search query.');
-  }
-}
-
-async function runDeezerCli(trackUri: string) {
-  console.log('Initializing Deezer client...');
-  const deezerClient = new DeezerClient();
-
-  console.log(`Fetching details for track: ${trackUri}`);
-  const trackDetails = await deezerClient.getTrackDetails(trackUri);
-
-  console.log('\n--- Track Details ---');
-  console.log(`Title: ${trackDetails.title}`);
-  console.log(`Artist: ${trackDetails.artist.name}`);
-  console.log(`Album: ${trackDetails.album.title}`);
-  console.log(`Deezer URL: ${trackDetails.link}`);
-
-  console.log('\n--- Testing Search Functionality ---');
-  const searchQuery = `${trackDetails.title} ${trackDetails.artist.name}`;
-  console.log(`Searching for: "${searchQuery}"`);
-  const searchResult = await deezerClient.searchTracks(searchQuery);
-
-  if (searchResult) {
-    console.log(`Found track by search: ${searchResult.title} by ${searchResult.artist.name}`);
-    console.log(`Album (search result): ${searchResult.album.title}`);
-    console.log(`Deezer URL (search result): ${searchResult.link}`);
-  } else {
-    console.log('No track found with the given search query.');
-  }
-}
-
-async function runItunesCli(trackUri: string) {
-  console.log('Initializing iTunes client...');
-  const itunesClient = new ItunesClient();
-
-  console.log(`Fetching details for track: ${trackUri}`);
-  const trackDetails = await itunesClient.getTrackDetails(trackUri);
-
-  console.log('\n--- Track Details ---');
-  console.log(`Name: ${trackDetails.trackName}`);
-  console.log(`Track ID: ${trackDetails.trackId}`);
-  console.log(`Artist(s): ${trackDetails.artistName}`);
-  console.log(`iTunes URL: ${trackDetails.trackViewUrl}`);
-
-  console.log('\n--- Testing Search Functionality ---');
-  const searchQuery = `${trackDetails.trackName} ${trackDetails.artistName}`;
-  console.log(`Searching for: "${searchQuery}"`);
-  const searchResult = await itunesClient.searchTracks(searchQuery);
-
-  if (searchResult) {
-    console.log(`Found track by search: ${searchResult.trackName} by ${searchResult.artistName}`);
-    console.log(`Track ID (search result): ${searchResult.trackId}`);
-    console.log(`iTunes URL (search result): ${searchResult.trackViewUrl}`);
-  } else {
-    console.log('No track found with the given search query.');
-  }
-}
+import { AnyNormalizedTrack, BackendMediaService } from '@muc/common';
 
 async function main() {
   const mode = process.argv[2];
-  const uri = process.argv[3];
+  const uriOrQuery = process.argv[3];
 
-  if (!mode || !uri) {
-    console.error('Usage: tsx src/cli.ts <spotify|yt|deezer|itunes> <uri>');
+  if (!mode || (!uriOrQuery && mode !== 'search')) {
+    console.error('Usage: tsx src/cli.ts lookup <uri>');
+    console.error('Or:    tsx src/cli.ts search <query>');
     process.exit(1);
   }
 
+  const backendMediaService = new BackendMediaService();
+
+  const printNormalizedTrack = (track: AnyNormalizedTrack, prefix: string = '') => {
+    console.log(`${prefix}Platform: ${track.platform}`);
+    console.log(`${prefix}Title: ${track.title}`);
+    console.log(`${prefix}Artist: ${track.artistName}`);
+    console.log(`${prefix}Source URL: ${track.sourceUrl}`);
+    if ('albumName' in track && track.albumName) console.log(`${prefix}Album: ${track.albumName}`);
+    if ('artistUrl' in track && track.artistUrl)
+      console.log(`${prefix}Artist URL: ${track.artistUrl}`);
+  };
+
   try {
     switch (mode) {
-      case 'spotify':
-        await runSpotifyCli(uri);
+      case 'lookup':
+        console.log(`\n--- Looking up details for URI: ${uriOrQuery} ---`);
+        const trackDetails = await backendMediaService.getTrackDetails(uriOrQuery);
+        if (trackDetails) {
+          console.log('\n--- Track Details ---');
+          printNormalizedTrack(trackDetails);
+
+          let searchQuery: string;
+          if (trackDetails.platform === 'youtube') {
+            searchQuery = trackDetails.title;
+          } else {
+            searchQuery = `${trackDetails.title} ${trackDetails.artistName}`;
+          }
+
+          console.log(`\n--- Performing cross-platform search using query: "${searchQuery}" ---`);
+          const searchResults = await backendMediaService.searchAllPlatforms(searchQuery);
+          if (searchResults.length > 0) {
+            console.log(`\n--- Found ${searchResults.length} Search Results ---`);
+            searchResults.forEach((track, index) => {
+              console.log(`\n${index + 1}.`);
+              printNormalizedTrack(track, '   ');
+            });
+          } else {
+            console.log(`No search results found for "${searchQuery}".`);
+          }
+        } else {
+          console.error(`Could not find details for ${uriOrQuery}.`);
+        }
         break;
-      case 'yt':
-        await runYoutubeCli(uri);
-        break;
-      case 'deezer':
-        await runDeezerCli(uri);
-        break;
-      case 'itunes':
-        await runItunesCli(uri);
+      case 'search':
+        console.log(`\n--- Performing cross-platform search for query: "${uriOrQuery}" ---`);
+        const searchResultsOnly = await backendMediaService.searchAllPlatforms(uriOrQuery);
+        if (searchResultsOnly.length > 0) {
+          console.log(`\n--- Search Results for "${uriOrQuery}" ---`);
+          searchResultsOnly.forEach((track, index) => {
+            console.log(`\n${index + 1}.`);
+            printNormalizedTrack(track, '   ');
+          });
+        } else {
+          console.log(`No search results found for "${uriOrQuery}".`);
+        }
         break;
       default:
-        console.error(
-          `Error: Unknown mode "${mode}". Please use "spotify", "yt", "deezer", or "itunes".`,
-        );
+        console.error('Invalid mode. Please use "lookup" or "search".');
         process.exit(1);
     }
   } catch (error) {
-    console.error('An error occurred:', error instanceof Error ? error.message : error);
+    console.error('An error occurred:', error instanceof Error ? error.message : String(error));
     process.exit(1);
   }
 }

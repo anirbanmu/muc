@@ -32,6 +32,9 @@ export class ItunesClient {
 
   public async getTrackDetails(uri: string): Promise<ItunesTrack> {
     const id = ItunesClient.parseId(uri);
+    if (id === null) {
+      throw new Error('Invalid iTunes track URI format.');
+    }
     const params = { id };
 
     if (isBrowser) {
@@ -109,12 +112,16 @@ export class ItunesClient {
     });
   }
 
-  private static parseId(uri: string): string {
+  private static parseId(uri: string): string | null {
     const re = /album\/.+i=(\d+)/;
     const parsed = re.exec(uri);
     if (parsed === null || !parsed[1]) {
-      throw new Error('Invalid iTunes track URI format.');
+      return null;
     }
     return parsed[1];
+  }
+
+  public static isUriParsable(uri: string): boolean {
+    return ItunesClient.parseId(uri) !== null;
   }
 }
