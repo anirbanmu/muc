@@ -28,3 +28,4 @@ export {
 export { BackendMediaService } from './backendMediaService.js';
 
 export { MediaPlatform, MediaService } from './mediaService.js';
+export { getNextId } from './idGenerator.js';
