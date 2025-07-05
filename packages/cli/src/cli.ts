@@ -10,7 +10,29 @@ async function main() {
     process.exit(1);
   }
 
-  const backendMediaService = new BackendMediaService();
+  // Read API keys/secrets from environment variables
+  const youtubeApiKey = process.env.YOUTUBE_API_KEY;
+
+  let spotifyConfig: { clientId: string; clientSecret: string } | undefined;
+  const spotifyClientId = process.env.SPOTIFY_CLIENT_ID;
+  const spotifyClientSecret = process.env.SPOTIFY_CLIENT_SECRET;
+  if (spotifyClientId && spotifyClientSecret) {
+    spotifyConfig = { clientId: spotifyClientId, clientSecret: spotifyClientSecret };
+  }
+
+  // Warn if essential keys are missing. For CLI, we can be strict about informing the user.
+  if (!spotifyConfig) {
+    console.warn(
+      'Warning: SPOTIFY_CLIENT_ID and/or SPOTIFY_CLIENT_SECRET environment variables not set. Spotify features may not work.',
+    );
+  }
+  if (!youtubeApiKey) {
+    console.warn(
+      'Warning: YOUTUBE_API_KEY environment variable not set. YouTube features may not work.',
+    );
+  }
+
+  const backendMediaService = new BackendMediaService(spotifyConfig, youtubeApiKey);
 
   const printNormalizedTrack = (track: AnyNormalizedTrack, prefix: string = '') => {
     console.log(`${prefix}Platform: ${track.platform}`);

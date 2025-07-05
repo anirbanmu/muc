@@ -9,8 +9,7 @@ import {
 } from './normalizedTrack.js';
 
 export class BackendMediaService extends MediaService {
-  private spotifyClientId: string | undefined;
-  private spotifyClientSecret: string | undefined;
+  private spotifyConfig: { clientId: string; clientSecret: string } | undefined;
   private youtubeApiKey: string | undefined;
 
   // Spotify token caching
@@ -22,23 +21,11 @@ export class BackendMediaService extends MediaService {
   private spotifyClientInstance: SpotifyClient | undefined;
   private youtubeClientInstance: YoutubeClient | undefined;
 
-  constructor() {
+  constructor(spotifyConfig?: { clientId: string; clientSecret: string }, youtubeApiKey?: string) {
     super();
 
-    this.spotifyClientId = process.env.SPOTIFY_CLIENT_ID;
-    this.spotifyClientSecret = process.env.SPOTIFY_CLIENT_SECRET;
-    this.youtubeApiKey = process.env.YOUTUBE_API_KEY;
-
-    if (!this.spotifyClientId || !this.spotifyClientSecret) {
-      console.warn(
-        'Warning: SPOTIFY_CLIENT_ID and/or SPOTIFY_CLIENT_SECRET environment variables not set. Spotify features may not work.',
-      );
-    }
-    if (!this.youtubeApiKey) {
-      console.warn(
-        'Warning: YOUTUBE_API_KEY environment variable not set. YouTube features may not work.',
-      );
-    }
+    this.spotifyConfig = spotifyConfig;
+    this.youtubeApiKey = youtubeApiKey;
 
     if (this.youtubeApiKey) {
       this.youtubeClientInstance = new YoutubeClient(this.youtubeApiKey);
@@ -55,7 +42,7 @@ export class BackendMediaService extends MediaService {
     }
 
     // Token is expired or needs refreshing, or doesn't exist
-    if (!this.spotifyClientId || !this.spotifyClientSecret) {
+    if (!this.spotifyConfig?.clientId || !this.spotifyConfig?.clientSecret) {
       console.error('Error: Spotify client ID and/or secret not configured. Cannot obtain token.');
       return;
     }
@@ -63,8 +50,8 @@ export class BackendMediaService extends MediaService {
     try {
       console.log('Refreshing Spotify access token...');
       const auth: SpotifyClientCredentials = await SpotifyClient.getClientCredentialsToken(
-        this.spotifyClientId,
-        this.spotifyClientSecret,
+        this.spotifyConfig.clientId,
+        this.spotifyConfig.clientSecret,
       );
       this.spotifyAccessToken = auth.access_token;
       this.spotifyTokenExpiry = Date.now() + auth.expires_in * 1000; // expires_in is in seconds, convert to ms
