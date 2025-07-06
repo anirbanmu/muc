@@ -72,7 +72,7 @@ export class BackendMediaService extends MediaService {
     return this.spotifyClientInstance as SpotifyClient;
   }
 
-  protected async getSpotifyTrackDetails(uri: string): Promise<SpotifyNormalizedTrack> {
+  public async getSpotifyTrackDetails(uri: string): Promise<SpotifyNormalizedTrack> {
     let spotifyClient: SpotifyClient;
     try {
       spotifyClient = await this.getSpotifyClient();
@@ -83,7 +83,7 @@ export class BackendMediaService extends MediaService {
     return mapSpotifyTrackToNormalizedTrack(track);
   }
 
-  protected async searchSpotifyTracks(query: string): Promise<SpotifyNormalizedTrack | null> {
+  public async searchSpotifyTracks(query: string): Promise<SpotifyNormalizedTrack | null> {
     let spotifyClient: SpotifyClient;
     try {
       spotifyClient = await this.getSpotifyClient();
@@ -95,7 +95,7 @@ export class BackendMediaService extends MediaService {
     return track ? mapSpotifyTrackToNormalizedTrack(track) : null;
   }
 
-  protected async getYoutubeVideoDetails(uri: string): Promise<YoutubeNormalizedTrack> {
+  public async getYoutubeVideoDetails(uri: string): Promise<YoutubeNormalizedTrack> {
     if (!this.youtubeClientInstance) {
       throw new Error(
         'YouTube client not initialized. Check API key configuration. Cannot fetch video details.',
@@ -105,7 +105,7 @@ export class BackendMediaService extends MediaService {
     return mapYoutubeVideoToNormalizedTrack(video);
   }
 
-  protected async searchYoutubeVideos(query: string): Promise<YoutubeNormalizedTrack | null> {
+  public async searchYoutubeVideos(query: string): Promise<YoutubeNormalizedTrack | null> {
     if (!this.youtubeClientInstance) {
       console.warn(
         'YouTube client not initialized. Check API key configuration. Skipping YouTube search.',

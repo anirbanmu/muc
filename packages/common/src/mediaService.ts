@@ -27,10 +27,10 @@ export abstract class MediaService {
     this.itunesClient = new ItunesClient();
   }
 
-  protected abstract getSpotifyTrackDetails(uri: string): Promise<SpotifyNormalizedTrack>;
-  protected abstract searchSpotifyTracks(query: string): Promise<SpotifyNormalizedTrack | null>;
-  protected abstract getYoutubeVideoDetails(uri: string): Promise<YoutubeNormalizedTrack>;
-  protected abstract searchYoutubeVideos(query: string): Promise<YoutubeNormalizedTrack | null>;
+  public abstract getSpotifyTrackDetails(uri: string): Promise<SpotifyNormalizedTrack>;
+  public abstract searchSpotifyTracks(query: string): Promise<SpotifyNormalizedTrack | null>;
+  public abstract getYoutubeVideoDetails(uri: string): Promise<YoutubeNormalizedTrack>;
+  public abstract searchYoutubeVideos(query: string): Promise<YoutubeNormalizedTrack | null>;
 
   private static classifyUri(uri: string): MediaPlatform | null {
     if (uri.includes('spotify.com') || uri.startsWith('spotify:')) {
