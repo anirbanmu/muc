@@ -70,7 +70,7 @@ export class SpotifyClient {
     return response.data.tracks.total > 0 ? response.data.tracks.items[0] : null;
   }
 
-  private static parseTrackId(uri: string): string | null {
+  public static parseTrackId(uri: string): string | null {
     const re = /track[:/]([0-9A-Za-z=]+)/;
     const parsed = re.exec(uri);
     if (parsed === null || !parsed[1]) {
