@@ -112,7 +112,7 @@ export class ItunesClient {
     });
   }
 
-  private static parseId(uri: string): string | null {
+  public static parseId(uri: string): string | null {
     const re = /album\/.+i=(\d+)/;
     const parsed = re.exec(uri);
     if (parsed === null || !parsed[1]) {

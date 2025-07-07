@@ -66,7 +66,7 @@ export class YoutubeClient {
     return response.data.items.length > 0 ? response.data.items[0] : null;
   }
 
-  private static parseId(uri: string): string | null {
+  public static parseId(uri: string): string | null {
     let id = YoutubeClient.parseRegularLinkId(uri);
     if (id) {
       return id;

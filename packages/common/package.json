@@ -18,7 +18,7 @@
   "scripts": {
     "build": "tsc -b",
     "dev": "tsc -w",
-    "test": "vitest"
+    "test": "vitest --run"
   },
   "keywords": [],
   "author": "",
