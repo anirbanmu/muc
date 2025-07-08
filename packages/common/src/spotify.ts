@@ -33,41 +33,55 @@ const SPOTIFY_AUTHORIZATION_URI = 'https://accounts.spotify.com/api/token';
 const SPOTIFY_BASE_URI = 'https://api.spotify.com/v1';
 const SPOTIFY_SEARCH_URI = `${SPOTIFY_BASE_URI}/search`;
 
+// refreshes tokens on its own
 export class SpotifyClient {
-  private apiToken: string;
+  private clientId: string;
+  private clientSecret: string;
 
-  constructor(apiToken: string) {
-    this.apiToken = apiToken;
+  private accessToken: string | undefined;
+  private tokenExpiry: number | undefined; // Unix timestamp in milliseconds
+  private readonly TOKEN_REFRESH_BUFFER_MS = 300 * 1000; // Refresh token 5 minutes before expiry
+
+  private internalClient: InstanceType<typeof SpotifyClient.actualClient> | undefined;
+
+  private constructor(clientId: string, clientSecret: string) {
+    this.clientId = clientId;
+    this.clientSecret = clientSecret;
   }
 
-  private get headers(): { [key: string]: string } {
-    return { Authorization: `Bearer ${this.apiToken}` };
+  public static async create(clientId: string, clientSecret: string): Promise<SpotifyClient> {
+    const instance = new SpotifyClient(clientId, clientSecret);
+    await instance.ensureAccessToken();
+    return instance;
+  }
+
+  private async ensureAccessToken(): Promise<void> {
+    if (
+      this.accessToken &&
+      this.tokenExpiry &&
+      Date.now() < this.tokenExpiry - this.TOKEN_REFRESH_BUFFER_MS
+    ) {
+      return;
+    }
+
+    console.log('Refreshing Spotify access token...');
+    const auth: SpotifyClientCredentials = await SpotifyClient.getClientCredentialsToken(
+      this.clientId,
+      this.clientSecret,
+    );
+    this.accessToken = auth.access_token;
+    this.tokenExpiry = Date.now() + auth.expires_in * 1000;
+    this.internalClient = new SpotifyClient.actualClient(this.accessToken);
   }
 
   public async getTrackDetails(uri: string): Promise<SpotifyTrack> {
-    const trackId = SpotifyClient.parseTrackId(uri);
-    if (trackId === null) {
-      throw new Error('Invalid Spotify track URI format.');
-    }
-    const apiUri = `${SPOTIFY_BASE_URI}/tracks/${trackId}`;
-    const response = await axios.request<SpotifyTrack>({
-      url: apiUri,
-      headers: this.headers,
-    });
-    return response.data;
+    await this.ensureAccessToken();
+    return this.internalClient!.getTrackDetails(uri);
   }
 
   public async searchTracks(query: string): Promise<SpotifyTrack | null> {
-    const params = { q: query, type: 'track', limit: 1 };
-    const response = await axios.request<{
-      tracks: { total: number; items: SpotifyTrack[] };
-    }>({
-      url: SPOTIFY_SEARCH_URI,
-      headers: this.headers,
-      params: params,
-    });
-
-    return response.data.tracks.total > 0 ? response.data.tracks.items[0] : null;
+    await this.ensureAccessToken();
+    return this.internalClient!.searchTracks(query);
   }
 
   public static parseTrackId(uri: string): string | null {
@@ -83,7 +97,7 @@ export class SpotifyClient {
     return SpotifyClient.parseTrackId(uri) !== null;
   }
 
-  public static async getClientCredentialsToken(
+  private static async getClientCredentialsToken(
     clientId: string,
     clientSecret: string,
   ): Promise<SpotifyClientCredentials> {
@@ -102,4 +116,42 @@ export class SpotifyClient {
     );
     return response.data;
   }
+
+  private static readonly actualClient = class {
+    private apiToken: string;
+
+    constructor(apiToken: string) {
+      this.apiToken = apiToken;
+    }
+
+    private get headers(): { [key: string]: string } {
+      return { Authorization: `Bearer ${this.apiToken}` };
+    }
+
+    public async getTrackDetails(uri: string): Promise<SpotifyTrack> {
+      const trackId = SpotifyClient.parseTrackId(uri);
+      if (trackId === null) {
+        throw new Error('Invalid Spotify track URI format.');
+      }
+      const apiUri = `${SPOTIFY_BASE_URI}/tracks/${trackId}`;
+      const response = await axios.request<SpotifyTrack>({
+        url: apiUri,
+        headers: this.headers,
+      });
+      return response.data;
+    }
+
+    public async searchTracks(query: string): Promise<SpotifyTrack | null> {
+      const params = { q: query, type: 'track', limit: 1 };
+      const response = await axios.request<{
+        tracks: { total: number; items: SpotifyTrack[] };
+      }>({
+        url: SPOTIFY_SEARCH_URI,
+        headers: this.headers,
+        params: params,
+      });
+
+      return response.data.tracks.total > 0 ? response.data.tracks.items[0] : null;
+    }
+  };
 }
