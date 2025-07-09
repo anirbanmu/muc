@@ -1,5 +1,5 @@
 import { MediaService } from './mediaService.js';
-import { SpotifyTrack, SpotifyClient } from './spotify.js';
+import { SpotifyTrack, SpotifyClient, SpotifyClientCredentials } from './spotify.js';
 import { YoutubeClient, YoutubeVideoDetails, YoutubeSearchResultItem } from './youtube.js';
 import {
   mapSpotifyTrackToNormalizedTrack,
@@ -7,57 +7,66 @@ import {
   SpotifyNormalizedTrack,
   YoutubeNormalizedTrack,
 } from './normalizedTrack.js';
+import { ItunesClient } from './itunes.js';
+import { DeezerClient } from './deezer.js';
 
 export class BackendMediaService extends MediaService {
-  private spotifyConfig: { clientId: string; clientSecret: string } | undefined;
-  private youtubeApiKey: string | undefined;
+  private readonly youtubeClient: YoutubeClient | undefined;
+  private readonly spotifyClient: SpotifyClient | undefined;
 
-  private youtubeClient: YoutubeClient | undefined;
-  private spotifyClient: SpotifyClient | undefined;
-
-  constructor(spotifyConfig?: { clientId: string; clientSecret: string }, youtubeApiKey?: string) {
-    super();
-    this.spotifyConfig = spotifyConfig;
-    this.youtubeApiKey = youtubeApiKey;
-    if (this.youtubeApiKey) {
-      this.youtubeClient = new YoutubeClient(this.youtubeApiKey);
-    }
+  private constructor(
+    deezerClient?: DeezerClient,
+    itunesClient?: ItunesClient,
+    spotifyClient?: SpotifyClient,
+    youtubeClient?: YoutubeClient,
+  ) {
+    super(deezerClient, itunesClient);
+    this.spotifyClient = spotifyClient;
+    this.youtubeClient = youtubeClient;
   }
 
-  private async getManagedSpotifyClient(): Promise<SpotifyClient> {
-    if (!this.spotifyConfig?.clientId || !this.spotifyConfig?.clientSecret) {
-      throw new Error('Spotify client ID and/or secret not configured.');
-    }
-    if (!this.spotifyClient) {
-      console.log('Initializing SpotifyClient...');
-      this.spotifyClient = await SpotifyClient.create(
-        this.spotifyConfig.clientId,
-        this.spotifyConfig.clientSecret,
-      );
-    }
-    return this.spotifyClient;
+  public static async create(
+    spotifyCredentials?: SpotifyClientCredentials,
+    youtubeApiKey?: string,
+  ): Promise<BackendMediaService> {
+    const spotifyClient = spotifyCredentials
+      ? await SpotifyClient.create(spotifyCredentials)
+      : undefined;
+
+    const youtubeClient = youtubeApiKey ? new YoutubeClient(youtubeApiKey) : undefined;
+    return new BackendMediaService(
+      new DeezerClient(),
+      new ItunesClient(),
+      spotifyClient,
+      youtubeClient,
+    );
+  }
+
+  public static createWithClients(
+    deezerClient?: DeezerClient,
+    itunesClient?: ItunesClient,
+    spotifyClient?: SpotifyClient,
+    youtubeClient?: YoutubeClient,
+  ): BackendMediaService {
+    return new BackendMediaService(deezerClient, itunesClient, spotifyClient, youtubeClient);
   }
 
   public async getSpotifyTrackDetails(uri: string): Promise<SpotifyNormalizedTrack> {
-    let spotifyClient: SpotifyClient;
-    try {
-      spotifyClient = await this.getManagedSpotifyClient();
-    } catch (error) {
-      throw new Error('SpotifyClient could not be initialized. Cannot fetch track details.');
+    if (!this.spotifyClient) {
+      throw new Error(
+        'Spotify client ID and/or secret not configured. Cannot fetch track details.',
+      );
     }
-    const track: SpotifyTrack = await spotifyClient.getTrackDetails(uri);
+    const track: SpotifyTrack = await this.spotifyClient.getTrackDetails(uri);
     return mapSpotifyTrackToNormalizedTrack(track);
   }
 
   public async searchSpotifyTracks(query: string): Promise<SpotifyNormalizedTrack | null> {
-    let spotifyClient: SpotifyClient;
-    try {
-      spotifyClient = await this.getManagedSpotifyClient();
-    } catch (error) {
-      console.warn('SpotifyClient could not be initialized. Skipping Spotify search.');
+    if (!this.spotifyClient) {
+      console.warn('Spotify client ID and/or secret not configured. Skipping Spotify search..');
       return null;
     }
-    const track: SpotifyTrack | null = await spotifyClient.searchTracks(query);
+    const track: SpotifyTrack | null = await this.spotifyClient.searchTracks(query);
     return track ? mapSpotifyTrackToNormalizedTrack(track) : null;
   }
 

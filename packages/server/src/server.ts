@@ -98,7 +98,7 @@ async function start(): Promise<void> {
       console.warn('YouTube API key not configured. YouTube features might be unavailable.');
     }
 
-    mediaService = new BackendMediaService(
+    mediaService = await BackendMediaService.create(
       SPOTIFY_CLIENT_ID && SPOTIFY_CLIENT_SECRET
         ? { clientId: SPOTIFY_CLIENT_ID, clientSecret: SPOTIFY_CLIENT_SECRET }
         : undefined,

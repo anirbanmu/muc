@@ -23,10 +23,15 @@ export interface SpotifyTrack {
   external_urls: SpotifyExternalUrls;
 }
 
-export interface SpotifyClientCredentials {
+export interface SpotifyClientCredentialsToken {
   access_token: string;
   token_type: string;
   expires_in: number;
+}
+
+export interface SpotifyClientCredentials {
+  clientId: string;
+  clientSecret: string;
 }
 
 const SPOTIFY_AUTHORIZATION_URI = 'https://accounts.spotify.com/api/token';
@@ -44,13 +49,13 @@ export class SpotifyClient {
 
   private internalClient: InstanceType<typeof SpotifyClient.actualClient> | undefined;
 
-  private constructor(clientId: string, clientSecret: string) {
-    this.clientId = clientId;
-    this.clientSecret = clientSecret;
+  private constructor(credentials: SpotifyClientCredentials) {
+    this.clientId = credentials.clientId;
+    this.clientSecret = credentials.clientSecret;
   }
 
-  public static async create(clientId: string, clientSecret: string): Promise<SpotifyClient> {
-    const instance = new SpotifyClient(clientId, clientSecret);
+  public static async create(credentials: SpotifyClientCredentials): Promise<SpotifyClient> {
+    const instance = new SpotifyClient(credentials);
     await instance.ensureAccessToken();
     return instance;
   }
@@ -65,7 +70,7 @@ export class SpotifyClient {
     }
 
     console.log('Refreshing Spotify access token...');
-    const auth: SpotifyClientCredentials = await SpotifyClient.getClientCredentialsToken(
+    const auth: SpotifyClientCredentialsToken = await SpotifyClient.getClientCredentialsToken(
       this.clientId,
       this.clientSecret,
     );
@@ -100,7 +105,7 @@ export class SpotifyClient {
   private static async getClientCredentialsToken(
     clientId: string,
     clientSecret: string,
-  ): Promise<SpotifyClientCredentials> {
+  ): Promise<SpotifyClientCredentialsToken> {
     const base64Encoded = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
 
     const headers = {
@@ -109,7 +114,7 @@ export class SpotifyClient {
     };
     const params = { grant_type: 'client_credentials' };
 
-    const response = await axios.post<SpotifyClientCredentials>(
+    const response = await axios.post<SpotifyClientCredentialsToken>(
       SPOTIFY_AUTHORIZATION_URI,
       qs.stringify(params),
       { headers: headers },

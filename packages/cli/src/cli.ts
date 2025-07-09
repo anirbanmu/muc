@@ -32,7 +32,7 @@ async function main() {
     );
   }
 
-  const backendMediaService = new BackendMediaService(spotifyConfig, youtubeApiKey);
+  const backendMediaService = await BackendMediaService.create(spotifyConfig, youtubeApiKey);
 
   const printNormalizedTrack = (track: AnyNormalizedTrack, prefix: string = '') => {
     console.log(`${prefix}Platform: ${track.platform}`);

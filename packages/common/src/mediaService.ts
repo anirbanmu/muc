@@ -22,9 +22,9 @@ export abstract class MediaService {
   private deezerClient: DeezerClient;
   private itunesClient: ItunesClient;
 
-  constructor() {
-    this.deezerClient = new DeezerClient();
-    this.itunesClient = new ItunesClient();
+  constructor(deezerClient?: DeezerClient, itunesClient?: ItunesClient) {
+    this.deezerClient = deezerClient ?? new DeezerClient();
+    this.itunesClient = itunesClient ?? new ItunesClient();
   }
 
   public abstract getSpotifyTrackDetails(uri: string): Promise<SpotifyNormalizedTrack>;
