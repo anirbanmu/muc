@@ -6,21 +6,29 @@ import {
   mapYoutubeVideoToNormalizedTrack,
   SpotifyNormalizedTrack,
   YoutubeNormalizedTrack,
+  mapDeezerTrackToNormalizedTrack,
+  mapItunesTrackToNormalizedTrack,
+  DeezerNormalizedTrack,
+  ItunesNormalizedTrack,
 } from './normalizedTrack.js';
-import { ItunesClient } from './itunes.js';
-import { DeezerClient } from './deezer.js';
+import { ItunesClient, ItunesTrack } from './itunes.js';
+import { DeezerClient, DeezerTrack } from './deezer.js';
 
 export class BackendMediaService extends MediaService {
   private readonly youtubeClient: YoutubeClient | undefined;
   private readonly spotifyClient: SpotifyClient | undefined;
+  private readonly deezerClient: DeezerClient;
+  private readonly itunesClient: ItunesClient;
 
   private constructor(
-    deezerClient?: DeezerClient,
-    itunesClient?: ItunesClient,
+    deezerClient: DeezerClient,
+    itunesClient: ItunesClient,
     spotifyClient?: SpotifyClient,
     youtubeClient?: YoutubeClient,
   ) {
-    super(deezerClient, itunesClient);
+    super();
+    this.deezerClient = deezerClient;
+    this.itunesClient = itunesClient;
     this.spotifyClient = spotifyClient;
     this.youtubeClient = youtubeClient;
   }
@@ -48,7 +56,12 @@ export class BackendMediaService extends MediaService {
     spotifyClient?: SpotifyClient,
     youtubeClient?: YoutubeClient,
   ): BackendMediaService {
-    return new BackendMediaService(deezerClient, itunesClient, spotifyClient, youtubeClient);
+    return new BackendMediaService(
+      deezerClient ?? new DeezerClient(),
+      itunesClient ?? new ItunesClient(),
+      spotifyClient,
+      youtubeClient,
+    );
   }
 
   public async getSpotifyTrackDetails(uri: string): Promise<SpotifyNormalizedTrack> {
@@ -89,5 +102,25 @@ export class BackendMediaService extends MediaService {
     }
     const video: YoutubeSearchResultItem | null = await this.youtubeClient.searchVideos(query);
     return video ? mapYoutubeVideoToNormalizedTrack(video) : null;
+  }
+
+  public async getDeezerTrackDetails(uri: string): Promise<DeezerNormalizedTrack> {
+    const track: DeezerTrack = await this.deezerClient.getTrackDetails(uri);
+    return mapDeezerTrackToNormalizedTrack(track);
+  }
+
+  public async searchDeezerTracks(query: string): Promise<DeezerNormalizedTrack | null> {
+    const track: DeezerTrack | null = await this.deezerClient.searchTracks(query);
+    return track ? mapDeezerTrackToNormalizedTrack(track) : null;
+  }
+
+  public async getItunesTrackDetails(uri: string): Promise<ItunesNormalizedTrack> {
+    const track: ItunesTrack = await this.itunesClient.getTrackDetails(uri);
+    return mapItunesTrackToNormalizedTrack(track);
+  }
+
+  public async searchItunesTracks(query: string): Promise<ItunesNormalizedTrack | null> {
+    const track: ItunesTrack | null = await this.itunesClient.searchTracks(query);
+    return track ? mapItunesTrackToNormalizedTrack(track) : null;
   }
 }

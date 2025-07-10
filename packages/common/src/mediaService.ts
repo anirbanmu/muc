@@ -4,12 +4,10 @@ import {
   DeezerNormalizedTrack,
   ItunesNormalizedTrack,
   YoutubeNormalizedTrack,
-  mapDeezerTrackToNormalizedTrack,
-  mapItunesTrackToNormalizedTrack,
 } from './normalizedTrack.js';
 import { SpotifyClient } from './spotify.js';
-import { DeezerClient, DeezerTrack } from './deezer.js';
-import { ItunesClient, ItunesTrack } from './itunes.js';
+import { DeezerClient } from './deezer.js';
+import { ItunesClient } from './itunes.js';
 import { YoutubeClient } from './youtube.js';
 
 export type MediaPlatform =
@@ -19,18 +17,16 @@ export type MediaPlatform =
   | YoutubeNormalizedTrack['platform'];
 
 export abstract class MediaService {
-  private deezerClient: DeezerClient;
-  private itunesClient: ItunesClient;
-
-  constructor(deezerClient?: DeezerClient, itunesClient?: ItunesClient) {
-    this.deezerClient = deezerClient ?? new DeezerClient();
-    this.itunesClient = itunesClient ?? new ItunesClient();
-  }
+  constructor() {}
 
   public abstract getSpotifyTrackDetails(uri: string): Promise<SpotifyNormalizedTrack>;
   public abstract searchSpotifyTracks(query: string): Promise<SpotifyNormalizedTrack | null>;
   public abstract getYoutubeVideoDetails(uri: string): Promise<YoutubeNormalizedTrack>;
   public abstract searchYoutubeVideos(query: string): Promise<YoutubeNormalizedTrack | null>;
+  public abstract getDeezerTrackDetails(uri: string): Promise<DeezerNormalizedTrack>;
+  public abstract searchDeezerTracks(query: string): Promise<DeezerNormalizedTrack | null>;
+  public abstract getItunesTrackDetails(uri: string): Promise<ItunesNormalizedTrack>;
+  public abstract searchItunesTracks(query: string): Promise<ItunesNormalizedTrack | null>;
 
   private static classifyUri(uri: string): MediaPlatform | null {
     if (uri.includes('spotify.com') || uri.startsWith('spotify:')) {
@@ -62,11 +58,9 @@ export abstract class MediaService {
       case 'youtube':
         return await this.getYoutubeVideoDetails(uri);
       case 'deezer':
-        const deezerTrack: DeezerTrack = await this.deezerClient.getTrackDetails(uri);
-        return mapDeezerTrackToNormalizedTrack(deezerTrack);
+        return await this.getDeezerTrackDetails(uri);
       case 'itunes':
-        const itunesTrack: ItunesTrack = await this.itunesClient.getTrackDetails(uri);
-        return mapItunesTrackToNormalizedTrack(itunesTrack);
+        return await this.getItunesTrackDetails(uri);
     }
   }
 
@@ -76,8 +70,7 @@ export abstract class MediaService {
     searchPromises.push(
       (async () => {
         try {
-          const track = await this.searchSpotifyTracks(query);
-          return track;
+          return await this.searchSpotifyTracks(query);
         } catch (error) {
           console.error('Spotify search failed:', error);
           return null;
@@ -88,8 +81,7 @@ export abstract class MediaService {
     searchPromises.push(
       (async () => {
         try {
-          const track = await this.searchYoutubeVideos(query);
-          return track;
+          return await this.searchYoutubeVideos(query);
         } catch (error) {
           console.error('Youtube search failed:', error);
           return null;
@@ -100,8 +92,7 @@ export abstract class MediaService {
     searchPromises.push(
       (async () => {
         try {
-          const track = await this.deezerClient.searchTracks(query);
-          return track ? mapDeezerTrackToNormalizedTrack(track) : null;
+          return await this.searchDeezerTracks(query);
         } catch (error) {
           console.error('Deezer search failed:', error);
           return null;
@@ -112,8 +103,7 @@ export abstract class MediaService {
     searchPromises.push(
       (async () => {
         try {
-          const track = await this.itunesClient.searchTracks(query);
-          return track ? mapItunesTrackToNormalizedTrack(track) : null;
+          return await this.searchItunesTracks(query);
         } catch (error) {
           console.error('iTunes search failed:', error);
           return null;
