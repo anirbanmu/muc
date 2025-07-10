@@ -45,11 +45,11 @@ export abstract class MediaService {
     return null;
   }
 
-  public async getTrackDetails(uri: string): Promise<AnyNormalizedTrack | null> {
+  public async getTrackDetails(uri: string): Promise<AnyNormalizedTrack> {
     const platform = MediaService.classifyUri(uri);
 
     if (!platform) {
-      return null;
+      throw new Error('Platform could not be deduced from uri.');
     }
 
     switch (platform) {
