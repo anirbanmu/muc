@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import compression from 'compression';
 import rateLimit from 'express-rate-limit';
 import { BackendMediaService } from '@muc/common';
+import { ApiRouter } from './apiRouter.js';
 
 async function start(): Promise<void> {
   const app = express();
@@ -76,15 +77,6 @@ async function start(): Promise<void> {
     next();
   });
 
-  // Request body interfaces for type safety.
-  interface UriRequestBody {
-    uri: string;
-  }
-
-  interface QueryRequestBody {
-    query: string;
-  }
-
   // Initialize BackendMediaService with API credentials from environment variables.
   // This service handles all interactions with external media APIs.
   let mediaService: BackendMediaService;
@@ -106,113 +98,11 @@ async function start(): Promise<void> {
     );
   } catch (error) {
     console.error('Failed to initialize BackendMediaService:', error);
-    process.exit(1); // Exit if the media service, which is critical, cannot be initialized.
+    process.exit(1);
   }
 
-  const asyncHandler =
-    (fn: (req: Request, res: Response, next: NextFunction) => Promise<void>) =>
-    (req: Request, res: Response, next: NextFunction) =>
-      Promise.resolve(fn(req, res, next)).catch(next);
-
-  // --- API Routes (Accepting POST requests with JSON bodies) ---
-
-  // POST /api/spotify/track - Fetches Spotify track details by URI from request body.
-  app.post(
-    '/api/spotify/track',
-    asyncHandler(async (req: Request<any, any, UriRequestBody>, res: Response) => {
-      const { uri } = req.body;
-      if (!uri) {
-        res.status(400).json({ message: 'Request body must contain a "uri" field.' });
-        return;
-      }
-      try {
-        const track = await mediaService.getSpotifyTrackDetails(uri);
-        if (!track) {
-          res.status(404).json({ message: 'Spotify track not found or URI invalid.' });
-          return;
-        }
-        res.json(track);
-      } catch (error) {
-        console.error(
-          'Error fetching Spotify track details:',
-          error instanceof Error ? error.message : error,
-        );
-        res.status(500).json({ message: 'Failed to retrieve Spotify track details.' });
-      }
-    }),
-  );
-
-  // POST /api/spotify/search - Searches for Spotify tracks by query from request body.
-  app.post(
-    '/api/spotify/search',
-    asyncHandler(async (req: Request<any, any, QueryRequestBody>, res: Response) => {
-      const { query } = req.body;
-      if (!query) {
-        res.status(400).json({ message: 'Request body must contain a "query" field.' });
-        return;
-      }
-      try {
-        const track = await mediaService.searchSpotifyTracks(query);
-        // Always return an array; empty if no track, single-element array if found.
-        res.json(track ? [track] : []);
-      } catch (error) {
-        console.error(
-          'Error searching Spotify tracks:',
-          error instanceof Error ? error.message : error,
-        );
-        res.status(500).json({ message: 'Failed to search Spotify tracks.' });
-      }
-    }),
-  );
-
-  // POST /api/youtube/video - Fetches YouTube video details by URI from request body.
-  app.post(
-    '/api/youtube/video',
-    asyncHandler(async (req: Request<any, any, UriRequestBody>, res: Response) => {
-      const { uri } = req.body;
-      if (!uri) {
-        res.status(400).json({ message: 'Request body must contain a "uri" field.' });
-        return;
-      }
-      try {
-        const video = await mediaService.getYoutubeVideoDetails(uri);
-        if (!video) {
-          res.status(404).json({ message: 'YouTube video not found or URI invalid.' });
-          return;
-        }
-        res.json(video);
-      } catch (error) {
-        console.error(
-          'Error fetching YouTube video details:',
-          error instanceof Error ? error.message : error,
-        );
-        res.status(500).json({ message: 'Failed to retrieve YouTube video details.' });
-      }
-    }),
-  );
-
-  // POST /api/youtube/search - Searches for YouTube videos by query from request body.
-  app.post(
-    '/api/youtube/search',
-    asyncHandler(async (req: Request<any, any, QueryRequestBody>, res: Response) => {
-      const { query } = req.body;
-      if (!query) {
-        res.status(400).json({ message: 'Request body must contain a "query" field.' });
-        return;
-      }
-      try {
-        const video = await mediaService.searchYoutubeVideos(query);
-        // Always return an array; empty if no video, single-element array if found.
-        res.json(video ? [video] : []);
-      } catch (error) {
-        console.error(
-          'Error searching YouTube videos:',
-          error instanceof Error ? error.message : error,
-        );
-        res.status(500).json({ message: 'Failed to search YouTube videos.' });
-      }
-    }),
-  );
+  const apiRouter = new ApiRouter(mediaService);
+  app.use('/api', apiRouter.getRouter());
 
   app.use(express.static(CLIENT_DIST_PATH));
 
