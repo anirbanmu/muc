@@ -1,5 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { BackendMediaService, SpotifyNormalizedTrack, YoutubeNormalizedTrack } from '@muc/common';
+import NodeCache from 'node-cache';
 
 interface UriRequestBody {
   uri: string;
@@ -11,8 +12,10 @@ interface QueryRequestBody {
 
 export class ApiRouter {
   private readonly router = express.Router();
+  private readonly cache: NodeCache;
 
   constructor(private readonly mediaService: BackendMediaService) {
+    this.cache = new NodeCache({ stdTTL: 3600, checkperiod: 600, useClones: false });
     this.initializeRoutes();
   }
 
@@ -44,12 +47,21 @@ export class ApiRouter {
       res.status(400).json({ message: 'Request body must contain a "uri" field.' });
       return;
     }
+
+    const cacheKey = `spotify:track:${uri}`;
+    const cachedTrack = this.cache.get<SpotifyNormalizedTrack>(cacheKey);
+    if (cachedTrack) {
+      res.json(cachedTrack);
+      return;
+    }
+
     try {
       const track = await this.mediaService.getSpotifyTrackDetails(uri);
       if (!track) {
         res.status(404).json({ message: 'Spotify track not found or URI invalid.' });
         return;
       }
+      this.cache.set(cacheKey, track);
       res.json(track);
     } catch (error) {
       console.error(
@@ -69,8 +81,17 @@ export class ApiRouter {
       res.status(400).json({ message: 'Request body must contain a "query" field.' });
       return;
     }
+
+    const cacheKey = `spotify:search:${query}`;
+    if (this.cache.has(cacheKey)) {
+      const cachedTrack = this.cache.get<SpotifyNormalizedTrack | null>(cacheKey);
+      res.json(cachedTrack ? [cachedTrack] : []);
+      return;
+    }
+
     try {
       const track = await this.mediaService.searchSpotifyTracks(query);
+      this.cache.set(cacheKey, track);
       res.json(track ? [track] : []);
     } catch (error) {
       console.error(
@@ -90,12 +111,21 @@ export class ApiRouter {
       res.status(400).json({ message: 'Request body must contain a "uri" field.' });
       return;
     }
+
+    const cacheKey = `youtube:video:${uri}`;
+    const cachedVideo = this.cache.get<YoutubeNormalizedTrack>(cacheKey);
+    if (cachedVideo) {
+      res.json(cachedVideo);
+      return;
+    }
+
     try {
       const video = await this.mediaService.getYoutubeVideoDetails(uri);
       if (!video) {
         res.status(404).json({ message: 'YouTube video not found or URI invalid.' });
         return;
       }
+      this.cache.set(cacheKey, video);
       res.json(video);
     } catch (error) {
       console.error(
@@ -115,8 +145,17 @@ export class ApiRouter {
       res.status(400).json({ message: 'Request body must contain a "query" field.' });
       return;
     }
+
+    const cacheKey = `youtube:search:${query}`;
+    if (this.cache.has(cacheKey)) {
+      const cachedVideo = this.cache.get<YoutubeNormalizedTrack | null>(cacheKey);
+      res.json(cachedVideo ? [cachedVideo] : []);
+      return;
+    }
+
     try {
       const video = await this.mediaService.searchYoutubeVideos(query);
+      this.cache.set(cacheKey, video);
       res.json(video ? [video] : []);
     } catch (error) {
       console.error(
