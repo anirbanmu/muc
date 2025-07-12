@@ -1,14 +1,13 @@
 import express, { Request, Response, NextFunction } from 'express';
-import { BackendMediaService, SpotifyNormalizedTrack, YoutubeNormalizedTrack } from '@muc/common';
+import {
+  API_ROUTES,
+  BackendMediaService,
+  QueryRequestBody,
+  SpotifyNormalizedTrack,
+  UriRequestBody,
+  YoutubeNormalizedTrack,
+} from '@muc/common';
 import NodeCache from 'node-cache';
-
-interface UriRequestBody {
-  uri: string;
-}
-
-interface QueryRequestBody {
-  query: string;
-}
 
 export class ApiRouter {
   private readonly router = express.Router();
@@ -32,10 +31,10 @@ export class ApiRouter {
         Promise.resolve(fn(req, res, next)).catch(next);
 
     // expecting JSON
-    this.router.post('/spotify/track', asyncHandler(this.getSpotifyTrackDetails));
-    this.router.post('/spotify/search', asyncHandler(this.searchSpotifyTracks));
-    this.router.post('/youtube/video', asyncHandler(this.getYoutubeVideoDetails));
-    this.router.post('/youtube/search', asyncHandler(this.searchYoutubeVideos));
+    this.router.post(API_ROUTES.spotify.track, asyncHandler(this.getSpotifyTrackDetails));
+    this.router.post(API_ROUTES.spotify.search, asyncHandler(this.searchSpotifyTracks));
+    this.router.post(API_ROUTES.youtube.video, asyncHandler(this.getYoutubeVideoDetails));
+    this.router.post(API_ROUTES.youtube.search, asyncHandler(this.searchYoutubeVideos));
   }
 
   private getSpotifyTrackDetails = async (

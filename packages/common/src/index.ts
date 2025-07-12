@@ -29,3 +29,7 @@ export { BackendMediaService } from './backendMediaService.js';
 
 export { MediaPlatform, MediaService } from './mediaService.js';
 export { getNextId } from './idGenerator.js';
+
+export { ApiClient } from './apiClient.js';
+export { API_ROUTES } from './apiRoutes.js';
+export { UriRequestBody, QueryRequestBody } from './apiTypes.js';
