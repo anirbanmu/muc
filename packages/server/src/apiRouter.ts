@@ -2,7 +2,12 @@ import express, { Request, Response, NextFunction } from 'express';
 import {
   API_ROUTES,
   BackendMediaService,
+  ErrorResponse,
+  GetSpotifyTrackDetailsResponse,
+  GetYoutubeVideoDetailsResponse,
   QueryRequestBody,
+  SearchSpotifyTracksResponse,
+  SearchYoutubeVideosResponse,
   SpotifyNormalizedTrack,
   UriRequestBody,
   YoutubeNormalizedTrack,
@@ -39,7 +44,7 @@ export class ApiRouter {
 
   private getSpotifyTrackDetails = async (
     req: Request<any, any, UriRequestBody>,
-    res: Response<SpotifyNormalizedTrack | { message: string }>,
+    res: Response<GetSpotifyTrackDetailsResponse | ErrorResponse>,
   ) => {
     const { uri } = req.body;
     if (!uri) {
@@ -73,7 +78,7 @@ export class ApiRouter {
 
   private searchSpotifyTracks = async (
     req: Request<any, any, QueryRequestBody>,
-    res: Response<SpotifyNormalizedTrack[] | { message: string }>,
+    res: Response<SearchSpotifyTracksResponse | ErrorResponse>,
   ) => {
     const { query } = req.body;
     if (!query) {
@@ -103,7 +108,7 @@ export class ApiRouter {
 
   private getYoutubeVideoDetails = async (
     req: Request<any, any, UriRequestBody>,
-    res: Response<YoutubeNormalizedTrack | { message: string }>,
+    res: Response<GetYoutubeVideoDetailsResponse | ErrorResponse>,
   ) => {
     const { uri } = req.body;
     if (!uri) {
@@ -137,7 +142,7 @@ export class ApiRouter {
 
   private searchYoutubeVideos = async (
     req: Request<any, any, QueryRequestBody>,
-    res: Response<YoutubeNormalizedTrack[] | { message: string }>,
+    res: Response<SearchYoutubeVideosResponse | ErrorResponse>,
   ) => {
     const { query } = req.body;
     if (!query) {

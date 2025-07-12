@@ -32,4 +32,12 @@ export { getNextId } from './idGenerator.js';
 
 export { ApiClient } from './apiClient.js';
 export { API_ROUTES } from './apiRoutes.js';
-export { UriRequestBody, QueryRequestBody } from './apiTypes.js';
+export {
+  UriRequestBody,
+  QueryRequestBody,
+  GetSpotifyTrackDetailsResponse,
+  SearchSpotifyTracksResponse,
+  GetYoutubeVideoDetailsResponse,
+  SearchYoutubeVideosResponse,
+  ErrorResponse,
+} from './apiTypes.js';
