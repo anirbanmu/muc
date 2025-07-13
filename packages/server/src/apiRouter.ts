@@ -13,10 +13,13 @@ import {
   YoutubeNormalizedTrack,
 } from '@muc/common';
 import NodeCache from 'node-cache';
+import pLimit from 'p-limit';
 
 export class ApiRouter {
   private readonly router = express.Router();
   private readonly cache: NodeCache;
+  private readonly spotifyLimiter = pLimit(10);
+  private readonly youtubeLimiter = pLimit(10);
 
   constructor(private readonly mediaService: BackendMediaService) {
     this.cache = new NodeCache({ stdTTL: 3600, checkperiod: 600, useClones: false });
@@ -60,7 +63,7 @@ export class ApiRouter {
     }
 
     try {
-      const track = await this.mediaService.getSpotifyTrackDetails(uri);
+      const track = await this.spotifyLimiter(() => this.mediaService.getSpotifyTrackDetails(uri));
       if (!track) {
         res.status(404).json({ message: 'Spotify track not found or URI invalid.' });
         return;
@@ -94,7 +97,7 @@ export class ApiRouter {
     }
 
     try {
-      const track = await this.mediaService.searchSpotifyTracks(query);
+      const track = await this.spotifyLimiter(() => this.mediaService.searchSpotifyTracks(query));
       this.cache.set(cacheKey, track);
       res.json(track ? [track] : []);
     } catch (error) {
@@ -124,7 +127,7 @@ export class ApiRouter {
     }
 
     try {
-      const video = await this.mediaService.getYoutubeVideoDetails(uri);
+      const video = await this.youtubeLimiter(() => this.mediaService.getYoutubeVideoDetails(uri));
       if (!video) {
         res.status(404).json({ message: 'YouTube video not found or URI invalid.' });
         return;
@@ -158,7 +161,7 @@ export class ApiRouter {
     }
 
     try {
-      const video = await this.mediaService.searchYoutubeVideos(query);
+      const video = await this.youtubeLimiter(() => this.mediaService.searchYoutubeVideos(query));
       this.cache.set(cacheKey, video);
       res.json(video ? [video] : []);
     } catch (error) {
