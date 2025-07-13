@@ -10,6 +10,7 @@ import { ApiRouter } from './apiRouter.js';
 async function start(): Promise<void> {
   const app = express();
   const port = process.env.PORT || 3000;
+  const CORS_ALLOWED_ORIGIN = process.env.CORS_ALLOWED_ORIGIN;
 
   const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
   const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
@@ -21,39 +22,36 @@ async function start(): Promise<void> {
   app.use(compression());
   app.use(express.json());
 
-  let corsOptions: cors.CorsOptions;
+  // CORS configuration to control which domains can access the API.
+  const localHosts = [`localhost:${port}`, `127.0.0.1:${port}`];
   if (process.env.NODE_ENV === 'development') {
-    // In development, explicitly allow common localhost origins for client dev server.
-    // This covers scenarios where the client app runs on a different port (e.g., Vite dev server).
-    corsOptions = {
-      origin: [
-        'http://localhost:5173',
-        'http://127.0.0.1:5173',
-        `http://localhost:${port}`,
-        `http://127.0.0.1:${port}`,
-      ],
-    };
-    console.log('CORS (Development) allowing:', corsOptions.origin);
-  } else {
-    // In production, enforce same-origin policy by allowing requests with no Origin header
-    // and explicitly denying requests with an Origin header (which would be cross-origin).
-    corsOptions = {
-      origin: (
-        origin: string | undefined,
-        callback: (err: Error | null, allow?: boolean) => void,
-      ) => {
-        // Allow requests with no origin (e.g., same-origin requests from the browser).
-        if (!origin) {
+    // In development, add the Vite dev server host.
+    localHosts.push(`localhost:5173`, `127.0.0.1:5173`);
+  }
+
+  // Create a allowlist of full origins, including both http and https protocols for local development.
+  const allowedOrigins: string[] = [
+    ...localHosts.map((host) => `http://${host}`),
+    ...localHosts.map((host) => `https://${host}`),
+  ];
+
+  if (process.env.NODE_ENV !== 'development' && CORS_ALLOWED_ORIGIN) {
+    // In production, add specific origins from a comma-separated environment variable.
+    allowedOrigins.push(...CORS_ALLOWED_ORIGIN.split(',').map((origin) => origin.trim()));
+  }
+
+  app.use(
+    cors({
+      origin: (origin, callback) => {
+        // Allow requests with no origin (like server-to-server) or from allowlisted origins.
+        if (!origin || allowedOrigins.includes(origin)) {
           callback(null, true);
         } else {
-          // Deny cross-origin requests in production.
-          callback(new Error('Cross-origin requests are not allowed.'), false);
+          callback(new Error('This origin is not allowed by CORS configuration.'));
         }
       },
-    };
-    console.log('CORS (Production) configured to allow same-origin requests only.');
-  }
-  app.use(cors(corsOptions));
+    }),
+  );
 
   app.use(
     '/api/',
