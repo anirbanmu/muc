@@ -1,26 +1,26 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { ApiClient, ClientMediaService } from '@muc/common'
-import type { AnyNormalizedTrack } from '@muc/common'
+import { ref, onMounted } from 'vue';
+import { ApiClient, ClientMediaService } from '@muc/common';
+import type { AnyNormalizedTrack } from '@muc/common';
 defineProps<{
-  msg: string
-}>()
+  msg: string;
+}>();
 
-const searchResult = ref<AnyNormalizedTrack | null>(null)
-const error = ref<string | null>(null)
+const searchResult = ref<AnyNormalizedTrack | null>(null);
+const error = ref<string | null>(null);
 
 onMounted(async () => {
   try {
-    const apiClient = new ApiClient('/api')
-    const mediaService = new ClientMediaService(apiClient)
+    const apiClient = new ApiClient('/api');
+    const mediaService = new ClientMediaService(apiClient);
     // Let's search for a track to demonstrate.
-    const result = await mediaService.searchSpotifyTracks('Daft Punk - One More Time')
-    searchResult.value = result
+    const result = await mediaService.searchSpotifyTracks('Daft Punk - One More Time');
+    searchResult.value = result;
   } catch (e: any) {
-    console.error('Failed to fetch track details:', e)
-    error.value = e.message || 'An unknown error occurred.'
+    console.error('Failed to fetch track details:', e);
+    error.value = e.message || 'An unknown error occurred.';
   }
-})
+});
 </script>
 
 <template>

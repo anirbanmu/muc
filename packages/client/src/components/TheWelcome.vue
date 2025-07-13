@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import WelcomeItem from './WelcomeItem.vue'
-import DocumentationIcon from './icons/IconDocumentation.vue'
-import ToolingIcon from './icons/IconTooling.vue'
-import EcosystemIcon from './icons/IconEcosystem.vue'
-import CommunityIcon from './icons/IconCommunity.vue'
-import SupportIcon from './icons/IconSupport.vue'
+import WelcomeItem from './WelcomeItem.vue';
+import DocumentationIcon from './icons/IconDocumentation.vue';
+import ToolingIcon from './icons/IconTooling.vue';
+import EcosystemIcon from './icons/IconEcosystem.vue';
+import CommunityIcon from './icons/IconCommunity.vue';
+import SupportIcon from './icons/IconSupport.vue';
 
-const openReadmeInEditor = () => fetch('/__open-in-editor?file=README.md')
+const openReadmeInEditor = () => fetch('/__open-in-editor?file=README.md');
 </script>
 
 <template>
@@ -32,8 +32,9 @@ const openReadmeInEditor = () => fetch('/__open-in-editor?file=README.md')
     recommended IDE setup is
     <a href="https://code.visualstudio.com/" target="_blank" rel="noopener">VSCode</a>
     +
-    <a href="https://github.com/vuejs/language-tools" target="_blank" rel="noopener">Vue - Official</a>. If
-    you need to test your components and web pages, check out
+    <a href="https://github.com/vuejs/language-tools" target="_blank" rel="noopener"
+      >Vue - Official</a
+    >. If you need to test your components and web pages, check out
     <a href="https://vitest.dev/" target="_blank" rel="noopener">Vitest</a>
     and
     <a href="https://www.cypress.io/" target="_blank" rel="noopener">Cypress</a>
