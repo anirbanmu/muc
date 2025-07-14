@@ -78,7 +78,7 @@ export class DeezerClient {
     return new Promise((resolve, reject) => {
       jsonp(
         `${uri}&output=jsonp`,
-        undefined,
+        { timeout: 2000 }, // ms
         (error: Error | null, data: DeezerTrack & { error?: { message: string } }) => {
           if (error || data.error) {
             reject(
@@ -99,7 +99,7 @@ export class DeezerClient {
     return new Promise((resolve, reject) => {
       jsonp(
         `${DEEZER_TRACK_SEARCH_URI}?${queryString}`,
-        undefined,
+        { timeout: 2000 }, // ms
         (
           error: Error | null,
           data: { data: DeezerTrack[]; total: number; error?: { message: string } },

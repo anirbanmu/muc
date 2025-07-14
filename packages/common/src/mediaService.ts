@@ -19,6 +19,39 @@ export type MediaPlatform =
 export abstract class MediaService {
   constructor() {}
 
+  public static formulateQuery(track: AnyNormalizedTrack): string {
+    // Universally clean the title to remove details that can interfere with searching.
+    // This removes variations of (feat. ...), e.g., (ft. Artist) or [featuring...].
+    let cleanedTitle = track.title
+      .replace(/\s*\([^)]*f(ea)?t[^)]*\)/gi, '')
+      .replace(/\s*\[[^\]]*f(ea)?t[^\]]*\]/gi, '')
+      .trim();
+
+    switch (track.platform) {
+      case 'youtube': {
+        // For YouTube, also remove things like "(Official Video)".
+        cleanedTitle = cleanedTitle
+          .replace(/(\[.*?official.*?])|(\(.*?official.*?\))/gi, '')
+          .trim();
+
+        // If the channel is an "<ARTIST> - Topic" channel, we can trust the artist name.
+        if (track.artistName.endsWith(' - Topic')) {
+          const artist = track.artistName.replace(/ - Topic$/, '').trim();
+          // Prepend artist if title doesn't already have it, to avoid duplication.
+          if (!cleanedTitle.toLowerCase().startsWith(artist.toLowerCase())) {
+            return `${artist} ${cleanedTitle}`;
+          }
+        }
+
+        // Otherwise, the title itself is often the best query as it may contain the artist.
+        return cleanedTitle;
+      }
+      default:
+        // For most platforms, "Artist Title" is a reliable query.
+        return `${track.artistName} ${cleanedTitle}`;
+    }
+  }
+
   public abstract getSpotifyTrackDetails(uri: string): Promise<SpotifyNormalizedTrack>;
   public abstract searchSpotifyTracks(query: string): Promise<SpotifyNormalizedTrack | null>;
   public abstract getYoutubeVideoDetails(uri: string): Promise<YoutubeNormalizedTrack>;
@@ -110,6 +143,74 @@ export abstract class MediaService {
         }
       })(),
     );
+
+    const allSearchResults = await Promise.allSettled(searchPromises);
+
+    const results: AnyNormalizedTrack[] = [];
+    for (const result of allSearchResults) {
+      if (result.status === 'fulfilled' && result.value !== null) {
+        results.push(result.value);
+      }
+    }
+
+    return results;
+  }
+
+  public async searchOtherPlatforms(sourceTrack: AnyNormalizedTrack): Promise<AnyNormalizedTrack[]> {
+    const query = MediaService.formulateQuery(sourceTrack);
+    const searchPromises: Promise<AnyNormalizedTrack | null>[] = [];
+
+    if (sourceTrack.platform !== 'spotify') {
+      searchPromises.push(
+        (async () => {
+          try {
+            return await this.searchSpotifyTracks(query);
+          } catch (error) {
+            console.error('Spotify search failed:', error);
+            return null;
+          }
+        })(),
+      );
+    }
+
+    if (sourceTrack.platform !== 'youtube') {
+      searchPromises.push(
+        (async () => {
+          try {
+            return await this.searchYoutubeVideos(query);
+          } catch (error) {
+            console.error('Youtube search failed:', error);
+            return null;
+          }
+        })(),
+      );
+    }
+
+    if (sourceTrack.platform !== 'deezer') {
+      searchPromises.push(
+        (async () => {
+          try {
+            return await this.searchDeezerTracks(query);
+          } catch (error) {
+            console.error('Deezer search failed:', error);
+            return null;
+          }
+        })(),
+      );
+    }
+
+    if (sourceTrack.platform !== 'itunes') {
+      searchPromises.push(
+        (async () => {
+          try {
+            return await this.searchItunesTracks(query);
+          } catch (error) {
+            console.error('iTunes search failed:', error);
+            return null;
+          }
+        })(),
+      );
+    }
 
     const allSearchResults = await Promise.allSettled(searchPromises);
 

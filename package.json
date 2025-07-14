@@ -14,7 +14,8 @@
     "clean:node-modules": "rimraf --glob \"./node_modules\" \"./packages/*/node_modules\"",
     "clean:all": "npm run clean && npm run clean:node-modules",
     "dev": "npm run dev --workspace=server",
-    "start": "npm run start --workspace=server"
+    "start": "npm run start --workspace=server",
+    "start:clean": "npm run clean && npm run build && npm run start"
   },
   "keywords": [],
   "author": "",

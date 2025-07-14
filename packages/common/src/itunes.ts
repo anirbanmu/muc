@@ -57,7 +57,7 @@ export class ItunesClient {
     return new Promise((resolve, reject) => {
       jsonp(
         `${ITUNES_LOOKUP_URI}?${queryString}`,
-        undefined,
+        { timeout: 2000 }, // ms
         (error: Error | null, data: ItunesLookupResponse) => {
           if (error || data.resultCount < 1) {
             reject(new Error(`Bad iTunes URI: ${error?.message ?? 'No track found'}`));
@@ -99,7 +99,7 @@ export class ItunesClient {
     return new Promise((resolve, reject) => {
       jsonp(
         `${ITUNES_SEARCH_URI}?${queryString}`,
-        undefined,
+        { timeout: 2000 }, // ms
         (error: Error | null, data: ItunesSearchResponse) => {
           if (error) {
             reject(new Error(`iTunes search failed: ${error.message}`));

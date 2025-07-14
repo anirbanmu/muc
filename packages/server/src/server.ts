@@ -18,7 +18,15 @@ async function start(): Promise<void> {
   const CLIENT_DIST_PATH =
     process.env.CLIENT_DIST_PATH || path.resolve(__dirname, '../../client/dist');
 
-  app.use(helmet());
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          'script-src': ["'self'", 'https://api.deezer.com', 'https://itunes.apple.com'],
+        },
+      },
+    }),
+  );
   app.use(compression());
   app.use(express.json());
 
