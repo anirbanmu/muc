@@ -23,7 +23,13 @@ const { showHistory } = storeToRefs(uiStore);
           :disabled="isLoading"
         />
         <Transition name="fade">
-          <button v-if="uri.trim()" type="submit" class="search-button" :disabled="isLoading">
+          <button
+            v-if="uri.trim().length > 0"
+            type="submit"
+            class="search-button"
+            :disabled="isLoading"
+            aria-label="Search"
+          >
             [Search]
           </button>
         </Transition>
@@ -84,7 +90,9 @@ const { showHistory } = storeToRefs(uiStore);
   cursor: pointer;
   border-radius: 4px;
   margin-left: 0.5rem;
-  transition: opacity 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    color 0.2s ease;
 }
 
 .search-button:hover:not(:disabled) {

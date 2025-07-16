@@ -1,13 +1,13 @@
 /* color palette */
 :root {
-  --color-background: #1e1e1e;
-  --color-background-rgb: 30, 30, 30;
-  --color-text: #d4d4d4;
-  --color-prompt: #1eff83;
-  --color-input-background: #333333;
-  --color-border: #333333;
-  --color-action: #ffc83d; /* A gold/yellow for clickable actions */
-  --color-error: #ff4d4d;
+  --color-background: #101010;
+  --color-background-rgb: 16, 16, 16;
+  --color-text: #ffbe41; /* Amber */
+  --color-prompt: #ff8c1a; /* Orange */
+  --color-input-background: #202020;
+  --color-border: #444444;
+  --color-action: #ffa500;
+  --color-error: #ff704d;
 
   /* Platform Colors */
   --color-platform-spotify: #1db954;

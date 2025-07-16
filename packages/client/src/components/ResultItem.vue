@@ -80,6 +80,10 @@ async function copyUrl(url: string) {
   min-height: 2.2rem;
 }
 
+.result-item:hover .track-details {
+  text-decoration: underline;
+}
+
 .copy-button {
   background: none;
   border: none;
@@ -148,6 +152,8 @@ async function copyUrl(url: string) {
 
 .track-details {
   word-break: break-word;
+  text-decoration: none;
+  transition: text-decoration 0.2s ease;
 }
 
 .album-name {
