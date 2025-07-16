@@ -1,13 +1,8 @@
 <script setup lang="ts">
-import { useUiStore } from './stores/uiStore.js';
-import { storeToRefs } from 'pinia';
-import { watch, ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import AppHeader from './components/AppHeader.vue';
 import SearchForm from './components/SearchForm.vue';
 import ResultsSection from './components/ResultsSection.vue';
-
-const uiStore = useUiStore();
-const { sharedSearchId } = storeToRefs(uiStore);
 
 const isScrolled = ref(false);
 
@@ -21,19 +16,6 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll);
-});
-
-watch(sharedSearchId, (newId) => {
-  if (newId !== null) {
-    // Shared item will be highlighted. After a delay, remove the highlight
-    // so it doesn't persist on the page forever.
-    setTimeout(() => {
-      // Check if the ID is still the same, in case another share link was clicked.
-      if (uiStore.sharedSearchId === newId) {
-        uiStore.sharedSearchId = null;
-      }
-    }, 4000); // Highlight for 4 seconds.
-  }
 });
 </script>
 

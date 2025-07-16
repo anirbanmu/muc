@@ -26,10 +26,7 @@ if (encodedUriParam) {
       const decodedUri = Base64.decode(encodedUriParam);
       // Always perform a new search for the shared link.
       searchStore.uri = decodedUri;
-      const newId = await searchStore.search();
-      if (newId) {
-        uiStore.sharedSearchId = newId;
-      }
+      await searchStore.search();
 
       // Clean the URL to avoid re-triggering on refresh or confusing the user.
       window.history.replaceState({}, document.title, window.location.pathname);

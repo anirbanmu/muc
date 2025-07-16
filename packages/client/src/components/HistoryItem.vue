@@ -6,7 +6,6 @@ import ResultItem from './ResultItem.vue';
 
 const props = defineProps<{
   search: SearchHistoryItem;
-  isShared: boolean;
 }>();
 
 const copiedShareLink = ref<string | null>(null);
@@ -57,7 +56,7 @@ async function copyShareLink(searchItem: SearchHistoryItem) {
 
 <template>
   <div class="history-item">
-    <div class="history-item-content" :class="{ 'shared-item': isShared }">
+    <div class="history-item-content">
       <div class="history-prompt">
         <div class="prompt-uri-wrapper">
           <span class="prompt">guest@muc:~$&nbsp;</span>
@@ -98,11 +97,6 @@ async function copyShareLink(searchItem: SearchHistoryItem) {
   transition:
     border-color 0.3s ease,
     box-shadow 0.3s ease;
-}
-
-.history-item-content.shared-item {
-  border-color: var(--color-prompt);
-  box-shadow: 0 0 10px -2px var(--color-prompt);
 }
 
 .history-prompt {

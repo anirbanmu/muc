@@ -5,12 +5,16 @@ import { useHistoryStore } from './historyStore.js';
 export const useUiStore = defineStore('ui', () => {
   const historyStore = useHistoryStore();
 
-  const showHistory: Ref<boolean> = ref(true);
+  const isShareLink = new URLSearchParams(window.location.search).has('q');
+  const showHistory: Ref<boolean> = ref(!isShareLink);
   const sessionSearchIds: Ref<string[]> = ref([]);
-  const sharedSearchId: Ref<string | null> = ref(null);
 
   function toggleHistory() {
     showHistory.value = !showHistory.value;
+  }
+
+  function hideHistory() {
+    showHistory.value = false;
   }
 
   function addSessionSearchId(id: string) {
@@ -26,9 +30,9 @@ export const useUiStore = defineStore('ui', () => {
 
   return {
     showHistory,
-    sharedSearchId,
     visibleHistory,
     toggleHistory,
     addSessionSearchId,
+    hideHistory,
   };
 });

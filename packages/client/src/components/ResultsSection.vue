@@ -8,7 +8,7 @@ const searchStore = useSearchStore();
 const uiStore = useUiStore();
 
 const { isLoading, error } = storeToRefs(searchStore);
-const { visibleHistory, sharedSearchId } = storeToRefs(uiStore);
+const { visibleHistory } = storeToRefs(uiStore);
 </script>
 
 <template>
@@ -34,7 +34,6 @@ const { visibleHistory, sharedSearchId } = storeToRefs(uiStore);
           v-for="search in visibleHistory"
           :key="search.id"
           :search="search"
-          :is-shared="search.id === sharedSearchId"
         />
       </TransitionGroup>
     </div>
