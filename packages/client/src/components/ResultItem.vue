@@ -1,30 +1,20 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import type { AnyNormalizedTrack } from '@muc/common';
+import { useCopyFeedback } from '../composables/useCopyFeedback';
 
-defineProps<{
+const props = defineProps<{
   track: AnyNormalizedTrack;
 }>();
 
-const copiedUrl = ref<string | null>(null);
+const { copy, isCopied } = useCopyFeedback();
 
-async function copyUrl(url: string) {
+function copyUrl(url: string) {
   if (!navigator.clipboard) {
-    // Fallback for older browsers or insecure contexts where clipboard is not available
     console.error('Clipboard API not available. Cannot copy URL.');
     return;
   }
-  try {
-    await navigator.clipboard.writeText(url);
-    copiedUrl.value = url;
-    setTimeout(() => {
-      if (copiedUrl.value === url) {
-        copiedUrl.value = null;
-      }
-    }, 2000); // Reset feedback after 2 seconds
-  } catch (err) {
-    console.error('Failed to copy URL to clipboard:', err);
-  }
+
+  copy(() => navigator.clipboard.writeText(url));
 }
 </script>
 
@@ -44,10 +34,11 @@ async function copyUrl(url: string) {
       <button
         @click.prevent="copyUrl(track.sourceUrl)"
         class="copy-button"
-        :class="{ copied: copiedUrl === track.sourceUrl }"
+        :class="{ copied: isCopied }"
+        :disabled="isCopied"
         title="Copy URL"
       >
-        <span v-if="copiedUrl === track.sourceUrl">Copied!</span>
+        <span v-if="isCopied">Copied!</span>
         <span v-else>[Copy]</span>
       </button>
     </a>

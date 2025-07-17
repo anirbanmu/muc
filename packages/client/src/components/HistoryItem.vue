@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { computed } from 'vue';
 import { Base64 } from 'js-base64';
 import type { SearchHistoryItem } from '../stores/types.js';
 import ResultItem from './ResultItem.vue';
+import { useCopyFeedback } from '../composables/useCopyFeedback';
 
 const props = defineProps<{
   search: SearchHistoryItem;
 }>();
 
-const copiedShareLink = ref<string | null>(null);
+const { copy, isCopied } = useCopyFeedback();
 
 const formattedTimestamp = computed(() => {
   if (!props.search.timestamp) {
@@ -35,22 +36,12 @@ const formattedTimestamp = computed(() => {
   });
 });
 
-async function copyShareLink(searchItem: SearchHistoryItem) {
+function copyShareLink(searchItem: SearchHistoryItem) {
   const encodedUri = Base64.encodeURI(searchItem.uri);
   const url = new URL(window.location.origin + window.location.pathname);
   url.searchParams.set('q', encodedUri);
 
-  try {
-    await navigator.clipboard.writeText(url.toString());
-    copiedShareLink.value = searchItem.id;
-    setTimeout(() => {
-      if (copiedShareLink.value === searchItem.id) {
-        copiedShareLink.value = null;
-      }
-    }, 2000); // Reset feedback after 2 seconds
-  } catch (err) {
-    console.error('Failed to copy share link:', err);
-  }
+  copy(() => navigator.clipboard.writeText(url.toString()));
 }
 </script>
 
@@ -67,10 +58,11 @@ async function copyShareLink(searchItem: SearchHistoryItem) {
           <button
             @click="copyShareLink(search)"
             class="share-button"
-            :class="{ copied: copiedShareLink === search.id }"
+            :class="{ copied: isCopied }"
+            :disabled="isCopied"
             title="Share this search"
           >
-            <span v-if="copiedShareLink === search.id">Copied!</span>
+            <span v-if="isCopied">Copied!</span>
             <span v-else>[Share]</span>
           </button>
         </div>
