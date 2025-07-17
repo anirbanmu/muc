@@ -30,11 +30,7 @@ const { visibleHistory } = storeToRefs(uiStore);
       </div>
 
       <TransitionGroup name="list" tag="div">
-        <HistoryItem
-          v-for="search in visibleHistory"
-          :key="search.id"
-          :search="search"
-        />
+        <HistoryItem v-for="search in visibleHistory" :key="search.id" :search="search" />
       </TransitionGroup>
     </div>
   </section>
@@ -42,7 +38,10 @@ const { visibleHistory } = storeToRefs(uiStore);
 
 <style scoped>
 .results-section {
-  padding-bottom: var(--section-gap); /* Keep bottom padding */
+  --animation-duration: 0.4s;
+  --animation-timing: ease-in-out;
+
+  padding-bottom: var(--section-gap);
   overflow-anchor: none; /* Prevents jumping when new content loads above */
 }
 
@@ -54,9 +53,7 @@ const { visibleHistory } = storeToRefs(uiStore);
 .status-wrapper {
   display: grid;
   grid-template-rows: 0fr;
-  transition:
-    grid-template-rows 0.4s ease-in-out,
-    margin-bottom 0.4s ease-in-out;
+  transition: var(--transition-all);
   margin-bottom: 0;
 }
 
@@ -69,10 +66,7 @@ const { visibleHistory } = storeToRefs(uiStore);
   overflow: hidden;
 }
 
-.error-message {
-  color: var(--color-error);
-}
-
+.error-message,
 .error-prompt {
   color: var(--color-error);
 }
@@ -80,7 +74,7 @@ const { visibleHistory } = storeToRefs(uiStore);
 /* Transitions */
 .status-fade-enter-active,
 .status-fade-leave-active {
-  transition: opacity 0.15s ease-in-out;
+  transition: var(--transition-opacity);
 }
 
 .status-fade-enter-from,
@@ -89,7 +83,7 @@ const { visibleHistory } = storeToRefs(uiStore);
 }
 
 .list-move {
-  transition: transform 0.5s ease;
+  transition: transform var(--animation-duration) var(--animation-timing);
 }
 
 .list-leave-active {
@@ -97,9 +91,7 @@ const { visibleHistory } = storeToRefs(uiStore);
 }
 
 .list-enter-active {
-  transition:
-    grid-template-rows 0.4s ease-in-out,
-    opacity 0.4s ease-in-out;
+  transition: var(--transition-all);
 }
 
 .list-enter-from {

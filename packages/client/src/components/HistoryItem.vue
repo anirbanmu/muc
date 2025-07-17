@@ -92,27 +92,24 @@ async function copyShareLink(searchItem: SearchHistoryItem) {
 .history-item-content {
   overflow: hidden;
   border: 1px solid var(--color-border);
-  border-radius: 4px;
-  padding: 1rem;
-  transition:
-    border-color 0.3s ease,
-    box-shadow 0.3s ease;
+  border-radius: var(--border-radius-md);
+  padding: var(--space-md);
+  transition: var(--transition-colors);
 }
 
 .history-prompt {
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--space-sm);
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--space-md);
 }
 
 .prompt-uri-wrapper {
   display: flex;
   align-items: center;
-  /* Crucial for text-overflow to work in a flex child */
-  min-width: 0;
+  min-width: 0; /* Enables text-overflow in flex child */
 }
 
 .prompt {
@@ -123,11 +120,11 @@ async function copyShareLink(searchItem: SearchHistoryItem) {
 .actions {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: var(--space-md);
 }
 
 .timestamp {
-  font-size: 0.8rem;
+  font-size: calc(var(--font-size-sm) * 0.9);
   opacity: 0.6;
   white-space: nowrap;
 }
@@ -137,11 +134,11 @@ async function copyShareLink(searchItem: SearchHistoryItem) {
   border: none;
   color: var(--color-text);
   font-family: inherit;
-  font-size: 0.9rem;
-  padding: 0.2rem 0.6rem;
-  border-radius: 4px;
+  font-size: var(--font-size-sm);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--border-radius-md);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-all);
   opacity: 0.7;
 }
 
@@ -164,6 +161,6 @@ async function copyShareLink(searchItem: SearchHistoryItem) {
 
 .results-list {
   list-style: none;
-  padding-left: 1.5rem;
+  padding-left: var(--space-lg);
 }
 </style>

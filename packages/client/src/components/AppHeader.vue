@@ -6,16 +6,17 @@
 
 <style scoped>
 .header h1 {
-  font-size: 2.5rem;
+  --title-glow: 0 0 20px rgba(255, 140, 26, 0.4);
+  font-size: calc(var(--font-size-lg) * 2);
   font-weight: bold;
   color: var(--color-prompt);
-  margin-bottom: 0;
+  margin: 0;
   text-shadow: var(--glow-prompt);
-  transition: text-shadow var(--transition-speed) var(--transition-timing);
+  transition: var(--transition-base);
 }
 
 .header h1:hover {
-  text-shadow: 0 0 20px rgba(255, 140, 26, 0.4);
+  text-shadow: var(--title-glow);
 }
 
 .cursor {

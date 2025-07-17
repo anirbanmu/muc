@@ -48,7 +48,7 @@ const { showHistory } = storeToRefs(uiStore);
 .search-form {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: var(--space-lg);
 }
 
 .input-wrapper {
@@ -69,8 +69,8 @@ const { showHistory } = storeToRefs(uiStore);
   color: var(--color-text);
   font-family: inherit;
   font-size: inherit;
-  padding: 0.5rem;
-  transition: text-shadow var(--transition-speed) var(--transition-timing);
+  padding: var(--space-sm);
+  transition: var(--transition-all);
 }
 
 .search-input:focus {
@@ -87,16 +87,12 @@ const { showHistory } = storeToRefs(uiStore);
   border: 1px solid var(--color-action);
   color: var(--color-action);
   font-family: inherit;
-  font-size: 1rem;
-  padding: 0.4rem 1rem;
+  font-size: var(--font-size-base);
+  padding: var(--space-xs) var(--space-md);
   cursor: pointer;
-  border-radius: 2px;
-  margin-left: 0.5rem;
-  transition:
-    opacity var(--transition-speed) var(--transition-timing),
-    color var(--transition-speed) var(--transition-timing),
-    border-color var(--transition-speed) var(--transition-timing),
-    box-shadow var(--transition-speed) var(--transition-timing);
+  border-radius: var(--border-radius-sm);
+  margin-left: var(--space-sm);
+  transition: var(--transition-colors);
 }
 
 .search-button:hover:not(:disabled) {
@@ -110,7 +106,7 @@ const { showHistory } = storeToRefs(uiStore);
 
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.3s ease;
+  transition: var(--transition-opacity);
 }
 
 .fade-enter-from,
@@ -118,19 +114,19 @@ const { showHistory } = storeToRefs(uiStore);
   opacity: 0;
 }
 
-/* New styles for history toggle */
+/* History toggle styles */
 .history-toggle {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-sm);
   cursor: pointer;
   user-select: none;
 }
 
 .toggle-label {
-  font-size: 0.9em;
+  font-size: var(--font-size-sm);
   opacity: 0.7;
-  transition: opacity 0.2s ease;
+  transition: var(--transition-opacity);
 }
 
 .history-toggle:hover .toggle-label {
@@ -142,8 +138,8 @@ const { showHistory } = storeToRefs(uiStore);
   width: 36px;
   height: 20px;
   background-color: var(--color-input-background);
-  border-radius: 10px;
-  transition: all var(--transition-speed) var(--transition-timing);
+  border-radius: var(--border-radius-lg);
+  transition: var(--transition-all);
   border: 1px solid var(--color-border);
 }
 
@@ -161,7 +157,7 @@ const { showHistory } = storeToRefs(uiStore);
   height: 14px;
   background-color: var(--color-text);
   border-radius: 50%;
-  transition: all var(--transition-speed) var(--transition-timing);
+  transition: var(--transition-all);
 }
 
 .toggle-switch.on .toggle-button {

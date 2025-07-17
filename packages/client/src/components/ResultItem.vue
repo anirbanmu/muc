@@ -58,12 +58,10 @@ async function copyUrl(url: string) {
 .result-item {
   display: flex;
   align-items: center;
-  border-radius: 2px;
-  padding: 0.25rem 0.5rem;
-  margin: 0.1rem -0.5rem; /* Offset padding to align with outer container */
-  transition:
-    background-color var(--transition-speed) var(--transition-timing),
-    transform var(--transition-speed) var(--transition-timing);
+  border-radius: var(--border-radius-sm);
+  padding: var(--space-xs) var(--space-sm);
+  margin: 0.1rem calc(-1 * var(--space-sm));
+  transition: var(--transition-all);
   border: 1px solid transparent;
 }
 
@@ -77,11 +75,9 @@ async function copyUrl(url: string) {
   flex-grow: 1;
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: var(--space-md);
   color: var(--color-text);
   text-decoration: none;
-  /* Clicks should pass through to the link, not the wrapper
-     so we make sure the link fills the available space */
   min-height: 2.2rem;
 }
 
@@ -94,18 +90,16 @@ async function copyUrl(url: string) {
   border: none;
   color: var(--color-text);
   font-family: inherit;
-  font-size: 0.9rem;
-  padding: 0.2rem 0.6rem;
-  border-radius: 4px;
+  font-size: var(--font-size-sm);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--border-radius-md);
   cursor: pointer;
-  opacity: 0; /* Hidden by default */
-  transition:
-    opacity 0.2s ease,
-    color 0.2s ease;
+  opacity: 0;
+  transition: var(--transition-colors);
 }
 
 .result-item:hover .copy-button:not(.copied) {
-  opacity: 1; /* Fade in on hover, but not if it's in "copied" state */
+  opacity: 1;
 }
 
 .copy-button:hover:not(.copied) {
@@ -121,15 +115,15 @@ async function copyUrl(url: string) {
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  width: 95px; /* Fixed width to maintain alignment */
+  width: 95px;
 }
 
 .link-arrow {
   color: var(--color-prompt);
   font-weight: bold;
   opacity: 0;
-  transition: opacity 0.2s ease;
-  padding-right: 0.5rem;
+  transition: var(--transition-opacity);
+  padding-right: var(--space-sm);
 }
 
 .result-item:hover .link-arrow {
@@ -137,28 +131,30 @@ async function copyUrl(url: string) {
 }
 
 .platform {
-  flex-grow: 1; /* Platform name takes remaining space in the column */
+  flex-grow: 1;
   text-align: right;
   font-weight: bold;
 }
 
-.platform.spotify {
-  color: var(--color-platform-spotify);
-}
-.platform.youtube {
-  color: var(--color-platform-youtube);
-}
-.platform.deezer {
-  color: var(--color-platform-deezer);
-}
-.platform.itunes {
-  color: var(--color-platform-itunes);
+.platform {
+  &.spotify {
+    color: var(--color-platform-spotify);
+  }
+  &.youtube {
+    color: var(--color-platform-youtube);
+  }
+  &.deezer {
+    color: var(--color-platform-deezer);
+  }
+  &.itunes {
+    color: var(--color-platform-itunes);
+  }
 }
 
 .track-details {
   word-break: break-word;
   text-decoration: none;
-  transition: text-decoration 0.2s ease;
+  transition: var(--transition-base);
 }
 
 .album-name {
