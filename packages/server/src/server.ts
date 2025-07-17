@@ -6,11 +6,57 @@ import compression from 'compression';
 import rateLimit from 'express-rate-limit';
 import { BackendMediaService } from '@muc/common';
 import { ApiRouter } from './apiRouter.js';
+import morgan from 'morgan';
+import supportsColor from 'supports-color';
+
+// Global log helpers and color setup
+const colorSupported = supportsColor.stdout;
+const appPrefix = colorSupported ? '\x1b[32m[APP]\x1b[0m' : '[APP]';
+const errorPrefix = colorSupported ? '\x1b[31m[ERR]\x1b[0m' : '[ERR]';
+const requestPrefix = colorSupported ? '\x1b[36m[REQ]\x1b[0m ' : '[REQ] ';
+
+function logApp(...args: any[]) {
+  originalConsoleLog(appPrefix, ...args);
+}
+function logError(...args: any[]) {
+  originalConsoleError(errorPrefix, ...args);
+}
+
+// Save original console methods
+const originalConsoleLog = console.log;
+const originalConsoleError = console.error;
+
+// Override global console methods to prefix all logs
+console.log = (...args: any[]) => {
+  originalConsoleLog(appPrefix, ...args);
+};
+console.error = (...args: any[]) => {
+  originalConsoleError(errorPrefix, ...args);
+};
 
 async function start(): Promise<void> {
   const app = express();
   const port = process.env.PORT || 3000;
   const CORS_ALLOWED_ORIGIN = process.env.CORS_ALLOWED_ORIGIN;
+
+  // Trust proxy headers (needed for HTTPS enforcement behind Fly.io proxy)
+  // Set to 1 to trust only the first proxy (Fly.io)
+  app.set('trust proxy', 1);
+
+  // Morgan request logging with prefix and optional color
+  app.use(
+    morgan(
+      requestPrefix + ':method :url :status :res[content-length] - :response-time ms :user-agent',
+    ),
+  );
+
+  // Enforce HTTPS (redirect HTTP to HTTPS if behind proxy)
+  app.use((req, res, next) => {
+    if (process.env.NODE_ENV === 'production' && req.headers['x-forwarded-proto'] === 'http') {
+      return res.redirect(301, `https://${req.headers.host}${req.url}`);
+    }
+    next();
+  });
 
   const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
   const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
@@ -121,30 +167,29 @@ async function start(): Promise<void> {
   // Catches errors passed from async handlers or other middleware.
   // Parameters are typed with `_` prefix to indicate they are unused in this specific handler, improving readability.
   app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
-    console.error('Unhandled server error:', err instanceof Error ? err.message : err);
+    logError('Unhandled server error:', err instanceof Error ? err.message : err);
     res.status(500).json({ message: 'An unexpected internal server error occurred.' });
   });
 
   app.listen(port, () => {
-    console.log(`⚡️ [Server]: Running on http://localhost:${port}`);
-    console.log(`Serving client assets from: ${CLIENT_DIST_PATH}`);
-    // Provide clear instructions for setting up API keys if they are missing in development.
+    logApp(`Server running on http://localhost:${port}`);
+    logApp(`Serving client assets from: ${CLIENT_DIST_PATH}`);
     if (
       process.env.NODE_ENV !== 'production' &&
       (!SPOTIFY_CLIENT_ID || !SPOTIFY_CLIENT_SECRET || !YOUTUBE_API_KEY)
     ) {
-      console.warn('\n--- WARNING: API credentials unconfigured ---');
-      console.warn(
+      logError('\n--- WARNING: API credentials unconfigured ---');
+      logError(
         '  Some media service features (Spotify, YouTube) may be unavailable until you configure the following environment variables:',
       );
-      console.warn('  SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, YOUTUBE_API_KEY');
-      console.warn('  You can set these in a `.env` file in the `packages/server` directory.');
-      console.warn('--------------------------------------------\n');
+      logError('  SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, YOUTUBE_API_KEY');
+      logError('  You can set these in a `.env` file in the `packages/server` directory.');
+      logError('--------------------------------------------\n');
     }
   });
 }
 
 start().catch((error) => {
-  console.error('Error starting server:', error instanceof Error ? error.message : error);
+  logError('Error starting server:', error instanceof Error ? error.message : error);
   process.exit(1);
 });
