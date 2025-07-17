@@ -1,14 +1,21 @@
 <script setup lang="ts">
 import { useSearchStore } from '../stores/searchStore.js';
-import { useUiStore } from '../stores/uiStore.js';
+import { useSessionStore } from '../stores/sessionStore.js';
+import { useHistoryStore } from '../stores/historyStore.js';
+import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import HistoryItem from './HistoryItem.vue';
 
 const searchStore = useSearchStore();
-const uiStore = useUiStore();
+const sessionStore = useSessionStore();
+const historyStore = useHistoryStore();
 
 const { isLoading, error } = storeToRefs(searchStore);
-const { visibleHistory } = storeToRefs(uiStore);
+const { showOnlyCurrentSession, currentSearchIds } = storeToRefs(sessionStore);
+
+const visibleHistory = computed(() =>
+  historyStore.filteredHistory(!showOnlyCurrentSession.value, currentSearchIds.value),
+);
 </script>
 
 <template>

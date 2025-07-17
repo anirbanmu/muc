@@ -1,55 +1,69 @@
 import { defineStore } from 'pinia';
-import { ref, watch, type Ref } from 'vue';
 import type { SearchHistoryItem } from './types.js';
 
-const MUC_SEARCH_HISTORY_KEY = 'muc-search-history';
 const MAX_HISTORY_ITEMS = 10;
 
-export const useHistoryStore = defineStore('history', () => {
-  const searchHistory: Ref<SearchHistoryItem[]> = ref(
-    (() => {
-      try {
-        const rawHistory = localStorage.getItem(MUC_SEARCH_HISTORY_KEY);
-        if (!rawHistory) return [];
+interface HistoryState {
+  items: SearchHistoryItem[];
+}
 
-        try {
-          const history = JSON.parse(rawHistory);
-          if (Array.isArray(history)) {
-            return history.slice(0, MAX_HISTORY_ITEMS);
-          }
-          throw new Error('Stored history is not an array.');
-        } catch {
-          console.warn(
-            'Failed to parse search history from localStorage. The data is corrupt; removing it.',
-          );
-          localStorage.removeItem(MUC_SEARCH_HISTORY_KEY);
-          return [];
-        }
-      } catch {
-        console.warn('localStorage is not available. Search history will not be persisted.');
-        return [];
-      }
-    })(),
+function isValidHistoryItem(item: unknown): item is SearchHistoryItem {
+  return (
+    typeof item === 'object' &&
+    item !== null &&
+    'id' in item &&
+    typeof item.id === 'string' &&
+    'uri' in item &&
+    typeof item.uri === 'string' &&
+    'timestamp' in item &&
+    typeof item.timestamp === 'number' &&
+    'results' in item &&
+    Array.isArray(item.results) &&
+    item.results.every(
+      (result) =>
+        typeof result === 'object' &&
+        result !== null &&
+        'sourceUrl' in result &&
+        typeof result.sourceUrl === 'string' &&
+        'platform' in result &&
+        typeof result.platform === 'string' &&
+        'resultId' in result &&
+        typeof result.resultId === 'number',
+    )
   );
+}
 
-  watch(
-    searchHistory,
-    (newHistory) => {
-      try {
-        localStorage.setItem(MUC_SEARCH_HISTORY_KEY, JSON.stringify(newHistory));
-      } catch {
-        // Warning already logged on init, no need to spam the console.
+export const useHistoryStore = defineStore('history', {
+  persistToStorage: {
+    key: 'muc-search-history',
+    validate: (data: unknown): data is HistoryState =>
+      typeof data === 'object' &&
+      data !== null &&
+      'items' in data &&
+      Array.isArray(data.items) &&
+      data.items.every(isValidHistoryItem),
+  },
+  state: (): HistoryState => ({
+    items: [],
+  }),
+
+  getters: {
+    filteredHistory: (state) => {
+      return (showAll: boolean, currentIds: string[]): SearchHistoryItem[] => {
+        if (showAll) {
+          return state.items;
+        }
+        return state.items.filter((item) => currentIds.includes(item.id));
+      };
+    },
+  },
+
+  actions: {
+    addItem(item: SearchHistoryItem) {
+      this.items.unshift(item);
+      if (this.items.length > MAX_HISTORY_ITEMS) {
+        this.items.pop();
       }
     },
-    { deep: true },
-  );
-
-  function addHistoryItem(item: SearchHistoryItem) {
-    searchHistory.value.unshift(item);
-    if (searchHistory.value.length > MAX_HISTORY_ITEMS) {
-      searchHistory.value.pop();
-    }
-  }
-
-  return { searchHistory, addHistoryItem };
+  },
 });

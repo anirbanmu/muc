@@ -4,19 +4,19 @@ import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import App from './App.vue';
 import { useSearchStore } from './stores/searchStore.js';
-import { useUiStore } from './stores/uiStore.js';
+import { storagePlugin } from './stores/plugins/storagePlugin.js';
 import { Base64 } from 'js-base64';
 
 const app = createApp(App);
 
 const pinia = createPinia();
+pinia.use(storagePlugin);
 app.use(pinia);
 
 app.mount('#app');
 
 // After mounting, we can access the store and check for shared links.
 const searchStore = useSearchStore();
-const uiStore = useUiStore();
 const params = new URLSearchParams(window.location.search);
 const encodedUriParam = params.get('q');
 

@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { useSearchStore } from '../stores/searchStore.js';
-import { useUiStore } from '../stores/uiStore.js';
+import { useSessionStore } from '../stores/sessionStore.js';
 import { storeToRefs } from 'pinia';
 
 const searchStore = useSearchStore();
-const uiStore = useUiStore();
+const sessionStore = useSessionStore();
 
 const { uri, isLoading } = storeToRefs(searchStore);
-const { showHistory } = storeToRefs(uiStore);
+const { showOnlyCurrentSession } = storeToRefs(sessionStore);
 </script>
 
 <template>
@@ -34,9 +34,13 @@ const { showHistory } = storeToRefs(uiStore);
           </button>
         </Transition>
       </div>
-      <div class="history-toggle" @click="uiStore.toggleHistory" title="Toggle History">
-        <span class="toggle-label">history</span>
-        <div class="toggle-switch" :class="{ on: showHistory }">
+      <div
+        class="history-toggle"
+        @click="sessionStore.toggleSessionFilter"
+        title="Toggle between all history and current session"
+      >
+        <span class="toggle-label">all history</span>
+        <div class="toggle-switch" :class="{ on: !showOnlyCurrentSession }">
           <div class="toggle-button"></div>
         </div>
       </div>
