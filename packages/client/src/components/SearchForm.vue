@@ -70,10 +70,12 @@ const { showHistory } = storeToRefs(uiStore);
   font-family: inherit;
   font-size: inherit;
   padding: 0.5rem;
+  transition: text-shadow var(--transition-speed) var(--transition-timing);
 }
 
 .search-input:focus {
   outline: none;
+  text-shadow: var(--glow-text);
 }
 
 .search-input:disabled {
@@ -82,17 +84,19 @@ const { showHistory } = storeToRefs(uiStore);
 
 .search-button {
   background: none;
-  border: none;
+  border: 1px solid var(--color-action);
   color: var(--color-action);
   font-family: inherit;
   font-size: 1rem;
-  padding: 0.5rem 1rem;
+  padding: 0.4rem 1rem;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 2px;
   margin-left: 0.5rem;
   transition:
-    opacity 0.2s ease,
-    color 0.2s ease;
+    opacity var(--transition-speed) var(--transition-timing),
+    color var(--transition-speed) var(--transition-timing),
+    border-color var(--transition-speed) var(--transition-timing),
+    box-shadow var(--transition-speed) var(--transition-timing);
 }
 
 .search-button:hover:not(:disabled) {
@@ -139,25 +143,30 @@ const { showHistory } = storeToRefs(uiStore);
   height: 20px;
   background-color: var(--color-input-background);
   border-radius: 10px;
-  transition: background-color 0.2s ease;
+  transition: all var(--transition-speed) var(--transition-timing);
+  border: 1px solid var(--color-border);
 }
 
 .toggle-switch.on {
-  background-color: var(--color-prompt);
+  background-color: color-mix(in srgb, var(--color-prompt) 20%, transparent);
+  border-color: var(--color-prompt);
+  box-shadow: 0 0 10px rgba(255, 140, 26, 0.1);
 }
 
 .toggle-button {
   position: absolute;
   top: 2px;
   left: 2px;
-  width: 16px;
-  height: 16px;
-  background-color: #f0f0f0;
+  width: 14px;
+  height: 14px;
+  background-color: var(--color-text);
   border-radius: 50%;
-  transition: transform 0.2s ease-in-out;
+  transition: all var(--transition-speed) var(--transition-timing);
 }
 
 .toggle-switch.on .toggle-button {
   transform: translateX(16px);
+  background-color: var(--color-prompt);
+  box-shadow: 0 0 8px rgba(255, 140, 26, 0.4);
 }
 </style>

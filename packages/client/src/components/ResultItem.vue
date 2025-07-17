@@ -58,14 +58,19 @@ async function copyUrl(url: string) {
 .result-item {
   display: flex;
   align-items: center;
-  border-radius: 4px;
+  border-radius: 2px;
   padding: 0.25rem 0.5rem;
   margin: 0.1rem -0.5rem; /* Offset padding to align with outer container */
-  transition: background-color 0.2s ease;
+  transition:
+    background-color var(--transition-speed) var(--transition-timing),
+    transform var(--transition-speed) var(--transition-timing);
+  border: 1px solid transparent;
 }
 
 .result-item:hover {
   background-color: var(--color-input-background);
+  border-color: var(--color-border);
+  transform: translateX(2px);
 }
 
 .result-link {
