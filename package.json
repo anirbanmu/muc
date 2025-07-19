@@ -2,6 +2,7 @@
   "name": "muc-root",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "description": "Monorepo for the MUC project.",
   "main": "index.js",
   "scripts": {
@@ -15,7 +16,8 @@
     "clean:all": "npm run clean && npm run clean:node-modules",
     "start": "npm run start --workspace=@muc/server",
     "start:clean": "npm run clean && npm run build && npm run start",
-    "test": "npm run test --workspace=@muc/common"
+    "test": "npm run test --workspace=@muc/common",
+    "format": "prettier --write \"./**/*.{js,jsx,ts,tsx,json,css,md}\""
   },
   "keywords": [],
   "author": "",
@@ -24,6 +26,7 @@
     "packages/*"
   ],
   "devDependencies": {
+    "prettier": "^3.6.2",
     "rimraf": "^6.0.1"
   }
 }

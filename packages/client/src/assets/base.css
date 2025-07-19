@@ -20,10 +20,9 @@
   --transition-base: var(--transition-speed) var(--transition-timing);
   --transition-all: all var(--transition-base);
   --transition-opacity: opacity var(--transition-base);
-  --transition-colors: background-color var(--transition-base),
-    color var(--transition-base),
-    border-color var(--transition-base),
-    box-shadow var(--transition-base);
+  --transition-colors:
+    background-color var(--transition-base), color var(--transition-base),
+    border-color var(--transition-base), box-shadow var(--transition-base);
 
   /* Platform Colors */
   --color-platform-spotify: #2ed760;
@@ -63,13 +62,7 @@ body {
   color: var(--color-text);
   background: var(--color-background);
   line-height: 1.6;
-  font-family:
-    'Fira Code',
-    'Consolas',
-    'Monaco',
-    'Andale Mono',
-    'Ubuntu Mono',
-    monospace;
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Andale Mono', 'Ubuntu Mono', monospace;
   font-size: 16px;
   font-optical-sizing: auto;
   text-rendering: optimizeLegibility;

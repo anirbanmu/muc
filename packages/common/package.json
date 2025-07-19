@@ -18,7 +18,8 @@
   "scripts": {
     "build": "tsc -b",
     "dev": "tsc -w",
-    "test": "vitest --run"
+    "test": "vitest --run",
+    "format": "prettier --write src/"
   },
   "keywords": [],
   "author": "",

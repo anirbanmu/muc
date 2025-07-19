@@ -6,7 +6,8 @@
   "main": "dist/server.bundle.cjs",
   "scripts": {
     "build": "esbuild src/server.ts --bundle --platform=node --target=node20 --outfile=dist/server.bundle.cjs --format=cjs --banner:js='#!/usr/bin/env node'",
-    "start": "node --env-file=../../.env dist/server.bundle.cjs"
+    "start": "node --env-file=../../.env dist/server.bundle.cjs",
+    "format": "prettier --write src/"
   },
   "keywords": [],
   "author": "",
