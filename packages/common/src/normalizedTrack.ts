@@ -2,6 +2,7 @@ import { SpotifyTrack } from './spotify.js';
 import { DeezerTrack } from './deezer.js';
 import { ItunesTrack } from './itunes.js';
 import { YoutubeVideoDetails, YoutubeSearchResultItem } from './youtube.js';
+import { TrackIdentifier } from './trackIdentifier.js';
 
 export interface NormalizedTrack {
   platform: 'spotify' | 'deezer' | 'itunes' | 'youtube';
@@ -9,6 +10,7 @@ export interface NormalizedTrack {
   title: string;
   artistName: string;
   sourceUrl: string;
+  uniqueId: string;
 }
 
 export interface SpotifyNormalizedTrack extends NormalizedTrack {
@@ -45,6 +47,7 @@ export function mapSpotifyTrackToNormalizedTrack(track: SpotifyTrack): SpotifyNo
     artistName: track.artists[0]?.name || 'Unknown Artist',
     sourceUrl: track.external_urls.spotify,
     albumName: track.album.name,
+    uniqueId: TrackIdentifier.generateUniqueId('spotify', track.id),
   };
 }
 
@@ -57,6 +60,7 @@ export function mapDeezerTrackToNormalizedTrack(track: DeezerTrack): DeezerNorma
     sourceUrl: track.link,
     albumName: track.album.title,
     artistUrl: track.artist.link,
+    uniqueId: TrackIdentifier.generateUniqueId('deezer', track.id.toString()),
   };
 }
 
@@ -68,6 +72,7 @@ export function mapItunesTrackToNormalizedTrack(track: ItunesTrack): ItunesNorma
     artistName: track.artistName,
     sourceUrl: track.trackViewUrl,
     artistUrl: track.artistViewUrl,
+    uniqueId: TrackIdentifier.generateUniqueId('itunes', track.trackId.toString()),
   };
 }
 
@@ -101,5 +106,6 @@ export function mapYoutubeVideoToNormalizedTrack(
     title: title,
     artistName: artistName,
     sourceUrl: `https://www.youtube.com/watch?v=${videoId}`,
+    uniqueId: TrackIdentifier.generateUniqueId('youtube', videoId),
   };
 }

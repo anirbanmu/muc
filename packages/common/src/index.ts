@@ -30,6 +30,7 @@ export { BackendMediaService } from './backendMediaService.js';
 export { ClientMediaService } from './clientMediaService.js';
 export { MediaPlatform, MediaService } from './mediaService.js';
 export { getNextId } from './idGenerator.js';
+export { TrackIdentifier } from './trackIdentifier.js';
 
 export { ApiClient } from './apiClient.js';
 export { API_ROUTES } from './apiRoutes.js';

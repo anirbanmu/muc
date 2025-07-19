@@ -56,3 +56,7 @@ yarn-debug.log*
 
 # aider.chat
 .aider*
+CONVENTIONS.md
+
+# kiro
+.kiro

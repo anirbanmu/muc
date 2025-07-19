@@ -131,4 +131,11 @@ export class DeezerClient {
   public static isUriParsable(uri: string): boolean {
     return DeezerClient.parseId(uri) !== null;
   }
+
+  public static reconstructUri(trackId: string): string {
+    if (!trackId || trackId.trim() === '') {
+      throw new Error('Track ID cannot be empty');
+    }
+    return `https://www.deezer.com/track/${trackId.trim()}`;
+  }
 }

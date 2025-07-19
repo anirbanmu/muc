@@ -102,6 +102,13 @@ export class SpotifyClient {
     return SpotifyClient.parseTrackId(uri) !== null;
   }
 
+  public static reconstructUri(trackId: string): string {
+    if (!trackId || trackId.trim() === '') {
+      throw new Error('Track ID cannot be empty');
+    }
+    return `https://open.spotify.com/track/${trackId.trim()}`;
+  }
+
   private static async getClientCredentialsToken(
     clientId: string,
     clientSecret: string,

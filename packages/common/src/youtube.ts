@@ -108,4 +108,11 @@ export class YoutubeClient {
   public static isUriParsable(uri: string): boolean {
     return YoutubeClient.parseId(uri) !== null;
   }
+
+  public static reconstructUri(trackId: string): string {
+    if (!trackId || trackId.trim() === '') {
+      throw new Error('Track ID cannot be empty');
+    }
+    return `https://www.youtube.com/watch?v=${trackId.trim()}`;
+  }
 }

@@ -45,6 +45,7 @@ describe('MediaService', () => {
     artistName: 'Spotify Artist',
     sourceUrl: mockSpotifyUri,
     albumName: 'Spotify Album',
+    uniqueId: 'sspotify-id-1',
   };
 
   const mockYoutubeTrack: YoutubeNormalizedTrack = {
@@ -53,6 +54,7 @@ describe('MediaService', () => {
     title: 'Youtube Video',
     artistName: 'Youtube Creator',
     sourceUrl: mockYoutubeUri,
+    uniqueId: 'yyoutube-id-1',
   };
 
   const mockDeezerTrack: DeezerNormalizedTrack = {
@@ -63,6 +65,7 @@ describe('MediaService', () => {
     sourceUrl: mockDeezerUri,
     albumName: 'Deezer Album',
     artistUrl: 'deezer-artist-url',
+    uniqueId: 'ddeezer-id-1',
   };
 
   const mockItunesTrack: ItunesNormalizedTrack = {
@@ -72,6 +75,7 @@ describe('MediaService', () => {
     artistName: 'iTunes Artist',
     sourceUrl: mockItunesUri,
     artistUrl: 'itunes-artist-url',
+    uniqueId: 'iitunes-id-1',
   };
 
   describe('getTrackDetails', () => {
