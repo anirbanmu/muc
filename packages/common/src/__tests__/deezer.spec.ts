@@ -4,15 +4,11 @@ import { DeezerClient } from '../deezer.js';
 describe('DeezerClient', () => {
   describe('parseId', () => {
     it('should correctly parse valid Deezer track URIs', () => {
-      expect(DeezerClient.parseId('https://www.deezer.com/track/123456789')).toBe(
-        '123456789',
-      );
+      expect(DeezerClient.parseId('https://www.deezer.com/track/123456789')).toBe('123456789');
       expect(DeezerClient.parseId('https://www.deezer.com/us/track/987654321?foo=bar')).toBe(
         '987654321',
       );
-      expect(DeezerClient.parseId('http://www.deezer.com/track/123')).toBe(
-        '123',
-      );
+      expect(DeezerClient.parseId('http://www.deezer.com/track/123')).toBe('123');
     });
 
     it('should return null for invalid or non-track Deezer URIs', () => {
@@ -28,7 +24,9 @@ describe('DeezerClient', () => {
   describe('isUriParsable', () => {
     it('should return true for parsable Deezer track URIs', () => {
       expect(DeezerClient.isUriParsable('https://www.deezer.com/track/123456789')).toBe(true);
-      expect(DeezerClient.isUriParsable('https://www.deezer.com/us/track/987654321?foo=bar')).toBe(true);
+      expect(DeezerClient.isUriParsable('https://www.deezer.com/us/track/987654321?foo=bar')).toBe(
+        true,
+      );
       expect(DeezerClient.isUriParsable('http://www.deezer.com/track/123')).toBe(true); // http protocol
     });
 

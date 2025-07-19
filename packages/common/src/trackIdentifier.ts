@@ -160,7 +160,9 @@ export class TrackIdentifier {
           throw new Error(`Unsupported platform: ${platform}`);
       }
     } catch (error) {
-      throw new Error(`Failed to reconstruct URI for platform ${platform}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to reconstruct URI for platform ${platform}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
     }
   }
 }

@@ -156,7 +156,9 @@ export abstract class MediaService {
     return results;
   }
 
-  public async searchOtherPlatforms(sourceTrack: AnyNormalizedTrack): Promise<AnyNormalizedTrack[]> {
+  public async searchOtherPlatforms(
+    sourceTrack: AnyNormalizedTrack,
+  ): Promise<AnyNormalizedTrack[]> {
     const query = MediaService.formulateQuery(sourceTrack);
     const searchPromises: Promise<AnyNormalizedTrack | null>[] = [];
 

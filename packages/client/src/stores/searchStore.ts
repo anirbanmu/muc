@@ -50,26 +50,44 @@ export const useSearchStore = defineStore('search', {
       // 1. Get details of the source track from the URI
       const sourceTrack = await mediaService.getTrackDetails(uri);
 
-      // 2. Search on all other platforms
+      // 2. Mark the source track with isSource flag
+      const markedSourceTrack = { ...sourceTrack, isSource: true };
+
+      // 3. Search on all other platforms
       const searchResults = await mediaService.searchOtherPlatforms(sourceTrack);
 
-      // 3. Combine, de-duplicate, and sort results
-      return this.processSearchResults([sourceTrack, ...searchResults]);
+      // 4. Combine, de-duplicate, and sort results
+      return this.processSearchResults([markedSourceTrack, ...searchResults]);
     },
 
     processSearchResults(tracks: AnyNormalizedTrack[]): AnyNormalizedTrack[] {
-      // De-duplicate results
-      const uniqueResults = tracks.reduce((acc: AnyNormalizedTrack[], current) => {
-        if (!acc.some((item) => item.sourceUrl === current.sourceUrl)) {
-          acc.push(current);
-        }
-        return acc;
-      }, []);
+      // Use Map for efficient O(n) deduplication by uniqueId
+      const trackMap = new Map<string, AnyNormalizedTrack>();
 
-      // Sort by platform order
-      return uniqueResults.sort(
-        (a, b) => platformOrder.indexOf(a.platform) - platformOrder.indexOf(b.platform),
-      );
+      for (const track of tracks) {
+        const existing = trackMap.get(track.uniqueId);
+        if (!existing) {
+          trackMap.set(track.uniqueId, track);
+        } else if (track.isSource && !existing.isSource) {
+          // Preserve source track if duplicate found
+          trackMap.set(track.uniqueId, track);
+        }
+      }
+
+      // Convert back to array and sort
+      const uniqueTracks = Array.from(trackMap.values());
+      return this.sortResults(uniqueTracks);
+    },
+
+    sortResults(tracks: AnyNormalizedTrack[]): AnyNormalizedTrack[] {
+      return tracks.sort((a, b) => {
+        // Source track always comes first
+        if (a.isSource && !b.isSource) return -1;
+        if (!a.isSource && b.isSource) return 1;
+
+        // Then sort by platform order
+        return platformOrder.indexOf(a.platform) - platformOrder.indexOf(b.platform);
+      });
     },
 
     saveSearchResults(uri: string, results: AnyNormalizedTrack[]): string {

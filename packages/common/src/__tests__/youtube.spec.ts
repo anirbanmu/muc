@@ -7,9 +7,9 @@ describe('YoutubeClient', () => {
       expect(YoutubeClient.parseId('https://www.youtube.com/watch?v=dQw4w9WgXcQ')).toBe(
         'dQw4w9WgXcQ',
       );
-      expect(YoutubeClient.parseId('https://www.youtube.com/watch?v=dQw4w9WgXcQ&feature=share')).toBe(
-        'dQw4w9WgXcQ',
-      );
+      expect(
+        YoutubeClient.parseId('https://www.youtube.com/watch?v=dQw4w9WgXcQ&feature=share'),
+      ).toBe('dQw4w9WgXcQ');
       expect(YoutubeClient.parseId('https://m.youtube.com/watch?v=dQw4w9WgXcQ')).toBe(
         'dQw4w9WgXcQ',
       );
@@ -34,9 +34,13 @@ describe('YoutubeClient', () => {
   describe('isUriParsable', () => {
     it('should return true for parsable regular YouTube video URLs', () => {
       expect(YoutubeClient.isUriParsable('https://www.youtube.com/watch?v=dQw4w9WgXcQ')).toBe(true);
-      expect(YoutubeClient.isUriParsable('https://www.youtube.com/watch?v=dQw4w9WgXcQ&feature=share')).toBe(true);
+      expect(
+        YoutubeClient.isUriParsable('https://www.youtube.com/watch?v=dQw4w9WgXcQ&feature=share'),
+      ).toBe(true);
       expect(YoutubeClient.isUriParsable('https://m.youtube.com/watch?v=dQw4w9WgXcQ')).toBe(true); // Mobile URL
-      expect(YoutubeClient.isUriParsable('https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=PLsomething')).toBe(true); // With playlist param
+      expect(
+        YoutubeClient.isUriParsable('https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=PLsomething'),
+      ).toBe(true); // With playlist param
     });
 
     it('should return true for parsable shortened YouTube video URLs (youtu.be)', () => {
@@ -46,8 +50,12 @@ describe('YoutubeClient', () => {
     });
 
     it('should return false for invalid or non-video YouTube URLs', () => {
-      expect(YoutubeClient.isUriParsable('https://www.youtube.com/playlist?list=PLsomething')).toBe(false); // Playlist URL
-      expect(YoutubeClient.isUriParsable('https://www.youtube.com/channel/UCsomething')).toBe(false); // Channel URL
+      expect(YoutubeClient.isUriParsable('https://www.youtube.com/playlist?list=PLsomething')).toBe(
+        false,
+      ); // Playlist URL
+      expect(YoutubeClient.isUriParsable('https://www.youtube.com/channel/UCsomething')).toBe(
+        false,
+      ); // Channel URL
       expect(YoutubeClient.isUriParsable('https://www.youtube.com/watch')).toBe(false); // Missing 'v' parameter
       expect(YoutubeClient.isUriParsable('https://youtu.be/')).toBe(false); // Missing video ID
       expect(YoutubeClient.isUriParsable('invalid-uri')).toBe(false);

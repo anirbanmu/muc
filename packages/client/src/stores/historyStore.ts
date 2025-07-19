@@ -28,7 +28,9 @@ function isValidHistoryItem(item: unknown): item is SearchHistoryItem {
         'platform' in result &&
         typeof result.platform === 'string' &&
         'resultId' in result &&
-        typeof result.resultId === 'number',
+        typeof result.resultId === 'number' &&
+        // Validate optional isSource field
+        (result.isSource === undefined || typeof result.isSource === 'boolean'),
     )
   );
 }

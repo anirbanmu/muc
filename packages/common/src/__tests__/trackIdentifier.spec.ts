@@ -25,14 +25,18 @@ describe('TrackIdentifier', () => {
 
   describe('generateUniqueId', () => {
     it('should generate correct unique IDs for each platform', () => {
-      expect(TrackIdentifier.generateUniqueId('spotify', '4BFd6LqI5Nf9h7Xm9tK3dY')).toBe('s4BFd6LqI5Nf9h7Xm9tK3dY');
+      expect(TrackIdentifier.generateUniqueId('spotify', '4BFd6LqI5Nf9h7Xm9tK3dY')).toBe(
+        's4BFd6LqI5Nf9h7Xm9tK3dY',
+      );
       expect(TrackIdentifier.generateUniqueId('deezer', '123456')).toBe('d123456');
       expect(TrackIdentifier.generateUniqueId('itunes', '789012')).toBe('i789012');
       expect(TrackIdentifier.generateUniqueId('youtube', 'dQw4w9WgXcQ')).toBe('ydQw4w9WgXcQ');
     });
 
     it('should trim whitespace from platform ID', () => {
-      expect(TrackIdentifier.generateUniqueId('spotify', '  4BFd6LqI5Nf9h7Xm9tK3dY  ')).toBe('s4BFd6LqI5Nf9h7Xm9tK3dY');
+      expect(TrackIdentifier.generateUniqueId('spotify', '  4BFd6LqI5Nf9h7Xm9tK3dY  ')).toBe(
+        's4BFd6LqI5Nf9h7Xm9tK3dY',
+      );
     });
 
     it('should throw error for empty platform ID', () => {
@@ -45,19 +49,19 @@ describe('TrackIdentifier', () => {
     it('should correctly parse valid unique IDs', () => {
       expect(TrackIdentifier.parseUniqueId('s4BFd6LqI5Nf9h7Xm9tK3dY')).toEqual({
         platform: 'spotify',
-        platformId: '4BFd6LqI5Nf9h7Xm9tK3dY'
+        platformId: '4BFd6LqI5Nf9h7Xm9tK3dY',
       });
       expect(TrackIdentifier.parseUniqueId('d123456')).toEqual({
         platform: 'deezer',
-        platformId: '123456'
+        platformId: '123456',
       });
       expect(TrackIdentifier.parseUniqueId('i789012')).toEqual({
         platform: 'itunes',
-        platformId: '789012'
+        platformId: '789012',
       });
       expect(TrackIdentifier.parseUniqueId('ydQw4w9WgXcQ')).toEqual({
         platform: 'youtube',
-        platformId: 'dQw4w9WgXcQ'
+        platformId: 'dQw4w9WgXcQ',
       });
     });
 
@@ -87,19 +91,24 @@ describe('TrackIdentifier', () => {
 
   describe('reconstructUriFromComponents', () => {
     it('should reconstruct correct URIs for each platform', () => {
-      expect(TrackIdentifier.reconstructUriFromComponents('spotify', '4BFd6LqI5Nf9h7Xm9tK3dY'))
-        .toBe('https://open.spotify.com/track/4BFd6LqI5Nf9h7Xm9tK3dY');
-      expect(TrackIdentifier.reconstructUriFromComponents('deezer', '123456'))
-        .toBe('https://www.deezer.com/track/123456');
-      expect(TrackIdentifier.reconstructUriFromComponents('itunes', '789012'))
-        .toBe('https://music.apple.com/album/id789012');
-      expect(TrackIdentifier.reconstructUriFromComponents('youtube', 'dQw4w9WgXcQ'))
-        .toBe('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+      expect(
+        TrackIdentifier.reconstructUriFromComponents('spotify', '4BFd6LqI5Nf9h7Xm9tK3dY'),
+      ).toBe('https://open.spotify.com/track/4BFd6LqI5Nf9h7Xm9tK3dY');
+      expect(TrackIdentifier.reconstructUriFromComponents('deezer', '123456')).toBe(
+        'https://www.deezer.com/track/123456',
+      );
+      expect(TrackIdentifier.reconstructUriFromComponents('itunes', '789012')).toBe(
+        'https://music.apple.com/album/id789012',
+      );
+      expect(TrackIdentifier.reconstructUriFromComponents('youtube', 'dQw4w9WgXcQ')).toBe(
+        'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+      );
     });
 
     it('should trim whitespace from platform ID', () => {
-      expect(TrackIdentifier.reconstructUriFromComponents('spotify', '  4BFd6LqI5Nf9h7Xm9tK3dY  '))
-        .toBe('https://open.spotify.com/track/4BFd6LqI5Nf9h7Xm9tK3dY');
+      expect(
+        TrackIdentifier.reconstructUriFromComponents('spotify', '  4BFd6LqI5Nf9h7Xm9tK3dY  '),
+      ).toBe('https://open.spotify.com/track/4BFd6LqI5Nf9h7Xm9tK3dY');
     });
 
     it('should throw error for empty platform ID', () => {
@@ -108,8 +117,9 @@ describe('TrackIdentifier', () => {
     });
 
     it('should throw error for unsupported platform', () => {
-      expect(() => TrackIdentifier.reconstructUriFromComponents('unsupported' as MediaPlatform, '123456'))
-        .toThrow();
+      expect(() =>
+        TrackIdentifier.reconstructUriFromComponents('unsupported' as MediaPlatform, '123456'),
+      ).toThrow();
     });
   });
 
@@ -141,9 +151,9 @@ describe('TrackIdentifier', () => {
           artistName: 'Test Artist',
           sourceUrl: 'https://open.spotify.com/track/4BFd6LqI5Nf9h7Xm9tK3dY',
           uniqueId: 's4BFd6LqI5Nf9h7Xm9tK3dY',
-          albumName: 'Test Album'
+          albumName: 'Test Album',
         };
-        
+
         const identifier = TrackIdentifier.fromNormalizedTrack(track);
         expect(identifier.platform).toBe('spotify');
         expect(identifier.platformId).toBe('4BFd6LqI5Nf9h7Xm9tK3dY');
@@ -156,7 +166,9 @@ describe('TrackIdentifier', () => {
     describe('reconstructUri', () => {
       it('should reconstruct URI for the track', () => {
         const identifier = new TrackIdentifier('spotify', '4BFd6LqI5Nf9h7Xm9tK3dY');
-        expect(identifier.reconstructUri()).toBe('https://open.spotify.com/track/4BFd6LqI5Nf9h7Xm9tK3dY');
+        expect(identifier.reconstructUri()).toBe(
+          'https://open.spotify.com/track/4BFd6LqI5Nf9h7Xm9tK3dY',
+        );
       });
     });
 
@@ -185,8 +197,7 @@ describe('TrackIdentifier', () => {
   describe('error handling', () => {
     it('should handle platform client errors gracefully', () => {
       // Test error handling when platform client throws an error
-      expect(() => TrackIdentifier.reconstructUriFromComponents('spotify', ''))
-        .toThrow();
+      expect(() => TrackIdentifier.reconstructUriFromComponents('spotify', '')).toThrow();
     });
   });
 
@@ -197,14 +208,14 @@ describe('TrackIdentifier', () => {
         { platform: 'spotify' as const, id: '4BFd6LqI5Nf9h7Xm9tK3dY', expectedPrefix: 's' },
         { platform: 'deezer' as const, id: '123456', expectedPrefix: 'd' },
         { platform: 'itunes' as const, id: '789012', expectedPrefix: 'i' },
-        { platform: 'youtube' as const, id: 'dQw4w9WgXcQ', expectedPrefix: 'y' }
+        { platform: 'youtube' as const, id: 'dQw4w9WgXcQ', expectedPrefix: 'y' },
       ];
 
       testCases.forEach(({ platform, id, expectedPrefix }) => {
         const uniqueId = TrackIdentifier.generateUniqueId(platform, id);
         expect(uniqueId).toMatch(new RegExp(`^${expectedPrefix}.+`));
         expect(TrackIdentifier.isValidUniqueId(uniqueId)).toBe(true);
-        
+
         const identifier = TrackIdentifier.fromUniqueId(uniqueId);
         expect(identifier.platform).toBe(platform);
         expect(identifier.platformId).toBe(id);
@@ -214,12 +225,12 @@ describe('TrackIdentifier', () => {
     it('should maintain data integrity across different factory methods', () => {
       const testId = '4BFd6LqI5Nf9h7Xm9tK3dY';
       const platform = 'spotify';
-      
+
       // Create identifier through different factory methods
       const fromPlatformId = TrackIdentifier.fromPlatformId(platform, testId);
       const fromUniqueId = TrackIdentifier.fromUniqueId(`s${testId}`);
       const fromConstructor = new TrackIdentifier(platform, testId);
-      
+
       // All should produce identical results
       expect(fromPlatformId.uniqueId).toBe(fromUniqueId.uniqueId);
       expect(fromUniqueId.uniqueId).toBe(fromConstructor.uniqueId);
@@ -229,7 +240,7 @@ describe('TrackIdentifier', () => {
 
     it('should generate different unique IDs for same ID on different platforms', () => {
       const sameId = '123456';
-      
+
       const spotifyId = TrackIdentifier.generateUniqueId('spotify', sameId);
       const deezerId = TrackIdentifier.generateUniqueId('deezer', sameId);
       const itunesId = TrackIdentifier.generateUniqueId('itunes', sameId);
@@ -248,8 +259,8 @@ describe('TrackIdentifier', () => {
 
     it('should handle edge case IDs consistently', () => {
       const edgeCaseIds = ['', '   ', '123', 'a', 'very-long-id-with-special-chars-123456789'];
-      
-      edgeCaseIds.forEach(id => {
+
+      edgeCaseIds.forEach((id) => {
         if (id.trim() === '') {
           // Should throw for empty IDs
           expect(() => TrackIdentifier.generateUniqueId('spotify', id)).toThrow();

@@ -14,7 +14,8 @@
     "clean:node-modules": "rimraf --glob \"./node_modules\" \"./packages/*/node_modules\"",
     "clean:all": "npm run clean && npm run clean:node-modules",
     "start": "npm run start --workspace=@muc/server",
-    "start:clean": "npm run clean && npm run build && npm run start"
+    "start:clean": "npm run clean && npm run build && npm run start",
+    "test": "npm run test --workspace=@muc/common"
   },
   "keywords": [],
   "author": "",
