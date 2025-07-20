@@ -85,13 +85,13 @@ async function start(): Promise<void> {
 
   // Create a allowlist of full origins, including both http and https protocols for local development.
   const allowedOrigins: string[] = [
-    ...localHosts.map((host) => `http://${host}`),
-    ...localHosts.map((host) => `https://${host}`),
+    ...localHosts.map(host => `http://${host}`),
+    ...localHosts.map(host => `https://${host}`),
   ];
 
   if (process.env.NODE_ENV !== 'development' && CORS_ALLOWED_ORIGIN) {
     // In production, add specific origins from a comma-separated environment variable.
-    allowedOrigins.push(...CORS_ALLOWED_ORIGIN.split(',').map((origin) => origin.trim()));
+    allowedOrigins.push(...CORS_ALLOWED_ORIGIN.split(',').map(origin => origin.trim()));
   }
 
   app.use(
@@ -189,7 +189,7 @@ async function start(): Promise<void> {
   });
 }
 
-start().catch((error) => {
+start().catch(error => {
   logError('Error starting server:', error instanceof Error ? error.message : error);
   process.exit(1);
 });

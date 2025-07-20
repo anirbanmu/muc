@@ -15,6 +15,7 @@ yarn-error.log*
 # Compiled JavaScript files, declaration files, and source maps
 # Adjust if you commit these for specific reasons (e.g., published packages)
 *.js
+!prettier.config.js
 *.d.ts
 *.map
 

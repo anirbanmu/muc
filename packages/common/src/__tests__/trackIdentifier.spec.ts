@@ -260,7 +260,7 @@ describe('TrackIdentifier', () => {
     it('should handle edge case IDs consistently', () => {
       const edgeCaseIds = ['', '   ', '123', 'a', 'very-long-id-with-special-chars-123456789'];
 
-      edgeCaseIds.forEach((id) => {
+      edgeCaseIds.forEach(id => {
         if (id.trim() === '') {
           // Should throw for empty IDs
           expect(() => TrackIdentifier.generateUniqueId('spotify', id)).toThrow();

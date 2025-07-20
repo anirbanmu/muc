@@ -20,7 +20,7 @@ function isValidHistoryItem(item: unknown): item is SearchHistoryItem {
     'results' in item &&
     Array.isArray(item.results) &&
     item.results.every(
-      (result) =>
+      result =>
         typeof result === 'object' &&
         result !== null &&
         'sourceUrl' in result &&
@@ -50,12 +50,12 @@ export const useHistoryStore = defineStore('history', {
   }),
 
   getters: {
-    filteredHistory: (state) => {
+    filteredHistory: state => {
       return (showAll: boolean, currentIds: string[]): SearchHistoryItem[] => {
         if (showAll) {
           return state.items;
         }
-        return state.items.filter((item) => currentIds.includes(item.id));
+        return state.items.filter(item => currentIds.includes(item.id));
       };
     },
   },
