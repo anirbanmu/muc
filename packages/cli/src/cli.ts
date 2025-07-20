@@ -43,7 +43,7 @@ async function main() {
 
   try {
     switch (mode) {
-      case 'lookup':
+      case 'lookup': {
         console.log(`\n--- Looking up details for URI: ${uriOrQuery} ---`);
         const trackDetails = await backendMediaService.getTrackDetails(uriOrQuery);
         if (trackDetails) {
@@ -72,7 +72,8 @@ async function main() {
           console.error(`Could not find details for ${uriOrQuery}.`);
         }
         break;
-      case 'search':
+      }
+      case 'search': {
         console.log(`\n--- Performing cross-platform search for query: "${uriOrQuery}" ---`);
         const searchResultsOnly = await backendMediaService.searchAllPlatforms(uriOrQuery);
         if (searchResultsOnly.length > 0) {
@@ -85,6 +86,7 @@ async function main() {
           console.log(`No search results found for "${uriOrQuery}".`);
         }
         break;
+      }
       default:
         console.error('Invalid mode. Please use "lookup" or "search".');
         process.exit(1);
