@@ -47,7 +47,7 @@ export class ApiRouter {
 
   private getSpotifyTrackDetails = async (
     req: Request<any, any, UriRequestBody>,
-    res: Response<GetSpotifyTrackDetailsResponse | ErrorResponse>,
+    res: Response<GetSpotifyTrackDetailsResponse | ErrorResponse>
   ) => {
     const { uri } = req.body;
     if (!uri) {
@@ -71,17 +71,14 @@ export class ApiRouter {
       this.cache.set(cacheKey, track);
       res.json(track);
     } catch (error) {
-      console.error(
-        'Error fetching Spotify track details:',
-        error instanceof Error ? error.message : error,
-      );
+      console.error('Error fetching Spotify track details:', error instanceof Error ? error.message : error);
       res.status(500).json({ message: 'Failed to retrieve Spotify track details.' });
     }
   };
 
   private searchSpotifyTracks = async (
     req: Request<any, any, QueryRequestBody>,
-    res: Response<SearchSpotifyTracksResponse | ErrorResponse>,
+    res: Response<SearchSpotifyTracksResponse | ErrorResponse>
   ) => {
     const { query } = req.body;
     if (!query) {
@@ -101,17 +98,14 @@ export class ApiRouter {
       this.cache.set(cacheKey, track);
       res.json(track ? [track] : []);
     } catch (error) {
-      console.error(
-        'Error searching Spotify tracks:',
-        error instanceof Error ? error.message : error,
-      );
+      console.error('Error searching Spotify tracks:', error instanceof Error ? error.message : error);
       res.status(500).json({ message: 'Failed to search Spotify tracks.' });
     }
   };
 
   private getYoutubeVideoDetails = async (
     req: Request<any, any, UriRequestBody>,
-    res: Response<GetYoutubeVideoDetailsResponse | ErrorResponse>,
+    res: Response<GetYoutubeVideoDetailsResponse | ErrorResponse>
   ) => {
     const { uri } = req.body;
     if (!uri) {
@@ -135,17 +129,14 @@ export class ApiRouter {
       this.cache.set(cacheKey, video);
       res.json(video);
     } catch (error) {
-      console.error(
-        'Error fetching YouTube video details:',
-        error instanceof Error ? error.message : error,
-      );
+      console.error('Error fetching YouTube video details:', error instanceof Error ? error.message : error);
       res.status(500).json({ message: 'Failed to retrieve YouTube video details.' });
     }
   };
 
   private searchYoutubeVideos = async (
     req: Request<any, any, QueryRequestBody>,
-    res: Response<SearchYoutubeVideosResponse | ErrorResponse>,
+    res: Response<SearchYoutubeVideosResponse | ErrorResponse>
   ) => {
     const { query } = req.body;
     if (!query) {
@@ -165,10 +156,7 @@ export class ApiRouter {
       this.cache.set(cacheKey, video);
       res.json(video ? [video] : []);
     } catch (error) {
-      console.error(
-        'Error searching YouTube videos:',
-        error instanceof Error ? error.message : error,
-      );
+      console.error('Error searching YouTube videos:', error instanceof Error ? error.message : error);
       res.status(500).json({ message: 'Failed to search YouTube videos.' });
     }
   };

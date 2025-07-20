@@ -14,7 +14,7 @@ const { isLoading, error } = storeToRefs(searchStore);
 const { showOnlyCurrentSession, currentSearchIds } = storeToRefs(sessionStore);
 
 const visibleHistory = computed(() =>
-  historyStore.filteredHistory(!showOnlyCurrentSession.value, currentSearchIds.value),
+  historyStore.filteredHistory(!showOnlyCurrentSession.value, currentSearchIds.value)
 );
 </script>
 

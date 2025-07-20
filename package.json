@@ -17,7 +17,10 @@
     "start": "npm run start --workspace=@muc/server",
     "start:clean": "npm run clean && npm run build && npm run start",
     "test": "npm run test --workspace=@muc/common",
-    "format": "prettier --write \"./**/*.{js,jsx,ts,tsx,json,css,md}\""
+    "lint": "npm run lint --workspaces",
+    "lint:fix": "npm run lint:fix --workspaces",
+    "format": "npm run format --workspaces",
+    "format:check": "npm run format:check --workspaces"
   },
   "keywords": [],
   "author": "",
@@ -26,7 +29,12 @@
     "packages/*"
   ],
   "devDependencies": {
+    "@eslint/js": "^9.31.0",
+    "@types/eslint": "^9.6.1",
+    "eslint": "^9.31.0",
+    "globals": "^16.3.0",
     "prettier": "^3.6.2",
-    "rimraf": "^6.0.1"
+    "rimraf": "^6.0.1",
+    "typescript-eslint": "^8.37.0"
   }
 }

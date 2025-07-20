@@ -1,15 +1,8 @@
 /** @type {import('prettier').Config} */
 const config = {
-  semi: true,
   singleQuote: true,
-  printWidth: 100,
-  tabWidth: 2,
-  trailingComma: 'all',
-  bracketSpacing: true,
-  arrowParens: 'avoid',
-  endOfLine: 'lf',
-  quoteProps: 'as-needed',
-  vueIndentScriptAndStyle: false,
+  trailingComma: 'es5',
+  printWidth: 120,
 };
 
 export default config;

@@ -81,15 +81,11 @@ export class DeezerClient {
         { timeout: 2000 }, // ms
         (error: Error | null, data: DeezerTrack & { error?: { message: string } }) => {
           if (error || data.error) {
-            reject(
-              new Error(
-                `Bad Deezer URI: ${error?.message ?? data.error?.message ?? 'Unknown error'}`,
-              ),
-            );
+            reject(new Error(`Bad Deezer URI: ${error?.message ?? data.error?.message ?? 'Unknown error'}`));
           } else {
             resolve(data);
           }
-        },
+        }
       );
     });
   }
@@ -100,21 +96,14 @@ export class DeezerClient {
       jsonp(
         `${DEEZER_TRACK_SEARCH_URI}?${queryString}`,
         { timeout: 2000 }, // ms
-        (
-          error: Error | null,
-          data: { data: DeezerTrack[]; total: number; error?: { message: string } },
-        ) => {
+        (error: Error | null, data: { data: DeezerTrack[]; total: number; error?: { message: string } }) => {
           if (error || data.error) {
-            reject(
-              new Error(
-                `Deezer search error: ${error?.message ?? data.error?.message ?? 'Unknown error'}`,
-              ),
-            );
+            reject(new Error(`Deezer search error: ${error?.message ?? data.error?.message ?? 'Unknown error'}`));
           } else {
             const found = data.total < 1 ? null : data.data[0];
             resolve(found);
           }
-        },
+        }
       );
     });
   }

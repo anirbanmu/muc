@@ -27,16 +27,14 @@ function copyUrl(url: string) {
       </span>
       <span class="track-details">
         {{ track.artistName }} - {{ track.title }}
-        <span v-if="'albumName' in track && track.albumName" class="album-name">
-          ({{ track.albumName }})
-        </span>
+        <span v-if="'albumName' in track && track.albumName" class="album-name"> ({{ track.albumName }}) </span>
       </span>
       <button
-        @click.prevent="copyUrl(track.sourceUrl)"
         class="copy-button"
         :class="{ copied: isCopied }"
         :disabled="isCopied"
         title="Copy URL"
+        @click.prevent="copyUrl(track.sourceUrl)"
       >
         <span v-if="isCopied">Copied!</span>
         <span v-else>[Copy]</span>

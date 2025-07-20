@@ -1,28 +1,72 @@
-import { globalIgnores } from 'eslint/config';
-import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescript';
+import rootConfig from '../../eslint.config.js';
 import pluginVue from 'eslint-plugin-vue';
 import pluginVitest from '@vitest/eslint-plugin';
-import skipFormatting from '@vue/eslint-config-prettier/skip-formatting';
+import globals from 'globals';
+import tseslint from 'typescript-eslint';
 
-// To allow more languages other than `ts` in `.vue` files, uncomment the following lines:
-// import { configureVueProject } from '@vue/eslint-config-typescript'
-// configureVueProject({ scriptLangs: ['ts', 'tsx'] })
-// More info at https://github.com/vuejs/eslint-config-typescript/#advanced-setup
+// Extends root config with Vue-specific rules
+const config = [
+  // Spread root configuration
+  ...rootConfig,
 
-export default defineConfigWithVueTs(
+  // Vue-specific configuration
+  ...pluginVue.configs['flat/recommended'],
+
+  // Configure Vue files with TypeScript parser
   {
-    name: 'app/files-to-lint',
-    files: ['**/*.{ts,mts,tsx,vue}'],
+    files: ['**/*.vue'],
+    languageOptions: {
+      parserOptions: {
+        parser: tseslint.parser,
+        extraFileExtensions: ['.vue'],
+        sourceType: 'module',
+      },
+    },
+    rules: {
+      // Vue 3 script setup defineProps creates variables that are used in template
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^(props|emit)$',
+        },
+      ],
+    },
   },
 
-  globalIgnores(['**/dist/**', '**/dist-ssr/**', '**/coverage/**']),
-
-  pluginVue.configs['flat/essential'],
-  vueTsConfigs.recommended,
-
+  // Vitest-specific rules for test files
   {
-    ...pluginVitest.configs.recommended,
     files: ['src/**/__tests__/*'],
+    ...pluginVitest.configs.recommended,
   },
-  skipFormatting,
-);
+
+  // Browser globals for client environment
+  {
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+      },
+    },
+  },
+
+  // TypeScript-specific rules for non-Vue files
+  {
+    files: ['**/*.ts', '**/*.tsx'],
+    rules: {
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+        },
+      ],
+    },
+  },
+
+  // Additional ignores for client-specific files
+  {
+    ignores: ['**/dist/**', '**/dist-ssr/**', '**/coverage/**'],
+  },
+];
+
+export default config;

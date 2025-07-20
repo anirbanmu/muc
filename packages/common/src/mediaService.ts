@@ -30,9 +30,7 @@ export abstract class MediaService {
     switch (track.platform) {
       case 'youtube': {
         // For YouTube, also remove things like "(Official Video)".
-        cleanedTitle = cleanedTitle
-          .replace(/(\[.*?official.*?])|(\(.*?official.*?\))/gi, '')
-          .trim();
+        cleanedTitle = cleanedTitle.replace(/(\[.*?official.*?])|(\(.*?official.*?\))/gi, '').trim();
 
         // If the channel is an "<ARTIST> - Topic" channel, we can trust the artist name.
         if (track.artistName.endsWith(' - Topic')) {
@@ -108,7 +106,7 @@ export abstract class MediaService {
           console.error('Spotify search failed:', error);
           return null;
         }
-      })(),
+      })()
     );
 
     searchPromises.push(
@@ -119,7 +117,7 @@ export abstract class MediaService {
           console.error('Youtube search failed:', error);
           return null;
         }
-      })(),
+      })()
     );
 
     searchPromises.push(
@@ -130,7 +128,7 @@ export abstract class MediaService {
           console.error('Deezer search failed:', error);
           return null;
         }
-      })(),
+      })()
     );
 
     searchPromises.push(
@@ -141,7 +139,7 @@ export abstract class MediaService {
           console.error('iTunes search failed:', error);
           return null;
         }
-      })(),
+      })()
     );
 
     const allSearchResults = await Promise.allSettled(searchPromises);
@@ -156,9 +154,7 @@ export abstract class MediaService {
     return results;
   }
 
-  public async searchOtherPlatforms(
-    sourceTrack: AnyNormalizedTrack,
-  ): Promise<AnyNormalizedTrack[]> {
+  public async searchOtherPlatforms(sourceTrack: AnyNormalizedTrack): Promise<AnyNormalizedTrack[]> {
     const query = MediaService.formulateQuery(sourceTrack);
     const searchPromises: Promise<AnyNormalizedTrack | null>[] = [];
 
@@ -171,7 +167,7 @@ export abstract class MediaService {
             console.error('Spotify search failed:', error);
             return null;
           }
-        })(),
+        })()
       );
     }
 
@@ -184,7 +180,7 @@ export abstract class MediaService {
             console.error('Youtube search failed:', error);
             return null;
           }
-        })(),
+        })()
       );
     }
 
@@ -197,7 +193,7 @@ export abstract class MediaService {
             console.error('Deezer search failed:', error);
             return null;
           }
-        })(),
+        })()
       );
     }
 
@@ -210,7 +206,7 @@ export abstract class MediaService {
             console.error('iTunes search failed:', error);
             return null;
           }
-        })(),
+        })()
       );
     }
 

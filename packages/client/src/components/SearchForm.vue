@@ -16,10 +16,10 @@ const { showOnlyCurrentSession } = storeToRefs(sessionStore);
       <div class="input-wrapper">
         <span class="prompt">guest@muc:~$&nbsp;</span>
         <input
+          v-model="uri"
           type="text"
           class="search-input"
           placeholder="Enter a music track URI..."
-          v-model="uri"
           :disabled="isLoading"
         />
         <Transition name="fade">
@@ -36,12 +36,12 @@ const { showOnlyCurrentSession } = storeToRefs(sessionStore);
       </div>
       <div
         class="history-toggle"
-        @click="sessionStore.toggleSessionFilter"
         title="Toggle between all history and current session"
+        @click="sessionStore.toggleSessionFilter"
       >
         <span class="toggle-label">all history</span>
         <div class="toggle-switch" :class="{ on: !showOnlyCurrentSession }">
-          <div class="toggle-button"></div>
+          <div class="toggle-button" />
         </div>
       </div>
     </form>

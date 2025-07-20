@@ -64,7 +64,7 @@ export class ItunesClient {
           } else {
             resolve(data.results[0]);
           }
-        },
+        }
       );
     });
   }
@@ -107,7 +107,7 @@ export class ItunesClient {
             const found = data.resultCount < 1 ? null : data.results[0];
             resolve(found);
           }
-        },
+        }
       );
     });
   }

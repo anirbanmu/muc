@@ -24,7 +24,7 @@ export class BackendMediaService extends MediaService {
     deezerClient: DeezerClient,
     itunesClient: ItunesClient,
     spotifyClient?: SpotifyClient,
-    youtubeClient?: YoutubeClient,
+    youtubeClient?: YoutubeClient
   ) {
     super();
     this.deezerClient = deezerClient;
@@ -35,40 +35,31 @@ export class BackendMediaService extends MediaService {
 
   public static async create(
     spotifyCredentials?: SpotifyClientCredentials,
-    youtubeApiKey?: string,
+    youtubeApiKey?: string
   ): Promise<BackendMediaService> {
-    const spotifyClient = spotifyCredentials
-      ? await SpotifyClient.create(spotifyCredentials)
-      : undefined;
+    const spotifyClient = spotifyCredentials ? await SpotifyClient.create(spotifyCredentials) : undefined;
 
     const youtubeClient = youtubeApiKey ? new YoutubeClient(youtubeApiKey) : undefined;
-    return new BackendMediaService(
-      new DeezerClient(),
-      new ItunesClient(),
-      spotifyClient,
-      youtubeClient,
-    );
+    return new BackendMediaService(new DeezerClient(), new ItunesClient(), spotifyClient, youtubeClient);
   }
 
   public static createWithClients(
     deezerClient?: DeezerClient,
     itunesClient?: ItunesClient,
     spotifyClient?: SpotifyClient,
-    youtubeClient?: YoutubeClient,
+    youtubeClient?: YoutubeClient
   ): BackendMediaService {
     return new BackendMediaService(
       deezerClient ?? new DeezerClient(),
       itunesClient ?? new ItunesClient(),
       spotifyClient,
-      youtubeClient,
+      youtubeClient
     );
   }
 
   public async getSpotifyTrackDetails(uri: string): Promise<SpotifyNormalizedTrack> {
     if (!this.spotifyClient) {
-      throw new Error(
-        'Spotify client ID and/or secret not configured. Cannot fetch track details.',
-      );
+      throw new Error('Spotify client ID and/or secret not configured. Cannot fetch track details.');
     }
     const track: SpotifyTrack = await this.spotifyClient.getTrackDetails(uri);
     return mapSpotifyTrackToNormalizedTrack(track);
@@ -85,9 +76,7 @@ export class BackendMediaService extends MediaService {
 
   public async getYoutubeVideoDetails(uri: string): Promise<YoutubeNormalizedTrack> {
     if (!this.youtubeClient) {
-      throw new Error(
-        'YouTube client not initialized. Check API key configuration. Cannot fetch video details.',
-      );
+      throw new Error('YouTube client not initialized. Check API key configuration. Cannot fetch video details.');
     }
     const video: YoutubeVideoDetails = await this.youtubeClient.getVideoDetails(uri);
     return mapYoutubeVideoToNormalizedTrack(video);
@@ -95,9 +84,7 @@ export class BackendMediaService extends MediaService {
 
   public async searchYoutubeVideos(query: string): Promise<YoutubeNormalizedTrack | null> {
     if (!this.youtubeClient) {
-      console.warn(
-        'YouTube client not initialized. Check API key configuration. Skipping YouTube search.',
-      );
+      console.warn('YouTube client not initialized. Check API key configuration. Skipping YouTube search.');
       return null;
     }
     const video: YoutubeSearchResultItem | null = await this.youtubeClient.searchVideos(query);

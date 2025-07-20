@@ -49,12 +49,12 @@ export function storagePlugin({ store, options }: PiniaPluginContext) {
         } catch (e) {
           console.warn(
             `Failed to parse stored data for store "${store.$id}" from localStorage. The data may be corrupt.`,
-            e,
+            e
           );
           localStorage.removeItem(key);
         }
       }
-    } catch (e) {
+    } catch {
       console.warn('localStorage is not available. State will not be persisted.');
     }
 

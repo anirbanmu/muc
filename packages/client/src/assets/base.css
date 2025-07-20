@@ -21,8 +21,8 @@
   --transition-all: all var(--transition-base);
   --transition-opacity: opacity var(--transition-base);
   --transition-colors:
-    background-color var(--transition-base), color var(--transition-base),
-    border-color var(--transition-base), box-shadow var(--transition-base);
+    background-color var(--transition-base), color var(--transition-base), border-color var(--transition-base),
+    box-shadow var(--transition-base);
 
   /* Platform Colors */
   --color-platform-spotify: #2ed760;

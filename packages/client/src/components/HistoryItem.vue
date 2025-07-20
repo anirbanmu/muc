@@ -56,11 +56,11 @@ function copyShareLink(searchItem: SearchHistoryItem) {
         <div class="actions">
           <span v-if="formattedTimestamp" class="timestamp">{{ formattedTimestamp }}</span>
           <button
-            @click="copyShareLink(search)"
             class="share-button"
             :class="{ copied: isCopied }"
             :disabled="isCopied"
             title="Share this search"
+            @click="copyShareLink(search)"
           >
             <span v-if="isCopied">Copied!</span>
             <span v-else>[Share]</span>

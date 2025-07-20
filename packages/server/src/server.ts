@@ -44,11 +44,7 @@ async function start(): Promise<void> {
   app.set('trust proxy', 1);
 
   // Morgan request logging with prefix and optional color
-  app.use(
-    morgan(
-      requestPrefix + ':method :url :status :res[content-length] - :response-time ms :user-agent',
-    ),
-  );
+  app.use(morgan(requestPrefix + ':method :url :status :res[content-length] - :response-time ms :user-agent'));
 
   // Enforce HTTPS (redirect HTTP to HTTPS if behind proxy)
   app.use((req, res, next) => {
@@ -61,8 +57,7 @@ async function start(): Promise<void> {
   const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
   const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
   const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
-  const CLIENT_DIST_PATH =
-    process.env.CLIENT_DIST_PATH || path.resolve(__dirname, '../../client/dist');
+  const CLIENT_DIST_PATH = process.env.CLIENT_DIST_PATH || path.resolve(__dirname, '../../client/dist');
 
   app.use(
     helmet({
@@ -71,7 +66,7 @@ async function start(): Promise<void> {
           'script-src': ["'self'", 'https://api.deezer.com', 'https://itunes.apple.com'],
         },
       },
-    }),
+    })
   );
   app.use(compression());
   app.use(express.json());
@@ -85,13 +80,13 @@ async function start(): Promise<void> {
 
   // Create a allowlist of full origins, including both http and https protocols for local development.
   const allowedOrigins: string[] = [
-    ...localHosts.map(host => `http://${host}`),
-    ...localHosts.map(host => `https://${host}`),
+    ...localHosts.map((host) => `http://${host}`),
+    ...localHosts.map((host) => `https://${host}`),
   ];
 
   if (process.env.NODE_ENV !== 'development' && CORS_ALLOWED_ORIGIN) {
     // In production, add specific origins from a comma-separated environment variable.
-    allowedOrigins.push(...CORS_ALLOWED_ORIGIN.split(',').map(origin => origin.trim()));
+    allowedOrigins.push(...CORS_ALLOWED_ORIGIN.split(',').map((origin) => origin.trim()));
   }
 
   app.use(
@@ -104,7 +99,7 @@ async function start(): Promise<void> {
           callback(new Error('This origin is not allowed by CORS configuration.'));
         }
       },
-    }),
+    })
   );
 
   app.use(
@@ -115,7 +110,7 @@ async function start(): Promise<void> {
       message: 'Too many requests from this IP, please try again after 15 minutes.',
       standardHeaders: true,
       legacyHeaders: false,
-    }),
+    })
   );
 
   // Enforce JSON content type for POST requests to API endpoints.
@@ -134,9 +129,7 @@ async function start(): Promise<void> {
   let mediaService: BackendMediaService;
   try {
     if (!SPOTIFY_CLIENT_ID || !SPOTIFY_CLIENT_SECRET) {
-      console.warn(
-        'Spotify API credentials not fully configured. Spotify features might be unavailable.',
-      );
+      console.warn('Spotify API credentials not fully configured. Spotify features might be unavailable.');
     }
     if (!YOUTUBE_API_KEY) {
       console.warn('YouTube API key not configured. YouTube features might be unavailable.');
@@ -146,7 +139,7 @@ async function start(): Promise<void> {
       SPOTIFY_CLIENT_ID && SPOTIFY_CLIENT_SECRET
         ? { clientId: SPOTIFY_CLIENT_ID, clientSecret: SPOTIFY_CLIENT_SECRET }
         : undefined,
-      YOUTUBE_API_KEY,
+      YOUTUBE_API_KEY
     );
   } catch (error) {
     console.error('Failed to initialize BackendMediaService:', error);
@@ -174,13 +167,10 @@ async function start(): Promise<void> {
   app.listen(port, () => {
     logApp(`Server running on http://localhost:${port}`);
     logApp(`Serving client assets from: ${CLIENT_DIST_PATH}`);
-    if (
-      process.env.NODE_ENV !== 'production' &&
-      (!SPOTIFY_CLIENT_ID || !SPOTIFY_CLIENT_SECRET || !YOUTUBE_API_KEY)
-    ) {
+    if (process.env.NODE_ENV !== 'production' && (!SPOTIFY_CLIENT_ID || !SPOTIFY_CLIENT_SECRET || !YOUTUBE_API_KEY)) {
       logError('\n--- WARNING: API credentials unconfigured ---');
       logError(
-        '  Some media service features (Spotify, YouTube) may be unavailable until you configure the following environment variables:',
+        '  Some media service features (Spotify, YouTube) may be unavailable until you configure the following environment variables:'
       );
       logError('  SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, YOUTUBE_API_KEY');
       logError('  You can set these in a `.env` file in the `packages/server` directory.');
@@ -189,7 +179,7 @@ async function start(): Promise<void> {
   });
 }
 
-start().catch(error => {
+start().catch((error) => {
   logError('Error starting server:', error instanceof Error ? error.message : error);
   process.exit(1);
 });

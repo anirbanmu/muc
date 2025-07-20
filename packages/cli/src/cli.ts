@@ -23,13 +23,11 @@ async function main() {
   // Warn if essential keys are missing. For CLI, we can be strict about informing the user.
   if (!spotifyConfig) {
     console.warn(
-      'Warning: SPOTIFY_CLIENT_ID and/or SPOTIFY_CLIENT_SECRET environment variables not set. Spotify features may not work.',
+      'Warning: SPOTIFY_CLIENT_ID and/or SPOTIFY_CLIENT_SECRET environment variables not set. Spotify features may not work.'
     );
   }
   if (!youtubeApiKey) {
-    console.warn(
-      'Warning: YOUTUBE_API_KEY environment variable not set. YouTube features may not work.',
-    );
+    console.warn('Warning: YOUTUBE_API_KEY environment variable not set. YouTube features may not work.');
   }
 
   const backendMediaService = await BackendMediaService.create(spotifyConfig, youtubeApiKey);
@@ -40,8 +38,7 @@ async function main() {
     console.log(`${prefix}Artist: ${track.artistName}`);
     console.log(`${prefix}Source URL: ${track.sourceUrl}`);
     if ('albumName' in track && track.albumName) console.log(`${prefix}Album: ${track.albumName}`);
-    if ('artistUrl' in track && track.artistUrl)
-      console.log(`${prefix}Artist URL: ${track.artistUrl}`);
+    if ('artistUrl' in track && track.artistUrl) console.log(`${prefix}Artist URL: ${track.artistUrl}`);
   };
 
   try {
