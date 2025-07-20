@@ -5,7 +5,7 @@ describe('ItunesClient', () => {
   describe('parseId', () => {
     it('should correctly parse valid iTunes track URIs/URLs', () => {
       expect(ItunesClient.parseId('https://music.apple.com/us/album/unwritten-ep/1440810457?i=1440810461')).toBe(
-        '1440810461'
+        '1440810461',
       );
       expect(ItunesClient.parseId('https://itunes.apple.com/us/album/some-album/id12345?i=67890')).toBe('67890');
       expect(ItunesClient.parseId('https://itunes.apple.com/jp/album/foo/id999?i=111222')).toBe('111222');
@@ -25,7 +25,7 @@ describe('ItunesClient', () => {
     it('should return true for parsable iTunes track URIs/URLs', () => {
       // URL format matching the regex /album\/.+i=(\d+)/
       expect(ItunesClient.isUriParsable('https://music.apple.com/us/album/unwritten-ep/1440810457?i=1440810461')).toBe(
-        true
+        true,
       );
       expect(ItunesClient.isUriParsable('https://itunes.apple.com/us/album/some-album/id12345?i=67890')).toBe(true);
       expect(ItunesClient.isUriParsable('https://itunes.apple.com/jp/album/foo/id999?i=111222')).toBe(true);

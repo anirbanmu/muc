@@ -88,22 +88,22 @@ describe('TrackIdentifier', () => {
   describe('reconstructUriFromComponents', () => {
     it('should reconstruct correct URIs for each platform', () => {
       expect(TrackIdentifier.reconstructUriFromComponents('spotify', '4BFd6LqI5Nf9h7Xm9tK3dY')).toBe(
-        'https://open.spotify.com/track/4BFd6LqI5Nf9h7Xm9tK3dY'
+        'https://open.spotify.com/track/4BFd6LqI5Nf9h7Xm9tK3dY',
       );
       expect(TrackIdentifier.reconstructUriFromComponents('deezer', '123456')).toBe(
-        'https://www.deezer.com/track/123456'
+        'https://www.deezer.com/track/123456',
       );
       expect(TrackIdentifier.reconstructUriFromComponents('itunes', '789012')).toBe(
-        'https://music.apple.com/album/id789012'
+        'https://music.apple.com/album/id789012',
       );
       expect(TrackIdentifier.reconstructUriFromComponents('youtube', 'dQw4w9WgXcQ')).toBe(
-        'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+        'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
       );
     });
 
     it('should trim whitespace from platform ID', () => {
       expect(TrackIdentifier.reconstructUriFromComponents('spotify', '  4BFd6LqI5Nf9h7Xm9tK3dY  ')).toBe(
-        'https://open.spotify.com/track/4BFd6LqI5Nf9h7Xm9tK3dY'
+        'https://open.spotify.com/track/4BFd6LqI5Nf9h7Xm9tK3dY',
       );
     });
 
@@ -252,7 +252,7 @@ describe('TrackIdentifier', () => {
     it('should handle edge case IDs consistently', () => {
       const edgeCaseIds = ['', '   ', '123', 'a', 'very-long-id-with-special-chars-123456789'];
 
-      edgeCaseIds.forEach((id) => {
+      edgeCaseIds.forEach(id => {
         if (id.trim() === '') {
           // Should throw for empty IDs
           expect(() => TrackIdentifier.generateUniqueId('spotify', id)).toThrow();

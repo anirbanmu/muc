@@ -1,6 +1,7 @@
 import type { PiniaPluginContext, StateTree } from 'pinia';
 
 declare module 'pinia' {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   export interface DefineStoreOptionsBase<S, Store> {
     /**
      * Configuration for localStorage persistence
@@ -49,7 +50,7 @@ export function storagePlugin({ store, options }: PiniaPluginContext) {
         } catch (e) {
           console.warn(
             `Failed to parse stored data for store "${store.$id}" from localStorage. The data may be corrupt.`,
-            e
+            e,
           );
           localStorage.removeItem(key);
         }

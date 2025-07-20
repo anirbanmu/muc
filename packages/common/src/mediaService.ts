@@ -106,7 +106,7 @@ export abstract class MediaService {
           console.error('Spotify search failed:', error);
           return null;
         }
-      })()
+      })(),
     );
 
     searchPromises.push(
@@ -117,7 +117,7 @@ export abstract class MediaService {
           console.error('Youtube search failed:', error);
           return null;
         }
-      })()
+      })(),
     );
 
     searchPromises.push(
@@ -128,7 +128,7 @@ export abstract class MediaService {
           console.error('Deezer search failed:', error);
           return null;
         }
-      })()
+      })(),
     );
 
     searchPromises.push(
@@ -139,7 +139,7 @@ export abstract class MediaService {
           console.error('iTunes search failed:', error);
           return null;
         }
-      })()
+      })(),
     );
 
     const allSearchResults = await Promise.allSettled(searchPromises);
@@ -167,7 +167,7 @@ export abstract class MediaService {
             console.error('Spotify search failed:', error);
             return null;
           }
-        })()
+        })(),
       );
     }
 
@@ -180,7 +180,7 @@ export abstract class MediaService {
             console.error('Youtube search failed:', error);
             return null;
           }
-        })()
+        })(),
       );
     }
 
@@ -193,7 +193,7 @@ export abstract class MediaService {
             console.error('Deezer search failed:', error);
             return null;
           }
-        })()
+        })(),
       );
     }
 
@@ -206,7 +206,7 @@ export abstract class MediaService {
             console.error('iTunes search failed:', error);
             return null;
           }
-        })()
+        })(),
       );
     }
 

@@ -7,11 +7,11 @@ describe('SpotifyClient', () => {
       expect(SpotifyClient.parseTrackId('spotify:track:4BFd6LqI5Nf9h7Xm9tK3dY')).toBe('4BFd6LqI5Nf9h7Xm9tK3dY');
       expect(
         SpotifyClient.parseTrackId(
-          'https://open.spotify.com/track/4BFd6LqI5Nf9h7Xm9tK3dY?si=example&utm_source=copy-link'
-        )
+          'https://open.spotify.com/track/4BFd6LqI5Nf9h7Xm9tK3dY?si=example&utm_source=copy-link',
+        ),
       ).toBe('4BFd6LqI5Nf9h7Xm9tK3dY');
       expect(SpotifyClient.parseTrackId('https://open.spotify.com/track/1PjdBtE4b0XnDj7rR3X4G5')).toBe(
-        '1PjdBtE4b0XnDj7rR3X4G5'
+        '1PjdBtE4b0XnDj7rR3X4G5',
       );
     });
 
@@ -29,7 +29,7 @@ describe('SpotifyClient', () => {
     it('should return true for parsable Spotify track URIs/URLs', () => {
       expect(SpotifyClient.isUriParsable('spotify:track:4BFd6LqI5Nf9h7Xm9tK3dY')).toBe(true);
       expect(SpotifyClient.isUriParsable('https://open.spotify.com/track/4BFd6LqI5Nf9h7Xm9tK3dY?si=example')).toBe(
-        true
+        true,
       );
       expect(SpotifyClient.isUriParsable('https://open.spotify.com/track/1PjdBtE4b0XnDj7rR3X4G5')).toBe(true);
     });

@@ -93,7 +93,7 @@ function getYoutubeId(video: YoutubeVideoDetails | YoutubeSearchResultItem): str
 }
 
 export function mapYoutubeVideoToNormalizedTrack(
-  video: YoutubeVideoDetails | YoutubeSearchResultItem
+  video: YoutubeVideoDetails | YoutubeSearchResultItem,
 ): YoutubeNormalizedTrack {
   const videoId = getYoutubeId(video);
   const title = video.snippet.title;

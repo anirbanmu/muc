@@ -85,7 +85,7 @@ export class DeezerClient {
           } else {
             resolve(data);
           }
-        }
+        },
       );
     });
   }
@@ -103,7 +103,7 @@ export class DeezerClient {
             const found = data.total < 1 ? null : data.data[0];
             resolve(found);
           }
-        }
+        },
       );
     });
   }

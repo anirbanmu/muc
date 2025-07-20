@@ -12,6 +12,27 @@ const config = [
   // Vue-specific configuration
   ...pluginVue.configs['flat/recommended'],
 
+  // Vue formatting rules that work better with Prettier
+  {
+    files: ['**/*.vue'],
+    rules: {
+      // Relax Vue formatting rules that conflict with Prettier
+      'vue/max-attributes-per-line': 'off',
+      'vue/html-self-closing': [
+        'error',
+        {
+          html: {
+            void: 'any', // Allow both self-closing and non-self-closing for void elements
+            normal: 'always',
+            component: 'always',
+          },
+          svg: 'always',
+          math: 'always',
+        },
+      ],
+    },
+  },
+
   // Configure Vue files with TypeScript parser
   {
     files: ['**/*.vue'],

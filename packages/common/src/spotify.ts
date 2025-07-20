@@ -68,7 +68,7 @@ export class SpotifyClient {
     console.log('Refreshing Spotify access token...');
     const auth: SpotifyClientCredentialsToken = await SpotifyClient.getClientCredentialsToken(
       this.clientId,
-      this.clientSecret
+      this.clientSecret,
     );
     this.accessToken = auth.access_token;
     this.tokenExpiry = Date.now() + auth.expires_in * 1000;
@@ -107,7 +107,7 @@ export class SpotifyClient {
 
   private static async getClientCredentialsToken(
     clientId: string,
-    clientSecret: string
+    clientSecret: string,
   ): Promise<SpotifyClientCredentialsToken> {
     const base64Encoded = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
 

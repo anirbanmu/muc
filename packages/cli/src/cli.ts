@@ -23,7 +23,7 @@ async function main() {
   // Warn if essential keys are missing. For CLI, we can be strict about informing the user.
   if (!spotifyConfig) {
     console.warn(
-      'Warning: SPOTIFY_CLIENT_ID and/or SPOTIFY_CLIENT_SECRET environment variables not set. Spotify features may not work.'
+      'Warning: SPOTIFY_CLIENT_ID and/or SPOTIFY_CLIENT_SECRET environment variables not set. Spotify features may not work.',
     );
   }
   if (!youtubeApiKey) {

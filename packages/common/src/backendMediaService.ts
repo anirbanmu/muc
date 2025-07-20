@@ -24,7 +24,7 @@ export class BackendMediaService extends MediaService {
     deezerClient: DeezerClient,
     itunesClient: ItunesClient,
     spotifyClient?: SpotifyClient,
-    youtubeClient?: YoutubeClient
+    youtubeClient?: YoutubeClient,
   ) {
     super();
     this.deezerClient = deezerClient;
@@ -35,7 +35,7 @@ export class BackendMediaService extends MediaService {
 
   public static async create(
     spotifyCredentials?: SpotifyClientCredentials,
-    youtubeApiKey?: string
+    youtubeApiKey?: string,
   ): Promise<BackendMediaService> {
     const spotifyClient = spotifyCredentials ? await SpotifyClient.create(spotifyCredentials) : undefined;
 
@@ -47,13 +47,13 @@ export class BackendMediaService extends MediaService {
     deezerClient?: DeezerClient,
     itunesClient?: ItunesClient,
     spotifyClient?: SpotifyClient,
-    youtubeClient?: YoutubeClient
+    youtubeClient?: YoutubeClient,
   ): BackendMediaService {
     return new BackendMediaService(
       deezerClient ?? new DeezerClient(),
       itunesClient ?? new ItunesClient(),
       spotifyClient,
-      youtubeClient
+      youtubeClient,
     );
   }
 
