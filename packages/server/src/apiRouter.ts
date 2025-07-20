@@ -46,10 +46,10 @@ export class ApiRouter {
   }
 
   private getSpotifyTrackDetails = async (
-    req: Request<any, any, UriRequestBody>,
+    req: Request,
     res: Response<GetSpotifyTrackDetailsResponse | ErrorResponse>
   ) => {
-    const { uri } = req.body;
+    const { uri } = req.body as UriRequestBody;
     if (!uri) {
       res.status(400).json({ message: 'Request body must contain a "uri" field.' });
       return;
@@ -77,10 +77,10 @@ export class ApiRouter {
   };
 
   private searchSpotifyTracks = async (
-    req: Request<any, any, QueryRequestBody>,
+    req: Request,
     res: Response<SearchSpotifyTracksResponse | ErrorResponse>
   ) => {
-    const { query } = req.body;
+    const { query } = req.body as QueryRequestBody;
     if (!query) {
       res.status(400).json({ message: 'Request body must contain a "query" field.' });
       return;
@@ -104,10 +104,10 @@ export class ApiRouter {
   };
 
   private getYoutubeVideoDetails = async (
-    req: Request<any, any, UriRequestBody>,
+    req: Request,
     res: Response<GetYoutubeVideoDetailsResponse | ErrorResponse>
   ) => {
-    const { uri } = req.body;
+    const { uri } = req.body as UriRequestBody;
     if (!uri) {
       res.status(400).json({ message: 'Request body must contain a "uri" field.' });
       return;
@@ -135,10 +135,10 @@ export class ApiRouter {
   };
 
   private searchYoutubeVideos = async (
-    req: Request<any, any, QueryRequestBody>,
+    req: Request,
     res: Response<SearchYoutubeVideosResponse | ErrorResponse>
   ) => {
-    const { query } = req.body;
+    const { query } = req.body as QueryRequestBody;
     if (!query) {
       res.status(400).json({ message: 'Request body must contain a "query" field.' });
       return;

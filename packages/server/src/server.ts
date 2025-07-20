@@ -15,10 +15,10 @@ const appPrefix = colorSupported ? '\x1b[32m[APP]\x1b[0m' : '[APP]';
 const errorPrefix = colorSupported ? '\x1b[31m[ERR]\x1b[0m' : '[ERR]';
 const requestPrefix = colorSupported ? '\x1b[36m[REQ]\x1b[0m ' : '[REQ] ';
 
-function logApp(...args: any[]) {
+function logApp(...args: unknown[]) {
   originalConsoleLog(appPrefix, ...args);
 }
-function logError(...args: any[]) {
+function logError(...args: unknown[]) {
   originalConsoleError(errorPrefix, ...args);
 }
 
@@ -27,10 +27,10 @@ const originalConsoleLog = console.log;
 const originalConsoleError = console.error;
 
 // Override global console methods to prefix all logs
-console.log = (...args: any[]) => {
+console.log = (...args: unknown[]) => {
   originalConsoleLog(appPrefix, ...args);
 };
-console.error = (...args: any[]) => {
+console.error = (...args: unknown[]) => {
   originalConsoleError(errorPrefix, ...args);
 };
 
@@ -159,7 +159,7 @@ async function start(): Promise<void> {
   // Centralized error handling middleware.
   // Catches errors passed from async handlers or other middleware.
   // Parameters are typed with `_` prefix to indicate they are unused in this specific handler, improving readability.
-  app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
+  app.use((err: Error, _req: Request, res: Response) => {
     logError('Unhandled server error:', err instanceof Error ? err.message : err);
     res.status(500).json({ message: 'An unexpected internal server error occurred.' });
   });
