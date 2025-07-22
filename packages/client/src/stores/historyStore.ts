@@ -15,6 +15,15 @@ function isValidHistoryItem(item: unknown): item is SearchHistoryItem {
     typeof item.id === 'string' &&
     'uri' in item &&
     typeof item.uri === 'string' &&
+    'sourceTrack' in item &&
+    typeof item.sourceTrack === 'object' &&
+    item.sourceTrack !== null &&
+    'platform' in item.sourceTrack &&
+    typeof item.sourceTrack.platform === 'string' &&
+    'platformId' in item.sourceTrack &&
+    typeof item.sourceTrack.platformId === 'string' &&
+    'uniqueId' in item.sourceTrack &&
+    typeof item.sourceTrack.uniqueId === 'string' &&
     'timestamp' in item &&
     typeof item.timestamp === 'number' &&
     'results' in item &&
@@ -28,9 +37,7 @@ function isValidHistoryItem(item: unknown): item is SearchHistoryItem {
         'platform' in result &&
         typeof result.platform === 'string' &&
         'resultId' in result &&
-        typeof result.resultId === 'number' &&
-        // Validate optional isSource field
-        (result.isSource === undefined || typeof result.isSource === 'boolean'),
+        typeof result.resultId === 'number',
     )
   );
 }

@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { v4 as uuidv4 } from 'uuid';
 import { mediaService } from '../services/mediaService.js';
 import type { AnyNormalizedTrack } from '@muc/common';
+import { TrackIdentifier } from '@muc/common';
 import type { SearchHistoryItem } from './types.js';
 import { useHistoryStore } from './historyStore.js';
 import { useSessionStore } from './sessionStore.js';
@@ -35,9 +36,9 @@ export const useSearchStore = defineStore('search', {
       const originalUri = this.uri;
 
       try {
-        const results = await this.performSearch(originalUri);
-        const newId = this.saveSearchResults(originalUri, results);
-        this.uri = ''; // Clear input after successful search
+        const { results, sourceTrack } = await this.performSearch(originalUri);
+        const newId = this.saveSearchResults(originalUri, results, sourceTrack);
+        this.uri = '';
         return newId;
       } catch (e) {
         this.handleSearchError(e);
@@ -46,51 +47,43 @@ export const useSearchStore = defineStore('search', {
       }
     },
 
-    async performSearch(uri: string): Promise<AnyNormalizedTrack[]> {
-      // 1. Get details of the source track from the URI
+    async performSearch(uri: string): Promise<{ results: AnyNormalizedTrack[]; sourceTrack: TrackIdentifier }> {
       const sourceTrack = await mediaService.getTrackDetails(uri);
+      const trackIdentifier = TrackIdentifier.fromNormalizedTrack(sourceTrack);
 
-      // 2. Mark the source track with isSource flag
-      const markedSourceTrack = { ...sourceTrack, isSource: true };
-
-      // 3. Search on all other platforms
       const searchResults = await mediaService.searchOtherPlatforms(sourceTrack);
 
-      // 4. Combine, de-duplicate, and sort results
-      return this.processSearchResults([markedSourceTrack, ...searchResults]);
+      const processedResults = this.processSearchResults([sourceTrack, ...searchResults], trackIdentifier.uniqueId);
+
+      return { results: processedResults, sourceTrack: trackIdentifier };
     },
 
-    processSearchResults(tracks: AnyNormalizedTrack[]): AnyNormalizedTrack[] {
-      // Use Map for efficient O(n) deduplication by uniqueId
+    processSearchResults(tracks: AnyNormalizedTrack[], sourceTrackId: string): AnyNormalizedTrack[] {
       const trackMap = new Map<string, AnyNormalizedTrack>();
 
       for (const track of tracks) {
         const existing = trackMap.get(track.uniqueId);
         if (!existing) {
           trackMap.set(track.uniqueId, track);
-        } else if (track.isSource && !existing.isSource) {
-          // Preserve source track if duplicate found
+        } else if (track.uniqueId === sourceTrackId && existing.uniqueId !== sourceTrackId) {
           trackMap.set(track.uniqueId, track);
         }
       }
 
-      // Convert back to array and sort
       const uniqueTracks = Array.from(trackMap.values());
-      return this.sortResults(uniqueTracks);
+      return this.sortResults(uniqueTracks, sourceTrackId);
     },
 
-    sortResults(tracks: AnyNormalizedTrack[]): AnyNormalizedTrack[] {
+    sortResults(tracks: AnyNormalizedTrack[], sourceTrackId: string): AnyNormalizedTrack[] {
       return tracks.sort((a, b) => {
-        // Source track always comes first
-        if (a.isSource && !b.isSource) return -1;
-        if (!a.isSource && b.isSource) return 1;
+        if (a.uniqueId === sourceTrackId && b.uniqueId !== sourceTrackId) return -1;
+        if (a.uniqueId !== sourceTrackId && b.uniqueId === sourceTrackId) return 1;
 
-        // Then sort by platform order
         return platformOrder.indexOf(a.platform) - platformOrder.indexOf(b.platform);
       });
     },
 
-    saveSearchResults(uri: string, results: AnyNormalizedTrack[]): string {
+    saveSearchResults(uri: string, results: AnyNormalizedTrack[], sourceTrack: TrackIdentifier): string {
       const historyStore = useHistoryStore();
       const sessionStore = useSessionStore();
 
@@ -98,6 +91,7 @@ export const useSearchStore = defineStore('search', {
       const newHistoryItem: SearchHistoryItem = {
         id: newId,
         uri,
+        sourceTrack,
         results: results.map((track, index) => ({ ...track, resultId: index })),
         timestamp: Date.now(),
       };

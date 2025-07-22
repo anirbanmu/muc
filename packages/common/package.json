@@ -19,6 +19,7 @@
     "build": "tsc -b",
     "dev": "tsc -w",
     "test": "vitest --run",
+    "test:watch": "vitest",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write . --ignore-path ../../.prettierignore",

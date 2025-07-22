@@ -11,7 +11,6 @@ export interface NormalizedTrack {
   artistName: string;
   sourceUrl: string;
   uniqueId: string;
-  isSource?: boolean;
 }
 
 export interface SpotifyNormalizedTrack extends NormalizedTrack {

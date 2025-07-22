@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { Base64 } from 'js-base64';
 import type { SearchHistoryItem } from '../stores/types.js';
 import ResultItem from './ResultItem.vue';
 import { useCopyFeedback } from '../composables/useCopyFeedback';
+import { ShareLinkEncoder } from '../services/shareLinks.js';
 
 const props = defineProps<{
   search: SearchHistoryItem;
@@ -37,11 +37,8 @@ const formattedTimestamp = computed(() => {
 });
 
 function copyShareLink(searchItem: SearchHistoryItem) {
-  const encodedUri = Base64.encodeURI(searchItem.uri);
-  const url = new URL(window.location.origin + window.location.pathname);
-  url.searchParams.set('q', encodedUri);
-
-  copy(() => navigator.clipboard.writeText(url.toString()));
+  const shareUrl = ShareLinkEncoder.createShareUrl(searchItem.sourceTrack);
+  copy(() => navigator.clipboard.writeText(shareUrl));
 }
 </script>
 

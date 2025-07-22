@@ -5,7 +5,7 @@ import { createPinia } from 'pinia';
 import App from './App.vue';
 import { useSearchStore } from './stores/searchStore.js';
 import { storagePlugin } from './stores/plugins/storagePlugin.js';
-import { Base64 } from 'js-base64';
+import { ShareLinkEncoder } from './services/shareLinks.js';
 
 const app = createApp(App);
 
@@ -15,20 +15,17 @@ app.use(pinia);
 
 app.mount('#app');
 
-// After mounting, we can access the store and check for shared links.
 const searchStore = useSearchStore();
 const params = new URLSearchParams(window.location.search);
-const encodedUriParam = params.get('q');
+const encodedParam = params.get('q');
 
-if (encodedUriParam) {
+if (encodedParam) {
   (async () => {
     try {
-      const decodedUri = Base64.decode(encodedUriParam);
-      // Always perform a new search for the shared link.
-      searchStore.uri = decodedUri;
+      const uri = ShareLinkEncoder.reconstructUriFromEncoded(encodedParam);
+      searchStore.uri = uri;
       await searchStore.search();
 
-      // Clean the URL to avoid re-triggering on refresh or confusing the user.
       window.history.replaceState({}, document.title, window.location.pathname);
     } catch (e) {
       console.error('Failed to decode or process shared query:', e);
