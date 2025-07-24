@@ -2,15 +2,15 @@ import './assets/main.css';
 
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
+import { createPersistedState } from 'pinia-plugin-persistedstate';
 import App from './App.vue';
 import { useSearchStore } from './stores/searchStore.js';
-import { storagePlugin } from './stores/plugins/storagePlugin.js';
 import { ShareLinkEncoder } from './services/shareLinks.js';
 
 const app = createApp(App);
 
 const pinia = createPinia();
-pinia.use(storagePlugin);
+pinia.use(createPersistedState());
 app.use(pinia);
 
 app.mount('#app');

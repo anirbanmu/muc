@@ -43,18 +43,47 @@ function isValidHistoryItem(item: unknown): item is SearchHistoryItem {
 }
 
 export const useHistoryStore = defineStore('history', {
-  persistToStorage: {
-    key: 'muc-search-history',
-    validate: (data: unknown): data is HistoryState =>
-      typeof data === 'object' &&
-      data !== null &&
-      'items' in data &&
-      Array.isArray(data.items) &&
-      data.items.every(isValidHistoryItem),
-  },
   state: (): HistoryState => ({
     items: [],
   }),
+
+  persist: {
+    key: 'muc-search-history',
+    serializer: {
+      deserialize: (value: string): HistoryState => {
+        try {
+          const parsed = JSON.parse(value);
+          // Validate the parsed data
+          if (
+            typeof parsed === 'object' &&
+            parsed !== null &&
+            'items' in parsed &&
+            Array.isArray(parsed.items) &&
+            parsed.items.every(isValidHistoryItem)
+          ) {
+            return parsed;
+          }
+          // If validation fails, clear the corrupted data and return default state
+          console.warn('Invalid stored history data, clearing localStorage and using default state');
+          try {
+            localStorage.removeItem('muc-search-history');
+          } catch {
+            // Silently ignore localStorage removal failures
+          }
+          return { items: [] };
+        } catch (e) {
+          console.warn('Failed to parse stored history data, clearing localStorage:', e);
+          try {
+            localStorage.removeItem('muc-search-history');
+          } catch {
+            // Silently ignore localStorage removal failures
+          }
+          return { items: [] };
+        }
+      },
+      serialize: JSON.stringify,
+    },
+  },
 
   getters: {
     filteredHistory: state => {
