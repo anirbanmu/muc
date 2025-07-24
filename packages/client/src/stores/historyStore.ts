@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { TrackIdentifier } from '@muc/common';
 import type { SearchHistoryItem } from './types.js';
 
 const MAX_HISTORY_ITEMS = 10;
@@ -7,7 +8,35 @@ interface HistoryState {
   items: SearchHistoryItem[];
 }
 
-function isValidHistoryItem(item: unknown): item is SearchHistoryItem {
+interface StorageHistoryItem {
+  id: string;
+  uri: string;
+  sourceTrackUniqueId: string;
+  results: SearchHistoryItem['results'];
+  timestamp: number;
+}
+
+function toStorageFormat(item: SearchHistoryItem): StorageHistoryItem {
+  return {
+    id: item.id,
+    uri: item.uri,
+    sourceTrackUniqueId: item.sourceTrack.uniqueId,
+    results: item.results,
+    timestamp: item.timestamp,
+  };
+}
+
+function fromStorageFormat(storageItem: StorageHistoryItem): SearchHistoryItem {
+  return {
+    id: storageItem.id,
+    uri: storageItem.uri,
+    sourceTrack: TrackIdentifier.fromUniqueId(storageItem.sourceTrackUniqueId),
+    results: storageItem.results,
+    timestamp: storageItem.timestamp,
+  };
+}
+
+function isValidStorageHistoryItem(item: unknown): item is StorageHistoryItem {
   return (
     typeof item === 'object' &&
     item !== null &&
@@ -15,15 +44,9 @@ function isValidHistoryItem(item: unknown): item is SearchHistoryItem {
     typeof item.id === 'string' &&
     'uri' in item &&
     typeof item.uri === 'string' &&
-    'sourceTrack' in item &&
-    typeof item.sourceTrack === 'object' &&
-    item.sourceTrack !== null &&
-    'platform' in item.sourceTrack &&
-    typeof item.sourceTrack.platform === 'string' &&
-    'platformId' in item.sourceTrack &&
-    typeof item.sourceTrack.platformId === 'string' &&
-    'uniqueId' in item.sourceTrack &&
-    typeof item.sourceTrack.uniqueId === 'string' &&
+    'sourceTrackUniqueId' in item &&
+    typeof item.sourceTrackUniqueId === 'string' &&
+    TrackIdentifier.isValidUniqueId(item.sourceTrackUniqueId) &&
     'timestamp' in item &&
     typeof item.timestamp === 'number' &&
     'results' in item &&
@@ -53,17 +76,16 @@ export const useHistoryStore = defineStore('history', {
       deserialize: (value: string): HistoryState => {
         try {
           const parsed = JSON.parse(value);
-          // Validate the parsed data
           if (
             typeof parsed === 'object' &&
             parsed !== null &&
             'items' in parsed &&
             Array.isArray(parsed.items) &&
-            parsed.items.every(isValidHistoryItem)
+            parsed.items.every(isValidStorageHistoryItem)
           ) {
-            return parsed;
+            const runtimeItems = parsed.items.map(fromStorageFormat);
+            return { items: runtimeItems };
           }
-          // If validation fails, clear the corrupted data and return default state
           console.warn('Invalid stored history data, clearing localStorage and using default state');
           try {
             localStorage.removeItem('muc-search-history');
@@ -81,7 +103,12 @@ export const useHistoryStore = defineStore('history', {
           return { items: [] };
         }
       },
-      serialize: JSON.stringify,
+      serialize: (state): string => {
+        const storageState = {
+          items: state.items.map(toStorageFormat),
+        };
+        return JSON.stringify(storageState);
+      },
     },
   },
 
