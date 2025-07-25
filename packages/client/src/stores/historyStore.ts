@@ -112,17 +112,6 @@ export const useHistoryStore = defineStore('history', {
     },
   },
 
-  getters: {
-    filteredHistory: state => {
-      return (showAll: boolean, currentIds: string[]): SearchHistoryItem[] => {
-        if (showAll) {
-          return state.items;
-        }
-        return state.items.filter(item => currentIds.includes(item.id));
-      };
-    },
-  },
-
   actions: {
     addItem(item: SearchHistoryItem) {
       this.items.unshift(item);

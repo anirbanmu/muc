@@ -13,9 +13,12 @@ const historyStore = useHistoryStore();
 const { isLoading, error } = storeToRefs(searchStore);
 const { showOnlyCurrentSession, currentSearchIds } = storeToRefs(sessionStore);
 
-const visibleHistory = computed(() =>
-  historyStore.filteredHistory(!showOnlyCurrentSession.value, currentSearchIds.value),
-);
+const visibleHistory = computed(() => {
+  if (!showOnlyCurrentSession.value) {
+    return historyStore.items;
+  }
+  return historyStore.items.filter(item => currentSearchIds.value.includes(item.id));
+});
 </script>
 
 <template>
