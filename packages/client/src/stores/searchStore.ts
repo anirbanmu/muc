@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { v4 as uuidv4 } from 'uuid';
-import { mediaService } from '../services/mediaService.js';
+import { SearchService } from '../services/searchService.js';
+import { sortSearchResults, addResultIds } from '../utils/searchResultUtils.js';
 import type { AnyNormalizedTrack } from '@muc/common';
 import { TrackIdentifier } from '@muc/common';
 import type { SearchHistoryItem } from './types.js';
@@ -12,8 +13,6 @@ interface SearchState {
   isLoading: boolean;
   error: string | null;
 }
-
-const platformOrder: AnyNormalizedTrack['platform'][] = ['spotify', 'youtube', 'deezer', 'itunes'];
 
 export const useSearchStore = defineStore('search', {
   state: (): SearchState => ({
@@ -48,39 +47,9 @@ export const useSearchStore = defineStore('search', {
     },
 
     async performSearch(uri: string): Promise<{ results: AnyNormalizedTrack[]; sourceTrack: TrackIdentifier }> {
-      const sourceTrack = await mediaService.getTrackDetails(uri);
-      const trackIdentifier = TrackIdentifier.fromNormalizedTrack(sourceTrack);
-
-      const searchResults = await mediaService.searchOtherPlatforms(sourceTrack);
-
-      const processedResults = this.processSearchResults([sourceTrack, ...searchResults], trackIdentifier.uniqueId);
-
-      return { results: processedResults, sourceTrack: trackIdentifier };
-    },
-
-    processSearchResults(tracks: AnyNormalizedTrack[], sourceTrackId: string): AnyNormalizedTrack[] {
-      const trackMap = new Map<string, AnyNormalizedTrack>();
-
-      for (const track of tracks) {
-        const existing = trackMap.get(track.uniqueId);
-        if (!existing) {
-          trackMap.set(track.uniqueId, track);
-        } else if (track.uniqueId === sourceTrackId && existing.uniqueId !== sourceTrackId) {
-          trackMap.set(track.uniqueId, track);
-        }
-      }
-
-      const uniqueTracks = Array.from(trackMap.values());
-      return this.sortResults(uniqueTracks, sourceTrackId);
-    },
-
-    sortResults(tracks: AnyNormalizedTrack[], sourceTrackId: string): AnyNormalizedTrack[] {
-      return tracks.sort((a, b) => {
-        if (a.uniqueId === sourceTrackId && b.uniqueId !== sourceTrackId) return -1;
-        if (a.uniqueId !== sourceTrackId && b.uniqueId === sourceTrackId) return 1;
-
-        return platformOrder.indexOf(a.platform) - platformOrder.indexOf(b.platform);
-      });
+      const { results, sourceTrack } = await SearchService.performSearch(uri);
+      const sortedResults = sortSearchResults(results, sourceTrack.uniqueId);
+      return { results: sortedResults, sourceTrack };
     },
 
     saveSearchResults(uri: string, results: AnyNormalizedTrack[], sourceTrack: TrackIdentifier): string {
@@ -88,11 +57,12 @@ export const useSearchStore = defineStore('search', {
       const sessionStore = useSessionStore();
 
       const newId = uuidv4();
+      const resultsWithIds = addResultIds(results);
       const newHistoryItem: SearchHistoryItem = {
         id: newId,
         uri,
         sourceTrack,
-        results: results.map((track, index) => ({ ...track, resultId: index })),
+        results: resultsWithIds,
         timestamp: Date.now(),
       };
 
