@@ -9,21 +9,19 @@ import { useHistoryStore } from './historyStore.js';
 import { useSessionStore } from './sessionStore.js';
 
 interface SearchState {
-  uri: string;
   isLoading: boolean;
   error: string | null;
 }
 
 export const useSearchStore = defineStore('search', {
   state: (): SearchState => ({
-    uri: '',
     isLoading: false,
     error: null,
   }),
 
   actions: {
-    async search(): Promise<string | undefined> {
-      if (!this.uri.trim()) {
+    async search(uri: string): Promise<string | undefined> {
+      if (!uri.trim()) {
         return;
       }
 
@@ -32,12 +30,11 @@ export const useSearchStore = defineStore('search', {
 
       this.isLoading = true;
       this.error = null;
-      const originalUri = this.uri;
+      const originalUri = uri;
 
       try {
         const { results, sourceTrack } = await this.performSearch(originalUri);
         const newId = this.saveSearchResults(originalUri, results, sourceTrack);
-        this.uri = '';
         return newId;
       } catch (e) {
         this.handleSearchError(e);
@@ -80,7 +77,6 @@ export const useSearchStore = defineStore('search', {
     },
 
     $reset() {
-      this.uri = '';
       this.isLoading = false;
       this.error = null;
     },

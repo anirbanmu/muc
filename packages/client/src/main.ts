@@ -23,8 +23,7 @@ if (encodedParam) {
   (async () => {
     try {
       const uri = ShareLinkEncoder.reconstructUriFromEncoded(encodedParam);
-      searchStore.uri = uri;
-      await searchStore.search();
+      await searchStore.search(uri);
 
       window.history.replaceState({}, document.title, window.location.pathname);
     } catch (e) {

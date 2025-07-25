@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import { useSearchStore } from '../stores/searchStore.js';
 import { useSessionStore } from '../stores/sessionStore.js';
 import { storeToRefs } from 'pinia';
@@ -6,13 +7,21 @@ import { storeToRefs } from 'pinia';
 const searchStore = useSearchStore();
 const sessionStore = useSessionStore();
 
-const { uri, isLoading } = storeToRefs(searchStore);
+const uri = ref('');
+const { isLoading } = storeToRefs(searchStore);
 const { showOnlyCurrentSession } = storeToRefs(sessionStore);
+
+const handleSearch = async () => {
+  const searchId = await searchStore.search(uri.value);
+  if (searchId) {
+    uri.value = '';
+  }
+};
 </script>
 
 <template>
   <section class="search-section">
-    <form class="search-form" @submit.prevent="searchStore.search">
+    <form class="search-form" @submit.prevent="handleSearch">
       <div class="input-wrapper">
         <span class="prompt">guest@muc:~$&nbsp;</span>
         <input
