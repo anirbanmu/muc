@@ -15,6 +15,11 @@ export interface ItunesTrack {
   trackName: string;
   trackViewUrl: string;
   trackId: number;
+  // Album-related fields from iTunes API
+  collectionName: string; // album name
+  collectionId: number; // album id
+  collectionViewUrl: string; // album url
+  artworkUrl100: string; // album artwork (100x100)
 }
 
 interface ItunesLookupResponse {

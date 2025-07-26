@@ -75,6 +75,10 @@ describe('MediaService', () => {
     artistName: 'iTunes Artist',
     sourceUrl: mockItunesUri,
     artistUrl: 'itunes-artist-url',
+    albumName: 'iTunes Album',
+    albumId: 'itunes-album-id',
+    albumUrl: 'itunes-album-url',
+    albumArtUrl: 'itunes-album-art-url',
     uniqueId: 'iitunes-id-1',
   };
 

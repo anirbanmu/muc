@@ -27,6 +27,10 @@ export interface DeezerNormalizedTrack extends NormalizedTrack {
 export interface ItunesNormalizedTrack extends NormalizedTrack {
   platform: 'itunes';
   artistUrl: string;
+  albumName: string;
+  albumId: string;
+  albumUrl: string;
+  albumArtUrl: string;
 }
 
 export interface YoutubeNormalizedTrack extends NormalizedTrack {
@@ -72,6 +76,10 @@ export function mapItunesTrackToNormalizedTrack(track: ItunesTrack): ItunesNorma
     artistName: track.artistName,
     sourceUrl: track.trackViewUrl,
     artistUrl: track.artistViewUrl,
+    albumName: track.collectionName,
+    albumId: track.collectionId.toString(),
+    albumUrl: track.collectionViewUrl,
+    albumArtUrl: track.artworkUrl100,
     uniqueId: TrackIdentifier.generateUniqueId('itunes', track.trackId.toString()),
   };
 }
