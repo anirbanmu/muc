@@ -4,7 +4,7 @@ import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import { createPersistedState } from 'pinia-plugin-persistedstate';
 import App from './App.vue';
-import { useSearchStore } from './stores/searchStore.js';
+import { useSearch } from './composables/useSearch.js';
 import { ShareLinkEncoder } from './services/shareLinks.js';
 
 const app = createApp(App);
@@ -15,7 +15,7 @@ app.use(pinia);
 
 app.mount('#app');
 
-const searchStore = useSearchStore();
+const search = useSearch();
 const params = new URLSearchParams(window.location.search);
 const encodedParam = params.get('q');
 
@@ -23,7 +23,7 @@ if (encodedParam) {
   (async () => {
     try {
       const uri = ShareLinkEncoder.reconstructUriFromEncoded(encodedParam);
-      await searchStore.search(uri);
+      await search.search(uri);
 
       window.history.replaceState({}, document.title, window.location.pathname);
     } catch (e) {

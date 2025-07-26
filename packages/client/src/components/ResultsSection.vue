@@ -1,17 +1,16 @@
 <script setup lang="ts">
-import { useSearchStore } from '../stores/searchStore.js';
-import { useSessionStore } from '../stores/sessionStore.js';
+import { useSearch } from '../composables/useSearch.js';
+import { useSession } from '../composables/useSession.js';
 import { useHistoryStore } from '../stores/historyStore.js';
 import { computed } from 'vue';
-import { storeToRefs } from 'pinia';
 import HistoryItem from './HistoryItem.vue';
 
-const searchStore = useSearchStore();
-const sessionStore = useSessionStore();
+const search = useSearch();
+const session = useSession();
 const historyStore = useHistoryStore();
 
-const { isLoading, error } = storeToRefs(searchStore);
-const { showOnlyCurrentSession, currentSearchIds } = storeToRefs(sessionStore);
+const { isLoading, error } = search;
+const { showOnlyCurrentSession, currentSearchIds } = session;
 
 const visibleHistory = computed(() => {
   if (!showOnlyCurrentSession.value) {
@@ -40,7 +39,7 @@ const visibleHistory = computed(() => {
       </div>
 
       <TransitionGroup name="list" tag="div">
-        <HistoryItem v-for="search in visibleHistory" :key="search.id" :search="search" />
+        <HistoryItem v-for="historyItem in visibleHistory" :key="historyItem.id" :search="historyItem" />
       </TransitionGroup>
     </div>
   </section>

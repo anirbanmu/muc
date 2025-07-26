@@ -1,18 +1,17 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useSearchStore } from '../stores/searchStore.js';
-import { useSessionStore } from '../stores/sessionStore.js';
-import { storeToRefs } from 'pinia';
+import { useSearch } from '../composables/useSearch.js';
+import { useSession } from '../composables/useSession.js';
 
-const searchStore = useSearchStore();
-const sessionStore = useSessionStore();
+const search = useSearch();
+const session = useSession();
 
 const uri = ref('');
-const { isLoading } = storeToRefs(searchStore);
-const { showOnlyCurrentSession } = storeToRefs(sessionStore);
+const { isLoading } = search;
+const { showOnlyCurrentSession } = session;
 
 const handleSearch = async () => {
-  const searchId = await searchStore.search(uri.value);
+  const searchId = await search.search(uri.value);
   if (searchId) {
     uri.value = '';
   }
@@ -46,7 +45,7 @@ const handleSearch = async () => {
       <div
         class="history-toggle"
         title="Toggle between all history and current session"
-        @click="sessionStore.toggleSessionFilter"
+        @click="session.toggleSessionFilter"
       >
         <span class="toggle-label">all history</span>
         <div class="toggle-switch" :class="{ on: !showOnlyCurrentSession }">
