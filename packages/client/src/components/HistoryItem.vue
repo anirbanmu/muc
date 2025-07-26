@@ -4,10 +4,18 @@ import type { SearchHistoryItem } from '../stores/types.js';
 import ResultItem from './ResultItem.vue';
 import { useCopyFeedback } from '../composables/useCopyFeedback';
 import { ShareLinkEncoder } from '../services/shareLinks.js';
+import { sortSearchResults } from '../utils/searchResultUtils.js';
 
 const props = defineProps<{
   search: SearchHistoryItem;
 }>();
+
+const sortedResults = computed(() =>
+  sortSearchResults(props.search.results, props.search.sourceTrack.uniqueId).map((track, index) => ({
+    ...track,
+    resultId: index,
+  })),
+);
 
 const { copy, isCopied } = useCopyFeedback();
 
@@ -65,7 +73,7 @@ function copyShareLink(searchItem: SearchHistoryItem) {
         </div>
       </div>
       <ul class="results-list">
-        <ResultItem v-for="track in search.results" :key="track.resultId" :track="track" />
+        <ResultItem v-for="track in sortedResults" :key="track.resultId" :track="track" />
       </ul>
     </div>
   </div>

@@ -1,7 +1,7 @@
 import { ref } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 import { SearchService } from '../services/searchService.js';
-import { sortSearchResults, addResultIds } from '../utils/searchResultUtils.js';
+import { addResultIds } from '../utils/searchResultUtils.js';
 import type { AnyNormalizedTrack } from '@muc/common';
 import { TrackIdentifier } from '@muc/common';
 import type { SearchHistoryItem } from '../stores/types.js';
@@ -32,8 +32,7 @@ export function useSearch() {
 
   async function performSearch(uri: string): Promise<{ results: AnyNormalizedTrack[]; sourceTrack: TrackIdentifier }> {
     const { results, sourceTrack } = await SearchService.performSearch(uri);
-    const sortedResults = sortSearchResults(results, sourceTrack.uniqueId);
-    return { results: sortedResults, sourceTrack };
+    return { results, sourceTrack };
   }
 
   function saveSearchResults(uri: string, results: AnyNormalizedTrack[], sourceTrack: TrackIdentifier): string {
