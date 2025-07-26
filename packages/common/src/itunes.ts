@@ -130,10 +130,10 @@ export class ItunesClient {
     return ItunesClient.parseId(uri) !== null;
   }
 
-  public static reconstructUri(trackId: string): string {
-    if (!trackId || trackId.trim() === '') {
-      throw new Error('Track ID cannot be empty');
+  public static reconstructUri(trackId: string, albumId: string): string {
+    if (!trackId || !albumId) {
+      throw new Error('Both trackId and albumId are required to reconstruct the URI');
     }
-    return `https://music.apple.com/album/id${trackId.trim()}`;
+    return `https://music.apple.com/us/album/${albumId}?i=${trackId}`;
   }
 }

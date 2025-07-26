@@ -93,8 +93,8 @@ describe('TrackIdentifier', () => {
       expect(TrackIdentifier.reconstructUriFromComponents('deezer', '123456')).toBe(
         'https://www.deezer.com/track/123456',
       );
-      expect(TrackIdentifier.reconstructUriFromComponents('itunes', '789012')).toBe(
-        'https://music.apple.com/album/id789012',
+      expect(TrackIdentifier.reconstructUriFromComponents('itunes', '789012-345678')).toBe(
+        'https://music.apple.com/us/album/789012?i=345678',
       );
       expect(TrackIdentifier.reconstructUriFromComponents('youtube', 'dQw4w9WgXcQ')).toBe(
         'https://www.youtube.com/watch?v=dQw4w9WgXcQ',

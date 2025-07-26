@@ -75,12 +75,12 @@ export function mapItunesTrackToNormalizedTrack(track: ItunesTrack): ItunesNorma
     title: track.trackName,
     artistName: track.artistName,
     sourceUrl: track.trackViewUrl,
-    artistUrl: track.artistViewUrl,
     albumName: track.collectionName,
+    artistUrl: track.artistViewUrl,
     albumId: track.collectionId.toString(),
     albumUrl: track.collectionViewUrl,
     albumArtUrl: track.artworkUrl100,
-    uniqueId: TrackIdentifier.generateUniqueId('itunes', track.trackId.toString()),
+    uniqueId: TrackIdentifier.generateUniqueId('itunes', `${track.collectionId}-${track.trackId}`),
   };
 }
 

@@ -80,7 +80,9 @@ export class TrackIdentifier {
    * Creates a TrackIdentifier from a NormalizedTrack object
    */
   static fromNormalizedTrack(track: AnyNormalizedTrack): TrackIdentifier {
-    return new TrackIdentifier(track.platform, track.id);
+    const uniqueId = track.uniqueId;
+    const { platform, platformId } = TrackIdentifier.parseUniqueId(uniqueId);
+    return new TrackIdentifier(platform, platformId);
   }
 
   // Static utility methods
@@ -99,6 +101,14 @@ export class TrackIdentifier {
     }
 
     return `${prefix}${platformId.trim()}`;
+  }
+
+  static encodePlatformId(platform: MediaPlatform, components: string[]): string {
+    return components.join('-');
+  }
+
+  static decodePlatformId(platform: MediaPlatform, encodedId: string): string[] {
+    return encodedId.split('-');
   }
 
   /**
@@ -146,23 +156,23 @@ export class TrackIdentifier {
 
     const cleanPlatformId = platformId.trim();
 
-    try {
-      switch (platform) {
-        case 'spotify':
-          return SpotifyClient.reconstructUri(cleanPlatformId);
-        case 'deezer':
-          return DeezerClient.reconstructUri(cleanPlatformId);
-        case 'itunes':
-          return ItunesClient.reconstructUri(cleanPlatformId);
-        case 'youtube':
-          return YoutubeClient.reconstructUri(cleanPlatformId);
-        default:
-          throw new Error(`Unsupported platform: ${platform}`);
+    switch (platform) {
+      case 'spotify':
+        return SpotifyClient.reconstructUri(cleanPlatformId);
+      case 'deezer':
+        return DeezerClient.reconstructUri(cleanPlatformId);
+      case 'itunes': {
+        const components = TrackIdentifier.decodePlatformId(platform, cleanPlatformId);
+        if (components.length !== 2) {
+          throw new Error('Invalid platform ID format for iTunes');
+        }
+        const [albumId, trackId] = components;
+        return ItunesClient.reconstructUri(trackId, albumId);
       }
-    } catch (error) {
-      throw new Error(
-        `Failed to reconstruct URI for platform ${platform}: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      );
+      case 'youtube':
+        return YoutubeClient.reconstructUri(cleanPlatformId);
+      default:
+        throw new Error(`Unsupported platform: ${platform}`);
     }
   }
 }
