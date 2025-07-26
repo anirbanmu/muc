@@ -38,7 +38,6 @@ export class ApiRouter {
       (req: Request, res: Response, next: NextFunction) =>
         Promise.resolve(fn(req, res, next)).catch(next);
 
-    // expecting JSON
     this.router.post(API_ROUTES.spotify.track, asyncHandler(this.getSpotifyTrackDetails));
     this.router.post(API_ROUTES.spotify.search, asyncHandler(this.searchSpotifyTracks));
     this.router.post(API_ROUTES.youtube.video, asyncHandler(this.getYoutubeVideoDetails));

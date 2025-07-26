@@ -38,7 +38,6 @@ const SPOTIFY_AUTHORIZATION_URI = 'https://accounts.spotify.com/api/token';
 const SPOTIFY_BASE_URI = 'https://api.spotify.com/v1';
 const SPOTIFY_SEARCH_URI = `${SPOTIFY_BASE_URI}/search`;
 
-// refreshes tokens on its own
 export class SpotifyClient {
   private clientId: string;
   private clientSecret: string;

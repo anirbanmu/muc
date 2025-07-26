@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { SearchHistoryItem } from '../stores/types.js';
+import type { SearchHistoryItem } from '../stores/historyStore.js';
 import ResultItem from './ResultItem.vue';
 import { useCopyFeedback } from '../composables/useCopyFeedback';
 import { ShareLinkEncoder } from '../services/shareLinks.js';

@@ -1,6 +1,5 @@
 import { ref } from 'vue';
 
-// Shared state (singleton)
 const showOnlyCurrentSession = ref(new URLSearchParams(window.location.search).has('q'));
 const currentSearchIds = ref<string[]>([]);
 

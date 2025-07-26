@@ -22,11 +22,9 @@ function logError(...args: unknown[]) {
   originalConsoleError(errorPrefix, ...args);
 }
 
-// Save original console methods
 const originalConsoleLog = console.log;
 const originalConsoleError = console.error;
 
-// Override global console methods to prefix all logs
 console.log = (...args: unknown[]) => {
   originalConsoleLog(appPrefix, ...args);
 };
@@ -43,10 +41,8 @@ async function start(): Promise<void> {
   // Set to 1 to trust only the first proxy (Fly.io)
   app.set('trust proxy', 1);
 
-  // Morgan request logging with prefix and optional color
   app.use(morgan(requestPrefix + ':method :url :status :res[content-length] - :response-time ms :user-agent'));
 
-  // Enforce HTTPS (redirect HTTP to HTTPS if behind proxy)
   app.use((req, res, next) => {
     if (process.env.NODE_ENV === 'production' && req.headers['x-forwarded-proto'] === 'http') {
       return res.redirect(301, `https://${req.headers.host}${req.url}`);

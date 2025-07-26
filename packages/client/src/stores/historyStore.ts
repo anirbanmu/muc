@@ -1,8 +1,16 @@
 import { defineStore } from 'pinia';
 import { TrackIdentifier } from '@muc/common';
-import type { SearchHistoryItem } from './types.js';
+import type { AnyNormalizedTrack } from '@muc/common';
 
 const MAX_HISTORY_ITEMS = 10;
+
+export interface SearchHistoryItem {
+  id: string;
+  uri: string;
+  sourceTrack: TrackIdentifier;
+  results: (AnyNormalizedTrack & { resultId: number })[];
+  timestamp: number;
+}
 
 interface HistoryState {
   items: SearchHistoryItem[];

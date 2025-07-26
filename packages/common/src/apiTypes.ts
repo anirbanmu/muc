@@ -8,7 +8,6 @@ export interface QueryRequestBody {
   query: string;
 }
 
-// Responses
 export type GetSpotifyTrackDetailsResponse = SpotifyNormalizedTrack;
 export type SearchSpotifyTracksResponse = SpotifyNormalizedTrack[];
 

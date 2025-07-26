@@ -4,11 +4,10 @@ import { SearchService } from '../services/searchService.js';
 import { addResultIds } from '../utils/searchResultUtils.js';
 import type { AnyNormalizedTrack } from '@muc/common';
 import { TrackIdentifier } from '@muc/common';
-import type { SearchHistoryItem } from '../stores/types.js';
+import type { SearchHistoryItem } from '../stores/historyStore.js';
 import { useHistoryStore } from '../stores/historyStore.js';
 import { useSession } from './useSession.js';
 
-// Shared state (singleton)
 const isLoading = ref(false);
 const error = ref<string | null>(null);
 
