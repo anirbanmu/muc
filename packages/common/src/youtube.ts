@@ -24,7 +24,12 @@ export interface YoutubeSearchResultItem {
   };
 }
 
-export class YoutubeClient {
+export interface YoutubeClientInterface {
+  getVideoDetails(uri: string): Promise<YoutubeVideoDetails>;
+  searchVideos(query: string): Promise<YoutubeSearchResultItem | null>;
+}
+
+export class YoutubeClient implements YoutubeClientInterface {
   private apiKey: string;
 
   constructor(apiKey: string) {

@@ -2,9 +2,18 @@ export function sharedFunction(): string {
   return 'This is a shared function.';
 }
 
-export { SpotifyClient, SpotifyTrack, SpotifyArtist, SpotifyAlbum, SpotifyExternalUrls } from './spotify.js';
+export {
+  SpotifyClient,
+  SpotifyClientInterface,
+  SpotifyTrack,
+  SpotifyArtist,
+  SpotifyAlbum,
+  SpotifyExternalUrls,
+} from './spotify.js';
+export { CachedSpotifyClient } from './cachedSpotifyClient.js';
 
-export { YoutubeClient, YoutubeVideoSnippet, YoutubeVideoDetails } from './youtube.js';
+export { YoutubeClient, YoutubeClientInterface, YoutubeVideoSnippet, YoutubeVideoDetails } from './youtube.js';
+export { CachedYoutubeClient } from './cachedYoutubeClient.js';
 
 export { DeezerTrack, DeezerClient } from './deezer.js';
 
@@ -20,6 +29,7 @@ export {
 } from './normalizedTrack.js';
 
 export { BackendMediaService } from './backendMediaService.js';
+export { CacheAccessor } from './cacheAccessor.js';
 
 export { ClientMediaService } from './clientMediaService.js';
 export { MediaPlatform, MediaService } from './mediaService.js';

@@ -38,7 +38,12 @@ const SPOTIFY_AUTHORIZATION_URI = 'https://accounts.spotify.com/api/token';
 const SPOTIFY_BASE_URI = 'https://api.spotify.com/v1';
 const SPOTIFY_SEARCH_URI = `${SPOTIFY_BASE_URI}/search`;
 
-export class SpotifyClient {
+export interface SpotifyClientInterface {
+  getTrackDetails(uri: string): Promise<SpotifyTrack>;
+  searchTracks(query: string): Promise<SpotifyTrack | null>;
+}
+
+export class SpotifyClient implements SpotifyClientInterface {
   private clientId: string;
   private clientSecret: string;
 

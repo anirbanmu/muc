@@ -4,8 +4,15 @@ import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
 import rateLimit from 'express-rate-limit';
-import { BackendMediaService } from '@muc/common';
+import {
+  BackendMediaService,
+  SpotifyClient,
+  YoutubeClient,
+  CachedSpotifyClient,
+  CachedYoutubeClient,
+} from '@muc/common';
 import { ApiRouter } from './apiRouter.js';
+import NodeCache from 'node-cache';
 import morgan from 'morgan';
 import supportsColor from 'supports-color';
 
@@ -120,8 +127,6 @@ async function start(): Promise<void> {
     next();
   });
 
-  // Initialize BackendMediaService with API credentials from environment variables.
-  // This service handles all interactions with external media APIs.
   let mediaService: BackendMediaService;
   try {
     if (!SPOTIFY_CLIENT_ID || !SPOTIFY_CLIENT_SECRET) {
@@ -131,12 +136,24 @@ async function start(): Promise<void> {
       console.warn('YouTube API key not configured. YouTube features might be unavailable.');
     }
 
-    mediaService = await BackendMediaService.create(
-      SPOTIFY_CLIENT_ID && SPOTIFY_CLIENT_SECRET
-        ? { clientId: SPOTIFY_CLIENT_ID, clientSecret: SPOTIFY_CLIENT_SECRET }
-        : undefined,
-      YOUTUBE_API_KEY,
-    );
+    const cache = new NodeCache({ stdTTL: 3600, checkperiod: 600, useClones: false });
+
+    let spotifyClient: CachedSpotifyClient | undefined;
+    if (SPOTIFY_CLIENT_ID && SPOTIFY_CLIENT_SECRET) {
+      const rawSpotifyClient = await SpotifyClient.create({
+        clientId: SPOTIFY_CLIENT_ID,
+        clientSecret: SPOTIFY_CLIENT_SECRET,
+      });
+      spotifyClient = new CachedSpotifyClient(rawSpotifyClient, cache);
+    }
+
+    let youtubeClient: CachedYoutubeClient | undefined;
+    if (YOUTUBE_API_KEY) {
+      const rawYoutubeClient = new YoutubeClient(YOUTUBE_API_KEY);
+      youtubeClient = new CachedYoutubeClient(rawYoutubeClient, cache);
+    }
+
+    mediaService = BackendMediaService.createWithClients(undefined, undefined, spotifyClient, youtubeClient);
   } catch (error) {
     console.error('Failed to initialize BackendMediaService:', error);
     process.exit(1);
