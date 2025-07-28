@@ -12,17 +12,16 @@ import {
   UriRequestBody,
   YoutubeNormalizedTrack,
 } from '@muc/common';
-import NodeCache from 'node-cache';
 import pLimit from 'p-limit';
+import { CacheWrapper } from './cacheWrapper.js';
 
 export class ApiRouter {
   private readonly router = express.Router();
-  private readonly cache: NodeCache;
+  private readonly cacheWrapper = new CacheWrapper({ stdTTL: 3600, checkperiod: 600, useClones: false });
   private readonly spotifyLimiter = pLimit(10);
   private readonly youtubeLimiter = pLimit(10);
 
   constructor(private readonly mediaService: BackendMediaService) {
-    this.cache = new NodeCache({ stdTTL: 3600, checkperiod: 600, useClones: false });
     this.initializeRoutes();
   }
 
@@ -54,8 +53,8 @@ export class ApiRouter {
       return;
     }
 
-    const cacheKey = `spotify:track:${uri}`;
-    const cachedTrack = this.cache.get<SpotifyNormalizedTrack>(cacheKey);
+    const cache = this.cacheWrapper.getAccessor<SpotifyNormalizedTrack>('spotify:track');
+    const cachedTrack = cache.get(uri);
     if (cachedTrack) {
       res.json(cachedTrack);
       return;
@@ -67,7 +66,7 @@ export class ApiRouter {
         res.status(404).json({ message: 'Spotify track not found or URI invalid.' });
         return;
       }
-      this.cache.set(cacheKey, track);
+      cache.set(uri, track);
       res.json(track);
     } catch (error) {
       console.error('Error fetching Spotify track details:', error instanceof Error ? error.message : error);
@@ -82,16 +81,16 @@ export class ApiRouter {
       return;
     }
 
-    const cacheKey = `spotify:search:${query}`;
-    if (this.cache.has(cacheKey)) {
-      const cachedTrack = this.cache.get<SpotifyNormalizedTrack | null>(cacheKey);
+    const cache = this.cacheWrapper.getAccessor<SpotifyNormalizedTrack | null>('spotify:search');
+    if (cache.has(query)) {
+      const cachedTrack = cache.get(query);
       res.json(cachedTrack ? [cachedTrack] : []);
       return;
     }
 
     try {
       const track = await this.spotifyLimiter(() => this.mediaService.searchSpotifyTracks(query));
-      this.cache.set(cacheKey, track);
+      cache.set(query, track);
       res.json(track ? [track] : []);
     } catch (error) {
       console.error('Error searching Spotify tracks:', error instanceof Error ? error.message : error);
@@ -109,8 +108,8 @@ export class ApiRouter {
       return;
     }
 
-    const cacheKey = `youtube:video:${uri}`;
-    const cachedVideo = this.cache.get<YoutubeNormalizedTrack>(cacheKey);
+    const cache = this.cacheWrapper.getAccessor<YoutubeNormalizedTrack>('youtube:video');
+    const cachedVideo = cache.get(uri);
     if (cachedVideo) {
       res.json(cachedVideo);
       return;
@@ -122,7 +121,7 @@ export class ApiRouter {
         res.status(404).json({ message: 'YouTube video not found or URI invalid.' });
         return;
       }
-      this.cache.set(cacheKey, video);
+      cache.set(uri, video);
       res.json(video);
     } catch (error) {
       console.error('Error fetching YouTube video details:', error instanceof Error ? error.message : error);
@@ -137,16 +136,16 @@ export class ApiRouter {
       return;
     }
 
-    const cacheKey = `youtube:search:${query}`;
-    if (this.cache.has(cacheKey)) {
-      const cachedVideo = this.cache.get<YoutubeNormalizedTrack | null>(cacheKey);
+    const cache = this.cacheWrapper.getAccessor<YoutubeNormalizedTrack | null>('youtube:search');
+    if (cache.has(query)) {
+      const cachedVideo = cache.get(query);
       res.json(cachedVideo ? [cachedVideo] : []);
       return;
     }
 
     try {
       const video = await this.youtubeLimiter(() => this.mediaService.searchYoutubeVideos(query));
-      this.cache.set(cacheKey, video);
+      cache.set(query, video);
       res.json(video ? [video] : []);
     } catch (error) {
       console.error('Error searching YouTube videos:', error instanceof Error ? error.message : error);
