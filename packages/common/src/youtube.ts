@@ -1,5 +1,6 @@
-import axios from 'axios';
+import ky from 'ky';
 import qs from 'qs';
+import { isHTTPError } from './kyErrorUtils.js';
 
 const YOUTUBE_BASE_URI = 'https://www.googleapis.com/youtube/v3';
 const YOUTUBE_VIDEOS_URI = YOUTUBE_BASE_URI + '/videos';
@@ -45,15 +46,24 @@ export class YoutubeClient implements YoutubeClientInterface {
     if (id === null) {
       throw new Error('Invalid YouTube URI format.');
     }
-    const response = await axios.request<{ items: YoutubeVideoDetails[] }>({
-      url: YOUTUBE_VIDEOS_URI,
-      params: this.addKey({ id: id, part: 'snippet' }),
-    });
 
-    if (response.data.items.length < 1) {
-      throw new Error('Bad YouTube URI: No video found for the given ID.');
+    try {
+      const response = await ky
+        .get(YOUTUBE_VIDEOS_URI, {
+          searchParams: this.addKey({ id: id, part: 'snippet' }),
+        })
+        .json<{ items: YoutubeVideoDetails[] }>();
+
+      if (response.items.length < 1) {
+        throw new Error('Bad YouTube URI: No video found for the given ID.');
+      }
+      return response.items[0];
+    } catch (error) {
+      if (isHTTPError(error)) {
+        throw new Error(`Failed to get YouTube video details: ${error.response.status} ${error.response.statusText}`);
+      }
+      throw error;
     }
-    return response.data.items[0];
   }
 
   public async searchVideos(query: string): Promise<YoutubeSearchResultItem | null> {
@@ -63,12 +73,21 @@ export class YoutubeClient implements YoutubeClientInterface {
       maxResults: 1,
       part: 'snippet', // 'snippet' part is required to get the title for the search result item
     });
-    const response = await axios.request<{ items: YoutubeSearchResultItem[] }>({
-      url: YOUTUBE_SEARCH_URI,
-      params: params,
-    });
 
-    return response.data.items.length > 0 ? response.data.items[0] : null;
+    try {
+      const response = await ky
+        .get(YOUTUBE_SEARCH_URI, {
+          searchParams: params,
+        })
+        .json<{ items: YoutubeSearchResultItem[] }>();
+
+      return response.items.length > 0 ? response.items[0] : null;
+    } catch (error) {
+      if (isHTTPError(error)) {
+        throw new Error(`Failed to search YouTube videos: ${error.response.status} ${error.response.statusText}`);
+      }
+      throw error;
+    }
   }
 
   public static parseId(uri: string): string | null {

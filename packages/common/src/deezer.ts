@@ -1,6 +1,7 @@
-import axios from 'axios';
+import ky from 'ky';
 import qs from 'qs';
 import { isBrowser } from 'browser-or-node';
+import { isHTTPError, extractApiErrorMessage } from './kyErrorUtils.js';
 
 // using jsonp on browsers because deezer doesn't work with CORS
 import jsonp from 'jsonp';
@@ -40,12 +41,19 @@ export class DeezerClient {
       return DeezerClient.getUriDetailsJsonp(deezerUri);
     }
 
-    const response = await axios.get<DeezerTrack & { error?: { message: string } }>(deezerUri);
+    try {
+      const response = await ky.get(deezerUri).json<DeezerTrack & { error?: { message: string } }>();
 
-    if (response.data.error) {
-      throw new Error(`Bad Deezer URI: ${response.data.error.message ?? 'Unknown error'}`);
+      if (response.error) {
+        throw new Error(`Bad Deezer URI: ${extractApiErrorMessage(response, 'Unknown error')}`);
+      }
+      return response;
+    } catch (error) {
+      if (isHTTPError(error)) {
+        throw new Error(`Failed to get Deezer track details: ${error.response.status} ${error.response.statusText}`);
+      }
+      throw error;
     }
-    return response.data;
   }
 
   public async searchTracks(query: string): Promise<DeezerTrack | null> {
@@ -58,20 +66,28 @@ export class DeezerClient {
       return DeezerClient.searchJsonp(params);
     }
 
-    const response = await axios.request<{
-      data: DeezerTrack[];
-      total: number;
-      error?: { message: string };
-    }>({
-      url: DEEZER_TRACK_SEARCH_URI,
-      params: params,
-    });
+    try {
+      const response = await ky
+        .get(DEEZER_TRACK_SEARCH_URI, {
+          searchParams: params,
+        })
+        .json<{
+          data: DeezerTrack[];
+          total: number;
+          error?: { message: string };
+        }>();
 
-    if (response.data.error) {
-      throw new Error(`Deezer search error: ${response.data.error.message ?? 'Unknown error'}`);
+      if (response.error) {
+        throw new Error(`Deezer search error: ${extractApiErrorMessage(response, 'Unknown error')}`);
+      }
+
+      return response.total > 0 ? response.data[0] : null;
+    } catch (error) {
+      if (isHTTPError(error)) {
+        throw new Error(`Failed to search Deezer tracks: ${error.response.status} ${error.response.statusText}`);
+      }
+      throw error;
     }
-
-    return response.data.total > 0 ? response.data.data[0] : null;
   }
 
   private static getUriDetailsJsonp(uri: string): Promise<DeezerTrack> {

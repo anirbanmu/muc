@@ -52,7 +52,11 @@ export function useSearch() {
   }
 
   function handleSearchError(e: unknown) {
-    error.value = e instanceof Error ? e.message : String(e);
+    // Log the actual error for debugging purposes
+    console.error('Search error:', e);
+
+    // Show generic error message to users
+    error.value = 'Unable to search for tracks. Please try again.';
   }
 
   return {

@@ -1,5 +1,6 @@
-import axios from 'axios';
+import ky from 'ky';
 import qs from 'qs';
+import { isHTTPError } from './kyErrorUtils.js';
 
 export interface SpotifyExternalUrls {
   spotify: string;
@@ -121,10 +122,20 @@ export class SpotifyClient implements SpotifyClientInterface {
     };
     const params = { grant_type: 'client_credentials' };
 
-    const response = await axios.post<SpotifyClientCredentialsToken>(SPOTIFY_AUTHORIZATION_URI, qs.stringify(params), {
-      headers: headers,
-    });
-    return response.data;
+    try {
+      const response = await ky
+        .post(SPOTIFY_AUTHORIZATION_URI, {
+          headers: headers,
+          body: qs.stringify(params),
+        })
+        .json<SpotifyClientCredentialsToken>();
+      return response;
+    } catch (error) {
+      if (isHTTPError(error)) {
+        throw new Error(`Spotify authentication failed: ${error.response.status} ${error.response.statusText}`);
+      }
+      throw error;
+    }
   }
 
   private static readonly actualClient = class {
@@ -144,24 +155,40 @@ export class SpotifyClient implements SpotifyClientInterface {
         throw new Error('Invalid Spotify track URI format.');
       }
       const apiUri = `${SPOTIFY_BASE_URI}/tracks/${trackId}`;
-      const response = await axios.request<SpotifyTrack>({
-        url: apiUri,
-        headers: this.headers,
-      });
-      return response.data;
+      try {
+        const response = await ky
+          .get(apiUri, {
+            headers: this.headers,
+          })
+          .json<SpotifyTrack>();
+        return response;
+      } catch (error) {
+        if (isHTTPError(error)) {
+          throw new Error(`Failed to get Spotify track details: ${error.response.status} ${error.response.statusText}`);
+        }
+        throw error;
+      }
     }
 
     public async searchTracks(query: string): Promise<SpotifyTrack | null> {
-      const params = { q: query, type: 'track', limit: 1 };
-      const response = await axios.request<{
-        tracks: { total: number; items: SpotifyTrack[] };
-      }>({
-        url: SPOTIFY_SEARCH_URI,
-        headers: this.headers,
-        params: params,
-      });
+      const searchParams = new URLSearchParams({ q: query, type: 'track', limit: '1' });
+      try {
+        const response = await ky
+          .get(SPOTIFY_SEARCH_URI, {
+            headers: this.headers,
+            searchParams: searchParams,
+          })
+          .json<{
+            tracks: { total: number; items: SpotifyTrack[] };
+          }>();
 
-      return response.data.tracks.total > 0 ? response.data.tracks.items[0] : null;
+        return response.tracks.total > 0 ? response.tracks.items[0] : null;
+      } catch (error) {
+        if (isHTTPError(error)) {
+          throw new Error(`Failed to search Spotify tracks: ${error.response.status} ${error.response.statusText}`);
+        }
+        throw error;
+      }
     }
   };
 }

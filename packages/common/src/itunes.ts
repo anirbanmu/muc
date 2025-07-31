@@ -1,6 +1,7 @@
-import axios from 'axios';
+import ky from 'ky';
 import { isBrowser } from 'browser-or-node';
 import qs from 'qs';
+import { isHTTPError } from './kyErrorUtils.js';
 
 // Using jsonp on browsers because itunes doesn't work with CORS
 import jsonp from 'jsonp';
@@ -45,15 +46,23 @@ export class ItunesClient {
       return ItunesClient.getUriDetailsJsonp(params);
     }
 
-    const response = await axios.request<ItunesLookupResponse>({
-      url: ITUNES_LOOKUP_URI,
-      params: params,
-    });
+    try {
+      const response = await ky
+        .get(ITUNES_LOOKUP_URI, {
+          searchParams: params,
+        })
+        .json<ItunesLookupResponse>();
 
-    if (response.data.resultCount < 1) {
-      throw new Error('Bad iTunes URI: No track found for the given ID.');
+      if (response.resultCount < 1) {
+        throw new Error('Bad iTunes URI: No track found for the given ID.');
+      }
+      return response.results[0];
+    } catch (error) {
+      if (isHTTPError(error)) {
+        throw new Error(`Failed to get iTunes track details: ${error.response.status} ${error.response.statusText}`);
+      }
+      throw error;
     }
-    return response.data.results[0];
   }
 
   private static getUriDetailsJsonp(params: { id: string }): Promise<ItunesTrack> {
@@ -85,12 +94,20 @@ export class ItunesClient {
       return ItunesClient.searchJsonp(params);
     }
 
-    const response = await axios.request<ItunesSearchResponse>({
-      url: ITUNES_SEARCH_URI,
-      params: params,
-    });
+    try {
+      const response = await ky
+        .get(ITUNES_SEARCH_URI, {
+          searchParams: params,
+        })
+        .json<ItunesSearchResponse>();
 
-    return response.data.resultCount < 1 ? null : response.data.results[0];
+      return response.resultCount < 1 ? null : response.results[0];
+    } catch (error) {
+      if (isHTTPError(error)) {
+        throw new Error(`Failed to search iTunes tracks: ${error.response.status} ${error.response.statusText}`);
+      }
+      throw error;
+    }
   }
 
   private static searchJsonp(params: {
