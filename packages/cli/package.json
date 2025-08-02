@@ -18,10 +18,5 @@
   "dependencies": {
     "@muc/common": "*"
   },
-  "devDependencies": {
-    "@types/node": "^24.0.4",
-    "esbuild": "^0.25.5",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.8.3"
-  }
+  "devDependencies": {}
 }
