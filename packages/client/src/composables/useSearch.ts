@@ -1,5 +1,4 @@
 import { ref } from 'vue';
-import { v4 as uuidv4 } from 'uuid';
 import { SearchService } from '../services/searchService.js';
 import { addResultIds } from '../utils/searchResultUtils.js';
 import type { AnyNormalizedTrack } from '@muc/common';
@@ -37,7 +36,7 @@ export function useSearch() {
   function saveSearchResults(uri: string, results: AnyNormalizedTrack[], sourceTrack: TrackIdentifier): string {
     const historyStore = useHistoryStore();
     const session = useSession();
-    const newId = uuidv4();
+    const newId = crypto.randomUUID();
     const resultsWithIds = addResultIds(results);
     const newHistoryItem: SearchHistoryItem = {
       id: newId,
