@@ -1,5 +1,4 @@
 import ky from 'ky';
-import qs from 'qs';
 import { isHTTPError } from './kyErrorUtils.js';
 
 const YOUTUBE_BASE_URI = 'https://www.googleapis.com/youtube/v3';
@@ -105,9 +104,10 @@ export class YoutubeClient implements YoutubeClientInterface {
   private static parseRegularLinkId(uri: string): string | null {
     const queryString = uri.split('?', 2);
     if (queryString.length === 2) {
-      const parsedQs = qs.parse(queryString[1]);
-      if (typeof parsedQs.v === 'string') {
-        return parsedQs.v;
+      const parsedQs = new URLSearchParams(queryString[1]);
+      const v = parsedQs.get('v');
+      if (v) {
+        return v;
       }
     }
     return null;

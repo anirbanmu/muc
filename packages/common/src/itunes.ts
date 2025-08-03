@@ -1,5 +1,4 @@
 import ky from 'ky';
-import qs from 'qs';
 import { isHTTPError } from './kyErrorUtils.js';
 
 const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
@@ -67,7 +66,7 @@ export class ItunesClient {
   }
 
   private static getUriDetailsJsonp(params: { id: string }): Promise<ItunesTrack> {
-    const queryString = qs.stringify(params);
+    const queryString = new URLSearchParams(params).toString();
     return new Promise((resolve, reject) => {
       jsonp(
         `${ITUNES_LOOKUP_URI}?${queryString}`,
@@ -117,7 +116,12 @@ export class ItunesClient {
     media: string;
     entity: string;
   }): Promise<ItunesTrack | null> {
-    const queryString = qs.stringify(params);
+    const queryString = new URLSearchParams({
+      term: params.term,
+      limit: params.limit.toString(),
+      media: params.media,
+      entity: params.entity,
+    }).toString();
     return new Promise((resolve, reject) => {
       jsonp(
         `${ITUNES_SEARCH_URI}?${queryString}`,

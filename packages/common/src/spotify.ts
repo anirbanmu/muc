@@ -1,5 +1,4 @@
 import ky from 'ky';
-import qs from 'qs';
 import { isHTTPError } from './kyErrorUtils.js';
 
 export interface SpotifyExternalUrls {
@@ -126,7 +125,7 @@ export class SpotifyClient implements SpotifyClientInterface {
       const response = await ky
         .post(SPOTIFY_AUTHORIZATION_URI, {
           headers: headers,
-          body: qs.stringify(params),
+          body: new URLSearchParams(params).toString(),
         })
         .json<SpotifyClientCredentialsToken>();
       return response;

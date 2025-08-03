@@ -1,5 +1,4 @@
 import ky from 'ky';
-import qs from 'qs';
 import { isHTTPError, extractApiErrorMessage } from './kyErrorUtils.js';
 
 const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
@@ -108,7 +107,11 @@ export class DeezerClient {
   }
 
   private static searchJsonp(params: { q: string; limit: number }): Promise<DeezerTrack | null> {
-    const queryString = qs.stringify(Object.assign({ output: 'jsonp' }, params));
+    const queryString = new URLSearchParams({
+      output: 'jsonp',
+      q: params.q,
+      limit: params.limit.toString(),
+    }).toString();
     return new Promise((resolve, reject) => {
       jsonp(
         `${DEEZER_TRACK_SEARCH_URI}?${queryString}`,

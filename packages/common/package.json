@@ -29,12 +29,10 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/jsonp": "^0.2.3",
-    "@types/qs": "^6.14.0"
+    "@types/jsonp": "^0.2.3"
   },
   "dependencies": {
     "jsonp": "^0.2.1",
-    "ky": "^1.8.2",
-    "qs": "^6.14.0"
+    "ky": "^1.8.2"
   }
 }
