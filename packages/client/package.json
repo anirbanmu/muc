@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "run-p type-check \"build-only {@}\"",
+    "build": "npm run type-check & npm run build-only & wait",
     "preview": "vite preview",
     "test": "vitest --run",
     "test:watch": "vitest",
@@ -34,7 +34,6 @@
     "eslint-plugin-vue": "^10.4.0",
     "jiti": "^2.5.1",
     "jsdom": "^26.0.0",
-    "npm-run-all2": "^8.0.4",
     "vite-plugin-vue-devtools": "^8.0.0",
     "vue-tsc": "^3.0.5"
   }
