@@ -1,7 +1,8 @@
 import ky from 'ky';
 import qs from 'qs';
-import { isBrowser } from 'browser-or-node';
 import { isHTTPError, extractApiErrorMessage } from './kyErrorUtils.js';
+
+const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
 
 // using jsonp on browsers because deezer doesn't work with CORS
 import jsonp from 'jsonp';

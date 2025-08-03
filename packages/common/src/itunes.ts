@@ -1,7 +1,8 @@
 import ky from 'ky';
-import { isBrowser } from 'browser-or-node';
 import qs from 'qs';
 import { isHTTPError } from './kyErrorUtils.js';
+
+const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
 
 // Using jsonp on browsers because itunes doesn't work with CORS
 import jsonp from 'jsonp';
