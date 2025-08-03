@@ -6,7 +6,7 @@
   "description": "Monorepo for the MUC project.",
   "main": "index.js",
   "scripts": {
-    "build": "npm run build:common && npm run build:client && npm run build:server && npm run build:cli",
+    "build": "npm run clean && npm run build:common && (npm run build:client & npm run build:server & npm run build:cli & wait)",
     "build:common": "npm run build --workspace=@muc/common",
     "build:server": "npm run build --workspace=@muc/server",
     "build:client": "npm run build --workspace=@muc/client",
@@ -16,7 +16,7 @@
     "clean:all": "npm run clean && npm run clean:node-modules",
     "start": "npm run start --workspace=@muc/server",
     "start:clean": "npm run clean && npm run build && npm run start",
-    "test": "npm run test --workspace=@muc/common && npm run test --workspace=@muc/client",
+    "test": "npm run test:common & npm run test:client & wait",
     "test:common": "npm run test --workspace=@muc/common",
     "test:client": "npm run test --workspace=@muc/client",
     "test:watch": "npm run test:watch --workspace=@muc/common",
