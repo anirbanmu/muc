@@ -1,13 +1,13 @@
 import { TrackIdentifier } from '@muc/common';
-import { Base64 } from 'js-base64';
 
 export class ShareLinkEncoder {
   static encode(identifier: TrackIdentifier): string {
-    if (!identifier) {
+    if (!identifier || !identifier.uniqueId) {
       throw new Error('TrackIdentifier is required');
     }
 
-    return Base64.encodeURL(identifier.uniqueId);
+    // Convert string to base64 using native btoa and make it URL-safe
+    return btoa(identifier.uniqueId).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
   }
 
   static decode(encodedId: string): TrackIdentifier {
@@ -16,7 +16,14 @@ export class ShareLinkEncoder {
     }
 
     try {
-      const decoded = Base64.decode(encodedId.trim());
+      // Convert URL-safe base64 back to standard base64 and decode
+      let base64 = encodedId.trim().replace(/-/g, '+').replace(/_/g, '/');
+
+      // Add padding if needed
+      const padding = (4 - (base64.length % 4)) % 4;
+      base64 += '='.repeat(padding);
+
+      const decoded = atob(base64);
       return TrackIdentifier.fromUniqueId(decoded);
     } catch (error) {
       throw new Error(`Failed to decode share link: ${error instanceof Error ? error.message : 'Unknown error'}`);
