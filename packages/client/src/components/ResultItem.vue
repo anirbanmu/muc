@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { AnyNormalizedTrack } from '@muc/common';
 import { useCopyFeedback } from '../composables/useCopyFeedback';
+import PlatformBranding from './PlatformBranding.vue';
 
 const props = defineProps<{
   track: AnyNormalizedTrack;
@@ -23,7 +24,7 @@ function copyUrl(url: string) {
     <a :href="track.sourceUrl" target="_blank" rel="noopener noreferrer" class="result-link">
       <span class="platform-column">
         <span class="link-arrow">&gt;</span>
-        <span class="platform" :class="track.platform">{{ track.platform }}</span>
+        <PlatformBranding :platform="track.platform" />
       </span>
       <span class="track-details">
         {{ track.artistName }} - {{ track.title }}
@@ -104,7 +105,7 @@ function copyUrl(url: string) {
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  width: 95px;
+  width: 110px;
 }
 
 .link-arrow {
@@ -117,27 +118,6 @@ function copyUrl(url: string) {
 
 .result-item:hover .link-arrow {
   opacity: 1;
-}
-
-.platform {
-  flex-grow: 1;
-  text-align: right;
-  font-weight: bold;
-}
-
-.platform {
-  &.spotify {
-    color: var(--color-platform-spotify);
-  }
-  &.youtube {
-    color: var(--color-platform-youtube);
-  }
-  &.deezer {
-    color: var(--color-platform-deezer);
-  }
-  &.itunes {
-    color: var(--color-platform-itunes);
-  }
 }
 
 .track-details {
