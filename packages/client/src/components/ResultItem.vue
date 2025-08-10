@@ -105,7 +105,7 @@ function copyUrl(url: string) {
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  width: 140px;
+  width: 160px;
 }
 
 .link-arrow {

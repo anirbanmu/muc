@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import SpotifyLogo from '@/assets/images/spotify-logo.svg';
 import AppleMusicBadge from '@/assets/images/apple-music-badge.svg';
+import YouTubeLogo from '@/assets/images/yt_logo_fullcolor_white_digital.png';
 
 interface PlatformBrandingProps {
   platform: 'spotify' | 'youtube' | 'deezer' | 'itunes';
@@ -22,6 +23,12 @@ function onLogoError() {
     <div v-if="props.platform === 'spotify'" class="spotify-logo">
       <img v-if="!logoError" :src="SpotifyLogo" alt="Spotify" class="spotify-logo-img" @error="onLogoError" />
       <span v-if="logoError" class="platform-text spotify"> spotify </span>
+    </div>
+
+    <!-- YouTube logo display with fallback -->
+    <div v-else-if="props.platform === 'youtube'" class="youtube-logo">
+      <img v-if="!logoError" :src="YouTubeLogo" alt="YouTube" class="youtube-logo-img" @error="onLogoError" />
+      <span v-if="logoError" class="platform-text youtube"> youtube </span>
     </div>
 
     <!-- Apple Music badge display with fallback -->
@@ -72,14 +79,13 @@ function onLogoError() {
   height: 100%;
 }
 
-/* Spotify branding guidelines: logo should never be smaller than 70px in digital */
+/* Spotify branding guidelines: logo should never be smaller than 70px width in digital */
 .spotify-logo-img {
   height: auto;
   width: 75px;
   min-width: 75px;
   object-fit: contain;
   margin-right: 4px;
-  /* Slightly increased to balance with 30px Apple Music badge */
 }
 
 .apple-music-badge {
@@ -96,6 +102,22 @@ function onLogoError() {
   width: auto;
   object-fit: contain;
   margin-right: 4px;
-  /* Apple's minimum 30px for proper readability of "Listen on" text */
+}
+
+/* YouTube branding guidelines: minimum 20px height for digital use, maintain aspect ratio */
+.youtube-logo {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: 100%;
+}
+
+.youtube-logo-img {
+  height: 32px;
+  min-height: 20px;
+  width: auto;
+  object-fit: contain;
+  margin-right: -2px;
+  /* Negative margin to compensate for possible embedded padding in PNG file */
 }
 </style>
