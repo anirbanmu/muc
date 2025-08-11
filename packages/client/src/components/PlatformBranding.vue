@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import SpotifyLogo from '@/assets/images/spotify-logo.svg';
 import AppleMusicBadge from '@/assets/images/apple-music-badge.svg';
 import YouTubeLogo from '@/assets/images/yt_logo_fullcolor_white_digital.png';
+import DeezerLogo from '@/assets/images/deezer-horizontal-mw-rgb.svg';
 
 interface PlatformBrandingProps {
   platform: 'spotify' | 'youtube' | 'deezer' | 'itunes';
@@ -41,6 +42,12 @@ function onLogoError() {
         @error="onLogoError"
       />
       <span v-if="logoError" class="platform-text itunes"> itunes </span>
+    </div>
+
+    <!-- Deezer logo display with fallback -->
+    <div v-else-if="props.platform === 'deezer'" class="deezer-logo">
+      <img v-if="!logoError" :src="DeezerLogo" alt="Deezer" class="deezer-logo-img" @error="onLogoError" />
+      <span v-if="logoError" class="platform-text deezer"> deezer </span>
     </div>
 
     <!-- Text display for other platforms -->
@@ -82,8 +89,8 @@ function onLogoError() {
 /* Spotify branding guidelines: logo should never be smaller than 70px width in digital */
 .spotify-logo-img {
   height: auto;
-  width: 75px;
-  min-width: 75px;
+  width: 80px;
+  min-width: 80px;
   object-fit: contain;
   margin-right: 4px;
 }
@@ -117,7 +124,23 @@ function onLogoError() {
   min-height: 20px;
   width: auto;
   object-fit: contain;
-  margin-right: -2px;
+  margin-right: -3px;
   /* Negative margin to compensate for possible embedded padding in PNG file */
+}
+
+/* Deezer branding guidelines: maintain clear space and aspect ratio */
+.deezer-logo {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: 100%;
+}
+
+.deezer-logo-img {
+  height: auto;
+  width: 85px;
+  min-width: 85px;
+  object-fit: contain;
+  margin-right: 6px;
 }
 </style>
