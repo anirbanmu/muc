@@ -10,13 +10,9 @@
 #   CLIENT_DIST_PATH     - Path to client files (default: /app/client)
 
 # ----------------------------------------------------------------------------------------------------------------
-# base image
-FROM node:22-alpine AS base-node
-RUN npm install -g npm
-
-# ----------------------------------------------------------------------------------------------------------------
 # build stage
-FROM base-node AS builder
+FROM node:22-slim AS builder
+RUN npm install -g npm
 WORKDIR /app
 
 # copy package files
@@ -36,33 +32,19 @@ COPY eslint.config.ts ./
 RUN npm run build
 
 # ----------------------------------------------------------------------------------------------------------------
-# production image - ultra minimal with just node
-FROM base-node AS runner
-RUN npm install -g npm
-
-# Install tini for proper signal handling in containers
-RUN apk add --no-cache tini
+# production image
+FROM gcr.io/distroless/nodejs22-debian12 AS runner
 
 WORKDIR /app
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nodejs
-
 # only the built bundles
-COPY --from=builder --chown=nodejs:nodejs /app/packages/server/dist ./server/
-COPY --from=builder --chown=nodejs:nodejs /app/packages/client/dist ./client/
+COPY --from=builder /app/packages/server/dist ./server/
+COPY --from=builder /app/packages/client/dist ./client/
 
 ENV NODE_ENV=production
 ENV PORT=3000
 ENV CLIENT_DIST_PATH=/app/client
 
-USER nodejs
-
 EXPOSE 3000
 
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3000/', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
-
-# Use tini as init system for proper signal handling
-ENTRYPOINT ["/sbin/tini", "--"]
-CMD ["node", "server/server.bundle.cjs"]
+CMD ["server/server.bundle.cjs"]
