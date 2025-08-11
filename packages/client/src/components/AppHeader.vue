@@ -1,10 +1,24 @@
 <template>
   <header class="header">
     <h1>MUC<span class="cursor">_</span></h1>
+    <button type="button" class="about-link" @click="$emit('open-about-modal')">[About]</button>
   </header>
 </template>
 
+<script setup lang="ts">
+defineEmits<{
+  'open-about-modal': [];
+}>();
+</script>
+
 <style scoped>
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
 .header h1 {
   --title-glow: 0 0 20px rgba(255, 140, 26, 0.4);
   font-size: calc(var(--font-size-lg) * 2);
@@ -17,6 +31,41 @@
 
 .header h1:hover {
   text-shadow: var(--title-glow);
+}
+
+.about-link {
+  background: none;
+  border: none;
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  opacity: 0.6;
+  transition: var(--transition-colors);
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.about-link:hover {
+  color: var(--color-action);
+  opacity: 1;
+}
+
+.about-link:focus {
+  outline: none;
+}
+
+.about-link:focus-visible {
+  outline: 1px solid var(--color-prompt);
+  outline-offset: 2px;
+}
+
+.about-link:active {
+  transform: none;
+  background: none;
 }
 
 .cursor {
@@ -33,6 +82,20 @@
   50% {
     color: var(--color-prompt);
     text-shadow: var(--glow-prompt);
+  }
+}
+
+/* Responsive behavior */
+@media (max-width: 480px) {
+  .header {
+    flex-direction: column;
+    gap: var(--space-sm);
+    align-items: flex-start;
+  }
+
+  .about-link {
+    align-self: flex-end;
+    font-size: var(--font-size-sm);
   }
 }
 </style>

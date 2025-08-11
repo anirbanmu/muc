@@ -3,11 +3,21 @@ import { ref, onMounted, onUnmounted } from 'vue';
 import AppHeader from './components/AppHeader.vue';
 import SearchForm from './components/SearchForm.vue';
 import ResultsSection from './components/ResultsSection.vue';
+import AboutModal from './components/AboutModal.vue';
 
 const isScrolled = ref(false);
+const isAboutModalOpen = ref(false);
 
 const handleScroll = () => {
   isScrolled.value = window.scrollY > 10;
+};
+
+const openAboutModal = () => {
+  isAboutModalOpen.value = true;
+};
+
+const closeAboutModal = () => {
+  isAboutModalOpen.value = false;
 };
 
 onMounted(() => {
@@ -22,12 +32,13 @@ onUnmounted(() => {
 <template>
   <div class="container">
     <div class="sticky-header" :class="{ 'is-scrolled': isScrolled }">
-      <AppHeader />
+      <AppHeader @open-about-modal="openAboutModal" />
       <SearchForm />
     </div>
     <main class="content">
       <ResultsSection />
     </main>
+    <AboutModal :is-open="isAboutModalOpen" @close="closeAboutModal" />
   </div>
 </template>
 
