@@ -177,7 +177,7 @@ async function start(): Promise<void> {
     res.status(500).json({ message: 'An unexpected internal server error occurred.' });
   });
 
-  app.listen(port, () => {
+  const server = app.listen(port, () => {
     logApp(`Server running on http://localhost:${port}`);
     logApp(`Serving client assets from: ${CLIENT_DIST_PATH}`);
     if (process.env.NODE_ENV !== 'production' && (!SPOTIFY_CLIENT_ID || !SPOTIFY_CLIENT_SECRET || !YOUTUBE_API_KEY)) {
@@ -190,6 +190,25 @@ async function start(): Promise<void> {
       logError('--------------------------------------------\n');
     }
   });
+
+  // graceful shutdown handling for Docker containers
+  const gracefulShutdown = (signal: string) => {
+    logApp(`Received ${signal}, shutting down gracefully...`);
+    server.close(() => {
+      logApp('Server closed. Exiting process.');
+      process.exit(0);
+    });
+
+    // force close after 10 seconds
+    setTimeout(() => {
+      logError('Could not close connections in time, forcefully shutting down');
+      process.exit(1);
+    }, 10000);
+  };
+
+  // listen for termination signals
+  process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+  process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 }
 
 start().catch(error => {

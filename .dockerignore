@@ -1,0 +1,13 @@
+# ignore everything
+*
+
+# explicit includes
+!packages/
+!package.json
+!package-lock.json
+!eslint.config.ts
+
+# common output directories (for compiled code, e.g., 'dist' or 'build')
+# these will apply to the root and any nested packages
+*/**/dist/
+*/**/node_modules/
