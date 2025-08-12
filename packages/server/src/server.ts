@@ -42,7 +42,6 @@ console.error = (...args: unknown[]) => {
 async function start(): Promise<void> {
   const app = express();
   const port = process.env.PORT || 3000;
-  const CORS_ALLOWED_ORIGIN = process.env.CORS_ALLOWED_ORIGIN;
 
   // Trust proxy headers (needed for HTTPS enforcement behind Fly.io proxy)
   // Set to 1 to trust only the first proxy (Fly.io)
@@ -74,36 +73,17 @@ async function start(): Promise<void> {
   app.use(compression());
   app.use(express.json());
 
-  // CORS configuration to control which domains can access the API.
-  const localHosts = [`localhost:${port}`, `127.0.0.1:${port}`];
+  // CORS configuration - only needed in development for Vite dev server
   if (process.env.NODE_ENV === 'development') {
-    // In development, add the Vite dev server host.
-    localHosts.push(`localhost:5173`, `127.0.0.1:5173`);
+    logApp('Development mode: Enabling CORS for Vite dev server');
+    app.use(
+      cors({
+        origin: [`http://localhost:5173`, `https://localhost:5173`, `http://127.0.0.1:5173`, `https://127.0.0.1:5173`],
+      }),
+    );
+  } else {
+    logApp('Production mode: CORS disabled (same-origin deployment)');
   }
-
-  // Create a allowlist of full origins, including both http and https protocols for local development.
-  const allowedOrigins: string[] = [
-    ...localHosts.map(host => `http://${host}`),
-    ...localHosts.map(host => `https://${host}`),
-  ];
-
-  if (process.env.NODE_ENV !== 'development' && CORS_ALLOWED_ORIGIN) {
-    // In production, add specific origins from a comma-separated environment variable.
-    allowedOrigins.push(...CORS_ALLOWED_ORIGIN.split(',').map(origin => origin.trim()));
-  }
-
-  app.use(
-    cors({
-      origin: (origin, callback) => {
-        // Allow requests with no origin (like server-to-server) or from allowlisted origins.
-        if (!origin || allowedOrigins.includes(origin)) {
-          callback(null, true);
-        } else {
-          callback(new Error('This origin is not allowed by CORS configuration.'));
-        }
-      },
-    }),
-  );
 
   app.use(
     '/api/',
