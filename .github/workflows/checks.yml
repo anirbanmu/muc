@@ -1,4 +1,4 @@
-name: container build
+name: core-checks
 
 on:
   pull_request:
@@ -6,7 +6,7 @@ on:
     branches: [main]
 
 jobs:
-  build:
+  container-build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
