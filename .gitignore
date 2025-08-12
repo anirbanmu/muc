@@ -16,7 +16,12 @@ yarn-error.log*
 # Adjust if you commit these for specific reasons (e.g., published packages)
 *.js
 !prettier.config.js
-*.d.ts
+# Only ignore generated .d.ts files in build directories, not source .d.ts files
+dist/**/*.d.ts
+build/**/*.d.ts
+out/**/*.d.ts
+es/**/*.d.ts
+lib/**/*.d.ts
 *.map
 
 # TypeScript build info file
