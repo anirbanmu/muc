@@ -1,0 +1,44 @@
+app = "your-app-name"
+primary_region = "sjc"
+kill_signal = "SIGINT"
+kill_timeout = "5s"
+
+[experimental]
+  auto_rollback = true
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  NODE_ENV = "production"
+  PORT = "3000"
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+  [http_service.concurrency]
+    type = "connections"
+    hard_limit = 25
+    soft_limit = 20
+
+  [[http_service.checks]]
+    grace_period = "5s"
+    interval = "15s"
+    method = "GET"
+    timeout = "2s"
+    path = "/"
+
+# Static file serving - bypass Express for assets
+[[statics]]
+  guest_path = "/app/client/assets"
+  url_prefix = "/assets"
+
+# Serve favicon specifically
+[[statics]]
+  guest_path = "/app/client/favicon.ico"
+  url_prefix = "/favicon.ico"
