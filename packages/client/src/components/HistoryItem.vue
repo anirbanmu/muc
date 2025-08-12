@@ -45,6 +45,11 @@ const formattedTimestamp = computed(() => {
 });
 
 function copyShareLink(searchItem: SearchHistoryItem) {
+  if (!navigator.clipboard) {
+    console.error('Clipboard API not available. Cannot copy share URL.');
+    return;
+  }
+
   const shareUrl = ShareLinkEncoder.createShareUrl(searchItem.sourceTrack);
   copy(() => navigator.clipboard.writeText(shareUrl));
 }
@@ -61,7 +66,7 @@ function copyShareLink(searchItem: SearchHistoryItem) {
         <div class="actions">
           <span v-if="formattedTimestamp" class="timestamp">{{ formattedTimestamp }}</span>
           <button
-            class="share-button"
+            class="copy-link-button"
             :class="{ copied: isCopied }"
             :disabled="isCopied"
             title="Share this search"
@@ -126,7 +131,7 @@ function copyShareLink(searchItem: SearchHistoryItem) {
   white-space: nowrap;
 }
 
-.share-button {
+.copy-link-button {
   background: none;
   border: none;
   color: var(--color-text);
@@ -139,12 +144,12 @@ function copyShareLink(searchItem: SearchHistoryItem) {
   opacity: 0.7;
 }
 
-.share-button:hover:not(.copied) {
+.copy-link-button:hover:not(.copied) {
   color: var(--color-action);
   opacity: 1;
 }
 
-.share-button.copied {
+.copy-link-button.copied {
   color: var(--color-prompt);
   opacity: 1;
 }
