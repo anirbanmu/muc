@@ -62,3 +62,15 @@ jobs:
         with:
           context: .
           push: false
+
+  fly-toml-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+      - name: Install and run tomlv
+        run: |
+          go install github.com/BurntSushi/toml/cmd/tomlv@latest
+          tomlv fly.toml
