@@ -28,11 +28,11 @@ kill_timeout = "5s"
     soft_limit = 20
 
   [[http_service.checks]]
-    grace_period = "5s"
-    interval = "15s"
+    grace_period = "2s"
+    interval = "5s"
     method = "GET"
-    timeout = "2s"
-    path = "/"
+    timeout = "1s"
+    path = "/health"
 
 # Static file serving - bypass Express for assets
 [[statics]]

@@ -139,6 +139,10 @@ async function start(): Promise<void> {
     process.exit(1);
   }
 
+  app.get('/health', (_req: Request, res: Response) => {
+    res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+  });
+
   const apiRouter = new ApiRouter(mediaService);
   app.use('/api', apiRouter.getRouter());
 

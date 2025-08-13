@@ -6,9 +6,9 @@
   "description": "Monorepo for the MUC project.",
   "main": "index.js",
   "scripts": {
-    "all": "npm run format && npm run lint:fix && npm run build",
-    "all:check": "npm run format:check && npm run lint && npm run build",
-    "all:start": "npm run all && npm run start",
+    "all": "npm run clean && npm run format && npm run lint:fix && npm run build",
+    "all:check": "npm run clean && npm run format:check && npm run lint && npm run build",
+    "all:start": "npm run clean && npm run all && npm run start",
     "build": "npm run clean && npm run build:common && npm run build:client && npm run build:server && npm run build:cli",
     "build:common": "npm run build --workspace=@muc/common",
     "build:server": "npm run build --workspace=@muc/server",
