@@ -1,5 +1,7 @@
 # 🎵 muc - Music URI Converter
 
+[![Checks](https://github.com/anirbanmu/muc/actions/workflows/checks.yml/badge.svg)](https://github.com/anirbanmu/muc/actions/workflows/checks.yml)
+
 Paste a Spotify, YouTube, or other music link and get the same song on all platforms. Share music with anyone regardless
 of their preferred streaming service.
 
