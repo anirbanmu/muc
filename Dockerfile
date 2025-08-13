@@ -11,7 +11,7 @@
 
 # ----------------------------------------------------------------------------------------------------------------
 # build stage
-FROM node:22-slim AS builder
+FROM node:24-slim AS builder
 RUN npm install -g npm
 WORKDIR /app
 
@@ -33,7 +33,7 @@ RUN npm run build
 
 # ----------------------------------------------------------------------------------------------------------------
 # production image
-FROM gcr.io/distroless/nodejs22-debian12 AS runner
+FROM gcr.io/distroless/nodejs24-debian12 AS runner
 
 WORKDIR /app
 
