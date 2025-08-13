@@ -17,7 +17,7 @@ export class ApiRouter {
   private readonly spotifyLimiter = pLimit(10);
   private readonly youtubeLimiter = pLimit(10);
 
-  constructor(private readonly mediaService: BackendMediaService) {
+  constructor(private readonly mediaServicePromise: Promise<BackendMediaService>) {
     this.initializeRoutes();
   }
 
@@ -50,7 +50,8 @@ export class ApiRouter {
     }
 
     try {
-      const track = await this.spotifyLimiter(() => this.mediaService.getSpotifyTrackDetails(uri));
+      const mediaService = await this.mediaServicePromise;
+      const track = await this.spotifyLimiter(() => mediaService.getSpotifyTrackDetails(uri));
       if (!track) {
         res.status(404).json({ message: 'Spotify track not found or URI invalid.' });
         return;
@@ -70,7 +71,8 @@ export class ApiRouter {
     }
 
     try {
-      const track = await this.spotifyLimiter(() => this.mediaService.searchSpotifyTracks(query));
+      const mediaService = await this.mediaServicePromise;
+      const track = await this.spotifyLimiter(() => mediaService.searchSpotifyTracks(query));
       res.json(track ? [track] : []);
     } catch (error) {
       console.error('Error searching Spotify tracks:', error instanceof Error ? error.message : error);
@@ -89,7 +91,8 @@ export class ApiRouter {
     }
 
     try {
-      const video = await this.youtubeLimiter(() => this.mediaService.getYoutubeVideoDetails(uri));
+      const mediaService = await this.mediaServicePromise;
+      const video = await this.youtubeLimiter(() => mediaService.getYoutubeVideoDetails(uri));
       if (!video) {
         res.status(404).json({ message: 'YouTube video not found or URI invalid.' });
         return;
@@ -109,7 +112,8 @@ export class ApiRouter {
     }
 
     try {
-      const video = await this.youtubeLimiter(() => this.mediaService.searchYoutubeVideos(query));
+      const mediaService = await this.mediaServicePromise;
+      const video = await this.youtubeLimiter(() => mediaService.searchYoutubeVideos(query));
       res.json(video ? [video] : []);
     } catch (error) {
       console.error('Error searching YouTube videos:', error instanceof Error ? error.message : error);
