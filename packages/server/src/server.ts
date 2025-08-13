@@ -107,8 +107,7 @@ async function start(): Promise<void> {
     next();
   });
 
-  let mediaService: BackendMediaService;
-  try {
+  const mediaServicePromise = (async (): Promise<BackendMediaService> => {
     if (!SPOTIFY_CLIENT_ID || !SPOTIFY_CLIENT_SECRET) {
       console.warn('Spotify API credentials not fully configured. Spotify features might be unavailable.');
     }
@@ -133,17 +132,14 @@ async function start(): Promise<void> {
       youtubeClient = new CachedYoutubeClient(rawYoutubeClient, cache);
     }
 
-    mediaService = BackendMediaService.createWithClients(undefined, undefined, spotifyClient, youtubeClient);
-  } catch (error) {
-    console.error('Failed to initialize BackendMediaService:', error);
-    process.exit(1);
-  }
+    return BackendMediaService.createWithClients(undefined, undefined, spotifyClient, youtubeClient);
+  })();
 
   app.get('/health', (_req: Request, res: Response) => {
     res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
   });
 
-  const apiRouter = new ApiRouter(mediaService);
+  const apiRouter = new ApiRouter(mediaServicePromise);
   app.use('/api', apiRouter.getRouter());
 
   app.use(express.static(CLIENT_DIST_PATH));
