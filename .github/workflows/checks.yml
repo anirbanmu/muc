@@ -85,3 +85,19 @@ jobs:
         run: |
           go install github.com/BurntSushi/toml/cmd/tomlv@latest
           tomlv fly.toml
+
+  lockfile-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Check for package-lock drift
+        run: |
+          npm install --package-lock-only
+          git diff --exit-code package-lock.json packages/*/package-lock.json || {
+            echo "❌ Package lock files are out of sync with package.json files"
+            echo "Run 'npm install' to update lock files"
+            exit 1
+          }
