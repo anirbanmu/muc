@@ -63,6 +63,17 @@ jobs:
           context: .
           push: false
 
+  license-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run license:check
+
   fly-toml-validate:
     runs-on: ubuntu-latest
     steps:
