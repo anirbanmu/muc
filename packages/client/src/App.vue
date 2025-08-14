@@ -47,7 +47,7 @@ onUnmounted(() => {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 2rem; /* Handle horizontal padding */
+  padding: 0 clamp(1rem, 4vw, 2rem);
 }
 
 .sticky-header {
@@ -55,18 +55,26 @@ onUnmounted(() => {
   top: 0;
   z-index: 10;
   background-color: var(--color-background);
-  padding-top: 2rem; /* Re-apply top space */
-  padding-bottom: var(--section-gap); /* Space between search and results */
+  padding-top: clamp(1rem, 4vw, 2rem);
+  padding-bottom: var(--section-gap);
   border-bottom: 1px solid transparent;
   transition:
     background-color 0.3s ease,
     border-bottom-color 0.3s ease;
 }
 
+@media (max-width: 768px) {
+  .sticky-header {
+    position: static;
+    padding-top: var(--space-lg);
+    padding-bottom: var(--space-lg);
+  }
+}
+
 .sticky-header.is-scrolled {
   background-color: rgba(var(--color-background-rgb), 0.85);
   backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px); /* For Safari */
+  -webkit-backdrop-filter: blur(8px);
   border-bottom-color: var(--color-border);
 }
 </style>

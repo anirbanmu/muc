@@ -3,7 +3,7 @@ import type { AnyNormalizedTrack } from '@muc/common';
 import { useCopyFeedback } from '../composables/useCopyFeedback';
 import PlatformBranding from './PlatformBranding.vue';
 
-const props = defineProps<{
+defineProps<{
   track: AnyNormalizedTrack;
 }>();
 
@@ -27,7 +27,8 @@ function copyUrl(url: string) {
         <PlatformBranding :platform="track.platform" />
       </span>
       <span class="track-details">
-        {{ track.artistName }} - {{ track.title }}
+        <span class="artist-name">{{ track.artistName }}</span>
+        <span class="track-title">{{ track.title }}</span>
         <span v-if="'albumName' in track && track.albumName" class="album-name"> ({{ track.albumName }}) </span>
       </span>
       <button
@@ -37,8 +38,10 @@ function copyUrl(url: string) {
         title="Copy URL"
         @click.prevent="copyUrl(track.sourceUrl)"
       >
-        <span v-if="isCopied">Copied!</span>
-        <span v-else>[Copy]</span>
+        <span v-if="isCopied" class="copy-text">Copied!</span>
+        <span v-else class="copy-text">[Copy]</span>
+        <span v-if="isCopied" class="copy-icon">✓</span>
+        <span v-else class="copy-icon">⧉</span>
       </button>
     </a>
   </li>
@@ -69,6 +72,7 @@ function copyUrl(url: string) {
   color: var(--color-text);
   text-decoration: none;
   min-height: 2.2rem;
+  min-width: 0; /* Critical for flex truncation */
 }
 
 .result-item:hover .track-details {
@@ -86,6 +90,16 @@ function copyUrl(url: string) {
   cursor: pointer;
   opacity: 0;
   transition: var(--transition-colors);
+  margin-left: var(--space-sm); /* Space between track text and button */
+}
+
+/* Desktop: show text, hide icons */
+.copy-icon {
+  display: none;
+}
+
+.copy-text {
+  display: inline;
 }
 
 .result-item:hover .copy-button:not(.copied) {
@@ -121,12 +135,106 @@ function copyUrl(url: string) {
 }
 
 .track-details {
-  word-break: break-word;
+  flex: 1;
+  min-width: 0; /* Critical for truncation */
   text-decoration: none;
   transition: var(--transition-base);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.artist-name::after {
+  content: ' - ';
 }
 
 .album-name {
   opacity: 0.7;
+}
+
+/* Mobile responsive styles */
+@media (max-width: 767px) {
+  .copy-button:not(.copied) {
+    opacity: 0.8;
+  }
+
+  .result-link {
+    min-height: var(--touch-target-min);
+    gap: 8px; /* Fixed small gap on mobile */
+    min-width: 0; /* Critical for truncation */
+  }
+
+  .platform-column {
+    width: 100px; /* Give more space for Apple Music logo */
+    flex-shrink: 0;
+  }
+
+  .track-details {
+    flex: 1;
+    min-width: 0;
+    line-height: 1.3;
+
+    /* Condensed typography for better space usage */
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    font-size: clamp(0.85rem, 2.5vw, 0.95rem);
+
+    /* Single line with ellipsis truncation */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Very narrow screens: track title only */
+  @media (max-width: 379px) {
+    .artist-name,
+    .artist-name::after {
+      display: none;
+    }
+  }
+
+  /* Medium screens: artist + track with potential truncation */
+  @media (min-width: 380px) and (max-width: 479px) {
+    .track-details {
+      font-size: 0.9rem;
+    }
+  }
+
+  /* Wider screens: full size, both artist and track */
+  @media (min-width: 480px) {
+    .track-details {
+      font-size: 0.95rem;
+      letter-spacing: 0;
+    }
+  }
+
+  .album-name {
+    display: none;
+  }
+
+  .copy-button {
+    min-height: var(--touch-target-min);
+    flex-shrink: 0;
+    width: 32px; /* Much more compact with icons */
+    padding: 0;
+    font-size: 1rem; /* Larger for better icon visibility */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 4px; /* Small gap on mobile */
+  }
+
+  /* Mobile: hide text, show icons */
+  .copy-text {
+    display: none;
+  }
+
+  .copy-icon {
+    display: inline;
+  }
+
+  .link-arrow {
+    display: none;
+  }
 }
 </style>

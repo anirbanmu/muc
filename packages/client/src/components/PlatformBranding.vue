@@ -111,6 +111,13 @@ function onLogoError() {
   margin-right: 4px;
 }
 
+/* Mobile: move Apple Music logo left */
+@media (max-width: 767px) {
+  .apple-music-badge-img {
+    margin-left: -6px;
+  }
+}
+
 /* YouTube branding guidelines: minimum 20px height for digital use, maintain aspect ratio */
 .youtube-logo {
   display: flex;

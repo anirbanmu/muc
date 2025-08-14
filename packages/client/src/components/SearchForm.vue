@@ -22,7 +22,7 @@ const handleSearch = async () => {
   <section class="search-section">
     <form class="search-form" @submit.prevent="handleSearch">
       <div class="input-wrapper">
-        <span class="prompt">guest@muc:~$&nbsp;</span>
+        <span class="prompt" />
         <input
           v-model="uri"
           type="text"
@@ -30,26 +30,25 @@ const handleSearch = async () => {
           placeholder="Enter a music track URI..."
           :disabled="isLoading"
         />
-        <Transition name="fade">
-          <button
-            v-if="uri.trim().length > 0"
-            type="submit"
-            class="search-button"
-            :disabled="isLoading"
-            aria-label="Search"
-          >
-            [Search]
-          </button>
-        </Transition>
+        <button
+          type="submit"
+          class="search-button"
+          :disabled="isLoading || uri.trim().length === 0"
+          aria-label="Search"
+        >
+          →
+        </button>
       </div>
-      <div
-        class="history-toggle"
-        title="Toggle between all history and current session"
-        @click="session.toggleSessionFilter"
-      >
-        <span class="toggle-label">all history</span>
-        <div class="toggle-switch" :class="{ on: !showOnlyCurrentSession }">
-          <div class="toggle-button" />
+      <div class="bottom-row">
+        <div
+          class="history-toggle"
+          :title="showOnlyCurrentSession ? 'current session' : 'all history'"
+          @click="session.toggleSessionFilter"
+        >
+          <span class="toggle-label">all history</span>
+          <div class="toggle-switch" :class="{ on: !showOnlyCurrentSession }">
+            <div class="toggle-button" />
+          </div>
         </div>
       </div>
     </form>
@@ -63,6 +62,13 @@ const handleSearch = async () => {
   gap: var(--space-lg);
 }
 
+.bottom-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
 .input-wrapper {
   display: flex;
   align-items: center;
@@ -70,6 +76,12 @@ const handleSearch = async () => {
 }
 
 .prompt {
+  color: var(--color-prompt);
+  font-weight: bold;
+  margin-right: var(--space-xs);
+}
+
+.prompt::before {
   color: var(--color-prompt);
   font-weight: bold;
 }
@@ -80,9 +92,10 @@ const handleSearch = async () => {
   border: none;
   color: var(--color-text);
   font-family: inherit;
-  font-size: inherit;
+  font-size: 16px;
   padding: var(--space-sm);
   transition: var(--transition-all);
+  min-height: var(--touch-target-min);
 }
 
 .search-input:focus {
@@ -99,12 +112,13 @@ const handleSearch = async () => {
   border: 1px solid var(--color-action);
   color: var(--color-action);
   font-family: inherit;
-  font-size: var(--font-size-base);
-  padding: var(--space-xs) var(--space-md);
+  font-size: var(--font-size-lg);
   cursor: pointer;
-  border-radius: var(--border-radius-sm);
-  margin-left: var(--space-sm);
-  transition: var(--transition-colors);
+  transition: var(--transition-all);
+  min-height: var(--touch-target-min);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .search-button:hover:not(:disabled) {
@@ -114,6 +128,8 @@ const handleSearch = async () => {
 .search-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  color: var(--color-text);
+  border-color: var(--color-border);
 }
 
 .fade-enter-active,
@@ -126,13 +142,13 @@ const handleSearch = async () => {
   opacity: 0;
 }
 
-/* History toggle styles */
 .history-toggle {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
   cursor: pointer;
   user-select: none;
+  min-height: var(--touch-target-min);
 }
 
 .toggle-label {
@@ -173,8 +189,76 @@ const handleSearch = async () => {
 }
 
 .toggle-switch.on .toggle-button {
-  transform: translateX(16px);
   background-color: var(--color-prompt);
   box-shadow: 0 0 8px rgba(255, 140, 26, 0.4);
+}
+
+@media (min-width: 768px) {
+  .prompt::before {
+    content: 'guest@muc:~ > ';
+  }
+
+  .search-button {
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--border-radius-sm);
+    margin-left: var(--space-sm);
+    min-width: var(--touch-target-min);
+  }
+
+  .toggle-switch.on .toggle-button {
+    transform: translateX(16px);
+  }
+}
+
+@media (max-width: 767px) {
+  .search-form {
+    gap: var(--space-sm);
+  }
+
+  .bottom-row {
+    flex-direction: column;
+    gap: 0;
+    justify-content: center;
+  }
+
+  .input-wrapper {
+    position: relative;
+    padding-right: calc(var(--touch-target-min) + var(--space-md));
+  }
+
+  .prompt::before {
+    content: '~ > ';
+  }
+
+  .search-button {
+    padding: var(--space-sm);
+    border-radius: 50%;
+    width: var(--touch-target-min);
+    height: var(--touch-target-min);
+    margin-left: 0;
+    position: absolute;
+    right: var(--space-sm);
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .history-toggle {
+    flex-direction: column;
+    gap: 2px;
+    min-height: auto;
+  }
+
+  .toggle-label {
+    display: none;
+  }
+
+  .toggle-switch {
+    width: 20px;
+    height: 36px;
+  }
+
+  .toggle-switch.on .toggle-button {
+    transform: translateY(16px);
+  }
 }
 </style>

@@ -27,12 +27,16 @@ defineEmits<{
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  flex-wrap: nowrap;
+  min-width: 0;
 }
 
 .header-links {
   display: flex;
   gap: var(--space-sm);
   align-items: center;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .github-link {
@@ -44,6 +48,9 @@ defineEmits<{
   border-radius: var(--border-radius-md);
   opacity: 0.3;
   transition: var(--transition-colors);
+  min-height: var(--touch-target-min);
+  display: flex;
+  align-items: center;
 }
 
 .github-link:hover {
@@ -59,6 +66,8 @@ defineEmits<{
   margin: 0;
   text-shadow: var(--glow-prompt);
   transition: var(--transition-base);
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .header h1:hover {
@@ -79,6 +88,9 @@ defineEmits<{
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+  min-height: var(--touch-target-min);
+  display: flex;
+  align-items: center;
 }
 
 .about-link:hover {
@@ -117,21 +129,21 @@ defineEmits<{
   }
 }
 
-/* Responsive behavior */
-@media (max-width: 480px) {
-  .header {
-    flex-direction: column;
-    gap: var(--space-sm);
-    align-items: flex-start;
+@media (max-width: 768px) {
+  .header h1 {
+    font-size: calc(var(--font-size-lg) * 1.5);
   }
 
   .header-links {
-    align-self: flex-end;
+    gap: var(--space-xs);
   }
 
   .github-link,
   .about-link {
-    font-size: var(--font-size-sm);
+    font-size: calc(var(--font-size-sm) * 0.9);
+    padding: var(--space-xs);
+    /* Ensure touch targets are maintained on mobile */
+    min-height: var(--touch-target-min);
   }
 }
 </style>
