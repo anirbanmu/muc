@@ -153,7 +153,7 @@ function copyUrl(url: string) {
 }
 
 /* Mobile responsive styles */
-@media (max-width: 767px) {
+@media (max-width: 1024px) {
   .copy-button:not(.copied) {
     opacity: 0.8;
   }
@@ -215,13 +215,13 @@ function copyUrl(url: string) {
   .copy-button {
     min-height: var(--touch-target-min);
     flex-shrink: 0;
-    width: 32px; /* Much more compact with icons */
+    width: 32px;
     padding: 0;
-    font-size: 1rem; /* Larger for better icon visibility */
+    font-size: 1rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-left: 4px; /* Small gap on mobile */
+    margin-left: 4px;
   }
 
   /* Mobile: hide text, show icons */
