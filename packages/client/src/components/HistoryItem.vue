@@ -81,10 +81,10 @@ function copyShareLink(searchItem: SearchHistoryItem) {
             title="Share this search"
             @click="copyShareLink(search)"
           >
-            <span v-if="isCopied" class="share-text">Copied!</span>
-            <span v-else class="share-text">[Share]</span>
-            <span v-if="isCopied" class="share-icon">✓</span>
-            <span v-else class="share-icon">↗</span>
+            <span v-if="isCopied" class="action-text">Copied!</span>
+            <span v-else class="action-text">[Share]</span>
+            <span v-if="isCopied" class="action-icon">✓</span>
+            <span v-else class="action-icon">↗</span>
           </button>
         </div>
       </div>
@@ -186,12 +186,12 @@ function copyShareLink(searchItem: SearchHistoryItem) {
 
 /* Desktop: show text timestamps and share text */
 .timestamp-mobile,
-.share-icon {
+.action-icon {
   display: none;
 }
 
 .timestamp-desktop,
-.share-text {
+.action-text {
   display: inline;
 }
 
@@ -244,12 +244,12 @@ function copyShareLink(searchItem: SearchHistoryItem) {
 
   /* Mobile: show icons and mobile timestamp */
   .timestamp-desktop,
-  .share-text {
+  .action-text {
     display: none;
   }
 
   .timestamp-mobile,
-  .share-icon {
+  .action-icon {
     display: inline;
   }
 }
