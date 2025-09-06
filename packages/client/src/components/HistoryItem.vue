@@ -196,7 +196,7 @@ function copyShareLink(searchItem: SearchHistoryItem) {
 }
 
 /* Desktop: more space after prompt */
-@media (min-width: 768px) {
+@media (min-width: 1025px) {
   .prompt::before {
     content: 'guest@muc:~ > ';
   }
@@ -207,7 +207,7 @@ function copyShareLink(searchItem: SearchHistoryItem) {
 }
 
 /* Mobile: compact layout */
-@media (max-width: 767px) {
+@media (max-width: 1024px) {
   .prompt::before {
     content: '~ > ';
   }
