@@ -42,6 +42,7 @@
   --border-radius-sm: 2px;
   --border-radius-md: 4px;
   --border-radius-lg: 8px;
+  --touch-target-min: 44px;
 
   /* Typography */
   --font-size-sm: 0.9rem;

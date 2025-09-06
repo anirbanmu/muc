@@ -44,6 +44,14 @@ const formattedTimestamp = computed(() => {
   });
 });
 
+const formattedTimestampMobile = computed(() => {
+  if (!formattedTimestamp.value) {
+    return null;
+  }
+  // Convert desktop format to mobile by removing "just " and " ago"
+  return formattedTimestamp.value.replace(/^just /, '').replace(/ ago$/, '');
+});
+
 function copyShareLink(searchItem: SearchHistoryItem) {
   if (!navigator.clipboard) {
     console.error('Clipboard API not available. Cannot copy share URL.');
@@ -60,11 +68,12 @@ function copyShareLink(searchItem: SearchHistoryItem) {
     <div class="history-item-content">
       <div class="history-prompt">
         <div class="prompt-uri-wrapper">
-          <span class="prompt">guest@muc:~$&nbsp;</span>
+          <span class="prompt" />
           <span class="history-uri">{{ search.uri }}</span>
         </div>
         <div class="actions">
-          <span v-if="formattedTimestamp" class="timestamp">{{ formattedTimestamp }}</span>
+          <span v-if="formattedTimestamp" class="timestamp timestamp-desktop">{{ formattedTimestamp }}</span>
+          <span v-if="formattedTimestampMobile" class="timestamp timestamp-mobile">{{ formattedTimestampMobile }}</span>
           <button
             class="copy-link-button"
             :class="{ copied: isCopied }"
@@ -72,8 +81,10 @@ function copyShareLink(searchItem: SearchHistoryItem) {
             title="Share this search"
             @click="copyShareLink(search)"
           >
-            <span v-if="isCopied">Copied!</span>
-            <span v-else>[Share]</span>
+            <span v-if="isCopied" class="share-text">Copied!</span>
+            <span v-else class="share-text">[Share]</span>
+            <span v-if="isCopied" class="share-icon">✓</span>
+            <span v-else class="share-icon">↗</span>
           </button>
         </div>
       </div>
@@ -86,13 +97,10 @@ function copyShareLink(searchItem: SearchHistoryItem) {
 
 <style scoped>
 .history-item {
-  display: grid;
-  grid-template-rows: 1fr;
   margin-bottom: var(--section-gap);
 }
 
 .history-item-content {
-  overflow: hidden;
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-md);
   padding: var(--space-md);
@@ -103,7 +111,6 @@ function copyShareLink(searchItem: SearchHistoryItem) {
   margin-bottom: var(--space-sm);
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
   justify-content: space-between;
   gap: var(--space-md);
 }
@@ -111,18 +118,36 @@ function copyShareLink(searchItem: SearchHistoryItem) {
 .prompt-uri-wrapper {
   display: flex;
   align-items: center;
-  min-width: 0; /* Enables text-overflow in flex child */
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .prompt {
   color: var(--color-prompt);
   font-weight: bold;
+  margin-right: var(--space-xs);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.prompt::before {
+  color: var(--color-prompt);
+  font-weight: bold;
+}
+
+.history-uri {
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .actions {
   display: flex;
   align-items: center;
   gap: var(--space-md);
+  flex-shrink: 0;
 }
 
 .timestamp {
@@ -154,15 +179,78 @@ function copyShareLink(searchItem: SearchHistoryItem) {
   opacity: 1;
 }
 
-.history-uri {
-  color: var(--color-text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 .results-list {
   list-style: none;
   padding-left: var(--space-lg);
+}
+
+/* Desktop: show text timestamps and share text */
+.timestamp-mobile,
+.share-icon {
+  display: none;
+}
+
+.timestamp-desktop,
+.share-text {
+  display: inline;
+}
+
+/* Desktop: more space after prompt */
+@media (min-width: 768px) {
+  .prompt::before {
+    content: 'guest@muc:~ > ';
+  }
+
+  .prompt {
+    margin-right: var(--space-sm);
+  }
+}
+
+/* Mobile: compact layout */
+@media (max-width: 767px) {
+  .prompt::before {
+    content: '~ > ';
+  }
+
+  .history-prompt {
+    gap: 4px;
+  }
+
+  .actions {
+    gap: 4px;
+  }
+
+  .copy-link-button {
+    padding: 4px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+  }
+
+  .timestamp {
+    font-size: 12px;
+  }
+
+  .history-uri {
+    font-size: calc(var(--font-size-sm) * 0.9);
+  }
+
+  .results-list {
+    padding-left: var(--space-sm);
+  }
+
+  /* Mobile: show icons and mobile timestamp */
+  .timestamp-desktop,
+  .share-text {
+    display: none;
+  }
+
+  .timestamp-mobile,
+  .share-icon {
+    display: inline;
+  }
 }
 </style>
