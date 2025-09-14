@@ -20,12 +20,12 @@
     "compression": "^1.8.0",
     "cors": "^2.8.5",
     "express": "^5.1.0",
-    "express-rate-limit": "^8.0.1",
+    "express-rate-limit": "^8.1.0",
     "helmet": "^8.1.0",
     "morgan": "^1.10.0",
     "node-cache": "^5.1.2",
-    "p-limit": "^6.2.0",
-    "supports-color": "^10.1.0"
+    "p-limit": "^7.1.1",
+    "supports-color": "^10.2.2"
   },
   "devDependencies": {
     "@types/compression": "^1.8.1",
