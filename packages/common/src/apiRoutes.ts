@@ -7,4 +7,8 @@ export const API_ROUTES = {
     video: 'youtube/video',
     search: 'youtube/search',
   },
+  itunes: {
+    track: 'itunes/track',
+    search: 'itunes/search',
+  },
 };

@@ -11,18 +11,18 @@ import {
   DeezerNormalizedTrack,
   ItunesNormalizedTrack,
 } from './normalizedTrack.js';
-import { ItunesClient, ItunesTrack } from './itunes.js';
+import { ItunesClient, ItunesClientInterface, ItunesTrack } from './itunes.js';
 import { DeezerClient, DeezerTrack } from './deezer.js';
 
 export class BackendMediaService extends MediaService {
   private readonly youtubeClient: YoutubeClientInterface | undefined;
   private readonly spotifyClient: SpotifyClientInterface | undefined;
   private readonly deezerClient: DeezerClient;
-  private readonly itunesClient: ItunesClient;
+  private readonly itunesClient: ItunesClientInterface;
 
   private constructor(
     deezerClient: DeezerClient,
-    itunesClient: ItunesClient,
+    itunesClient: ItunesClientInterface,
     spotifyClient?: SpotifyClientInterface,
     youtubeClient?: YoutubeClientInterface,
   ) {
@@ -45,7 +45,7 @@ export class BackendMediaService extends MediaService {
 
   public static createWithClients(
     deezerClient?: DeezerClient,
-    itunesClient?: ItunesClient,
+    itunesClient?: ItunesClientInterface,
     spotifyClient?: SpotifyClientInterface,
     youtubeClient?: YoutubeClientInterface,
   ): BackendMediaService {

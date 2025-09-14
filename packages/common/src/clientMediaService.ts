@@ -6,21 +6,17 @@ import {
   DeezerNormalizedTrack,
   ItunesNormalizedTrack,
   mapDeezerTrackToNormalizedTrack,
-  mapItunesTrackToNormalizedTrack,
 } from './normalizedTrack.js';
 import { DeezerClient, DeezerTrack } from './deezer.js';
-import { ItunesClient, ItunesTrack } from './itunes.js';
 
 export class ClientMediaService extends MediaService {
   private readonly apiClient: ApiClient;
   private readonly deezerClient: DeezerClient;
-  private readonly itunesClient: ItunesClient;
 
   constructor(apiClient: ApiClient) {
     super();
     this.apiClient = apiClient;
     this.deezerClient = new DeezerClient();
-    this.itunesClient = new ItunesClient();
   }
 
   public async getSpotifyTrackDetails(uri: string): Promise<SpotifyNormalizedTrack> {
@@ -52,12 +48,11 @@ export class ClientMediaService extends MediaService {
   }
 
   public async getItunesTrackDetails(uri: string): Promise<ItunesNormalizedTrack> {
-    const track: ItunesTrack = await this.itunesClient.getTrackDetails(uri);
-    return mapItunesTrackToNormalizedTrack(track);
+    return this.apiClient.getItunesTrackDetails(uri);
   }
 
   public async searchItunesTracks(query: string): Promise<ItunesNormalizedTrack | null> {
-    const track: ItunesTrack | null = await this.itunesClient.searchTracks(query);
-    return track ? mapItunesTrackToNormalizedTrack(track) : null;
+    const results = await this.apiClient.searchItunesTracks(query);
+    return results[0] || null;
   }
 }

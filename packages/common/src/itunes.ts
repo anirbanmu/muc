@@ -1,11 +1,6 @@
 import ky from 'ky';
 import { isHTTPError } from './kyErrorUtils.js';
 
-const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
-
-// Using jsonp on browsers because itunes doesn't work with CORS
-import jsonp from 'jsonp';
-
 const ITUNES_BASE_URI = 'https://itunes.apple.com';
 const ITUNES_LOOKUP_URI = `${ITUNES_BASE_URI}/lookup`;
 const ITUNES_SEARCH_URI = `${ITUNES_BASE_URI}/search`;
@@ -32,7 +27,12 @@ interface ItunesSearchResponse {
   results: ItunesTrack[];
 }
 
-export class ItunesClient {
+export interface ItunesClientInterface {
+  getTrackDetails(uri: string): Promise<ItunesTrack>;
+  searchTracks(query: string): Promise<ItunesTrack | null>;
+}
+
+export class ItunesClient implements ItunesClientInterface {
   constructor() {}
 
   public async getTrackDetails(uri: string): Promise<ItunesTrack> {
@@ -41,10 +41,6 @@ export class ItunesClient {
       throw new Error('Invalid iTunes track URI format.');
     }
     const params = { id };
-
-    if (isBrowser) {
-      return ItunesClient.getUriDetailsJsonp(params);
-    }
 
     try {
       const response = await ky
@@ -65,23 +61,6 @@ export class ItunesClient {
     }
   }
 
-  private static getUriDetailsJsonp(params: { id: string }): Promise<ItunesTrack> {
-    const queryString = new URLSearchParams(params).toString();
-    return new Promise((resolve, reject) => {
-      jsonp(
-        `${ITUNES_LOOKUP_URI}?${queryString}`,
-        { timeout: 2000 }, // ms
-        (error: Error | null, data: ItunesLookupResponse) => {
-          if (error || data.resultCount < 1) {
-            reject(new Error(`Bad iTunes URI: ${error?.message ?? 'No track found'}`));
-          } else {
-            resolve(data.results[0]);
-          }
-        },
-      );
-    });
-  }
-
   public async searchTracks(query: string): Promise<ItunesTrack | null> {
     const params = {
       term: query,
@@ -89,10 +68,6 @@ export class ItunesClient {
       media: 'music',
       entity: 'song',
     };
-
-    if (isBrowser) {
-      return ItunesClient.searchJsonp(params);
-    }
 
     try {
       const response = await ky
@@ -108,34 +83,6 @@ export class ItunesClient {
       }
       throw error;
     }
-  }
-
-  private static searchJsonp(params: {
-    term: string;
-    limit: number;
-    media: string;
-    entity: string;
-  }): Promise<ItunesTrack | null> {
-    const queryString = new URLSearchParams({
-      term: params.term,
-      limit: params.limit.toString(),
-      media: params.media,
-      entity: params.entity,
-    }).toString();
-    return new Promise((resolve, reject) => {
-      jsonp(
-        `${ITUNES_SEARCH_URI}?${queryString}`,
-        { timeout: 2000 }, // ms
-        (error: Error | null, data: ItunesSearchResponse) => {
-          if (error) {
-            reject(new Error(`iTunes search failed: ${error.message}`));
-          } else {
-            const found = data.resultCount < 1 ? null : data.results[0];
-            resolve(found);
-          }
-        },
-      );
-    });
   }
 
   public static parseId(uri: string): string | null {
