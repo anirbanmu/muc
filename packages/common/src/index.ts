@@ -17,7 +17,8 @@ export { CachedYoutubeClient } from './cachedYoutubeClient.js';
 
 export { DeezerTrack, DeezerClient } from './deezer.js';
 
-export { ItunesClient, ItunesTrack } from './itunes.js';
+export { ItunesClient, ItunesClientInterface, ItunesTrack } from './itunes.js';
+export { CachedItunesClient } from './cachedItunesClient.js';
 
 export {
   NormalizedTrack,
@@ -45,5 +46,7 @@ export {
   SearchSpotifyTracksResponse,
   GetYoutubeVideoDetailsResponse,
   SearchYoutubeVideosResponse,
+  GetItunesTrackDetailsResponse,
+  SearchItunesTracksResponse,
   ErrorResponse,
 } from './apiTypes.js';

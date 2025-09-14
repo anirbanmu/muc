@@ -5,9 +5,11 @@ import {
   ErrorResponse,
   GetSpotifyTrackDetailsResponse,
   GetYoutubeVideoDetailsResponse,
+  GetItunesTrackDetailsResponse,
   QueryRequestBody,
   SearchSpotifyTracksResponse,
   SearchYoutubeVideosResponse,
+  SearchItunesTracksResponse,
   UriRequestBody,
 } from '@muc/common';
 import pLimit from 'p-limit';
@@ -16,6 +18,7 @@ export class ApiRouter {
   private readonly router = express.Router();
   private readonly spotifyLimiter = pLimit(10);
   private readonly youtubeLimiter = pLimit(10);
+  private readonly itunesLimiter = pLimit(10);
 
   constructor(private readonly mediaServicePromise: Promise<BackendMediaService>) {
     this.initializeRoutes();
@@ -37,6 +40,8 @@ export class ApiRouter {
     this.router.post(`/${API_ROUTES.spotify.search}`, asyncHandler(this.searchSpotifyTracks));
     this.router.post(`/${API_ROUTES.youtube.video}`, asyncHandler(this.getYoutubeVideoDetails));
     this.router.post(`/${API_ROUTES.youtube.search}`, asyncHandler(this.searchYoutubeVideos));
+    this.router.post(`/${API_ROUTES.itunes.track}`, asyncHandler(this.getItunesTrackDetails));
+    this.router.post(`/${API_ROUTES.itunes.search}`, asyncHandler(this.searchItunesTracks));
   }
 
   private getSpotifyTrackDetails = async (
@@ -118,6 +123,47 @@ export class ApiRouter {
     } catch (error) {
       console.error('Error searching YouTube videos:', error instanceof Error ? error.message : error);
       res.status(500).json({ message: 'Failed to search YouTube videos.' });
+    }
+  };
+
+  private getItunesTrackDetails = async (
+    req: Request,
+    res: Response<GetItunesTrackDetailsResponse | ErrorResponse>,
+  ) => {
+    const { uri } = req.body as UriRequestBody;
+    if (!uri) {
+      res.status(400).json({ message: 'Request body must contain a "uri" field.' });
+      return;
+    }
+
+    try {
+      const mediaService = await this.mediaServicePromise;
+      const track = await this.itunesLimiter(() => mediaService.getItunesTrackDetails(uri));
+      if (!track) {
+        res.status(404).json({ message: 'iTunes track not found or URI invalid.' });
+        return;
+      }
+      res.json(track);
+    } catch (error) {
+      console.error('Error fetching iTunes track details:', error instanceof Error ? error.message : error);
+      res.status(500).json({ message: 'Failed to retrieve iTunes track details.' });
+    }
+  };
+
+  private searchItunesTracks = async (req: Request, res: Response<SearchItunesTracksResponse | ErrorResponse>) => {
+    const { query } = req.body as QueryRequestBody;
+    if (!query) {
+      res.status(400).json({ message: 'Request body must contain a "query" field.' });
+      return;
+    }
+
+    try {
+      const mediaService = await this.mediaServicePromise;
+      const track = await this.itunesLimiter(() => mediaService.searchItunesTracks(query));
+      res.json(track ? [track] : []);
+    } catch (error) {
+      console.error('Error searching iTunes tracks:', error instanceof Error ? error.message : error);
+      res.status(500).json({ message: 'Failed to search iTunes tracks.' });
     }
   };
 }

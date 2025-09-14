@@ -8,8 +8,10 @@ import {
   BackendMediaService,
   SpotifyClient,
   YoutubeClient,
+  ItunesClient,
   CachedSpotifyClient,
   CachedYoutubeClient,
+  CachedItunesClient,
 } from '@muc/common';
 import { ApiRouter } from './apiRouter.js';
 import NodeCache from 'node-cache';
@@ -65,7 +67,7 @@ async function start(): Promise<void> {
     helmet({
       contentSecurityPolicy: {
         directives: {
-          'script-src': ["'self'", 'https://api.deezer.com', 'https://itunes.apple.com'],
+          'script-src': ["'self'", 'https://api.deezer.com'],
         },
       },
     }),
@@ -132,7 +134,11 @@ async function start(): Promise<void> {
       youtubeClient = new CachedYoutubeClient(rawYoutubeClient, cache);
     }
 
-    return BackendMediaService.createWithClients(undefined, undefined, spotifyClient, youtubeClient);
+    // iTunes client with caching (no API key required)
+    const rawItunesClient = new ItunesClient();
+    const itunesClient = new CachedItunesClient(rawItunesClient, cache);
+
+    return BackendMediaService.createWithClients(undefined, itunesClient, spotifyClient, youtubeClient);
   })();
 
   app.get('/health', (_req: Request, res: Response) => {

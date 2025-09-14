@@ -7,6 +7,8 @@ import {
   SearchSpotifyTracksResponse,
   GetYoutubeVideoDetailsResponse,
   SearchYoutubeVideosResponse,
+  GetItunesTrackDetailsResponse,
+  SearchItunesTracksResponse,
 } from './apiTypes.js';
 import { isHTTPError, isTimeoutError } from './kyErrorUtils.js';
 
@@ -91,6 +93,42 @@ export class ApiClient {
         throw error;
       }
       throw new Error(`Failed to search YouTube videos: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
+  public async getItunesTrackDetails(uri: string): Promise<GetItunesTrackDetailsResponse> {
+    try {
+      return await this.client
+        .post(API_ROUTES.itunes.track, {
+          json: {
+            uri,
+          } as UriRequestBody,
+        })
+        .json<GetItunesTrackDetailsResponse>();
+    } catch (error) {
+      if (isHTTPError(error) || isTimeoutError(error)) {
+        throw error;
+      }
+      throw new Error(
+        `Failed to get iTunes track details: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+    }
+  }
+
+  public async searchItunesTracks(query: string): Promise<SearchItunesTracksResponse> {
+    try {
+      return await this.client
+        .post(API_ROUTES.itunes.search, {
+          json: {
+            query,
+          } as QueryRequestBody,
+        })
+        .json<SearchItunesTracksResponse>();
+    } catch (error) {
+      if (isHTTPError(error) || isTimeoutError(error)) {
+        throw error;
+      }
+      throw new Error(`Failed to search iTunes tracks: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 }

@@ -28,11 +28,11 @@
   "keywords": [],
   "author": "",
   "license": "MIT",
+  "dependencies": {
+    "ky": "^1.8.2",
+    "jsonp": "^0.2.1"
+  },
   "devDependencies": {
     "@types/jsonp": "^0.2.3"
-  },
-  "dependencies": {
-    "jsonp": "^0.2.1",
-    "ky": "^1.8.2"
   }
 }
