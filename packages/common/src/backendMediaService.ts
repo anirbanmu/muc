@@ -12,16 +12,16 @@ import {
   ItunesNormalizedTrack,
 } from './normalizedTrack.js';
 import { ItunesClient, ItunesClientInterface, ItunesTrack } from './itunes.js';
-import { DeezerClient, DeezerTrack } from './deezer.js';
+import { DeezerClient, DeezerClientInterface, DeezerTrack } from './deezer.js';
 
 export class BackendMediaService extends MediaService {
   private readonly youtubeClient: YoutubeClientInterface | undefined;
   private readonly spotifyClient: SpotifyClientInterface | undefined;
-  private readonly deezerClient: DeezerClient;
+  private readonly deezerClient: DeezerClientInterface;
   private readonly itunesClient: ItunesClientInterface;
 
   private constructor(
-    deezerClient: DeezerClient,
+    deezerClient: DeezerClientInterface,
     itunesClient: ItunesClientInterface,
     spotifyClient?: SpotifyClientInterface,
     youtubeClient?: YoutubeClientInterface,
@@ -38,13 +38,13 @@ export class BackendMediaService extends MediaService {
     youtubeApiKey?: string,
   ): Promise<BackendMediaService> {
     const spotifyClient = spotifyCredentials ? await SpotifyClient.create(spotifyCredentials) : undefined;
-
     const youtubeClient = youtubeApiKey ? new YoutubeClient(youtubeApiKey) : undefined;
+
     return new BackendMediaService(new DeezerClient(), new ItunesClient(), spotifyClient, youtubeClient);
   }
 
   public static createWithClients(
-    deezerClient?: DeezerClient,
+    deezerClient?: DeezerClientInterface,
     itunesClient?: ItunesClientInterface,
     spotifyClient?: SpotifyClientInterface,
     youtubeClient?: YoutubeClientInterface,

@@ -11,4 +11,8 @@ export const API_ROUTES = {
     track: 'itunes/track',
     search: 'itunes/search',
   },
+  deezer: {
+    track: 'deezer/track',
+    search: 'deezer/search',
+  },
 };

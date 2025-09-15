@@ -1,11 +1,6 @@
 import ky from 'ky';
 import { isHTTPError, extractApiErrorMessage } from './kyErrorUtils.js';
 
-const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
-
-// using jsonp on browsers because deezer doesn't work with CORS
-import jsonp from 'jsonp';
-
 export interface DeezerArtist {
   name: string;
   link: string;
@@ -27,7 +22,12 @@ const DEEZER_BASE_URI = 'https://api.deezer.com';
 const DEEZER_TRACK_URI = DEEZER_BASE_URI + '/track';
 const DEEZER_TRACK_SEARCH_URI = DEEZER_BASE_URI + '/search/track';
 
-export class DeezerClient {
+export interface DeezerClientInterface {
+  getTrackDetails(uri: string): Promise<DeezerTrack>;
+  searchTracks(query: string): Promise<DeezerTrack | null>;
+}
+
+export class DeezerClient implements DeezerClientInterface {
   constructor() {}
 
   public async getTrackDetails(uri: string): Promise<DeezerTrack> {
@@ -36,10 +36,6 @@ export class DeezerClient {
       throw new Error('Invalid Deezer track URI format.');
     }
     const deezerUri = `${DEEZER_TRACK_URI}/${id}`;
-
-    if (isBrowser) {
-      return DeezerClient.getUriDetailsJsonp(deezerUri);
-    }
 
     try {
       const response = await ky.get(deezerUri).json<DeezerTrack & { error?: { message: string } }>();
@@ -61,10 +57,6 @@ export class DeezerClient {
       q: query,
       limit: 1,
     };
-
-    if (isBrowser) {
-      return DeezerClient.searchJsonp(params);
-    }
 
     try {
       const response = await ky
@@ -88,44 +80,6 @@ export class DeezerClient {
       }
       throw error;
     }
-  }
-
-  private static getUriDetailsJsonp(uri: string): Promise<DeezerTrack> {
-    return new Promise((resolve, reject) => {
-      jsonp(
-        `${uri}&output=jsonp`,
-        { timeout: 2000 }, // ms
-        (error: Error | null, data: DeezerTrack & { error?: { message: string } }) => {
-          if (error || data.error) {
-            reject(new Error(`Bad Deezer URI: ${error?.message ?? data.error?.message ?? 'Unknown error'}`));
-          } else {
-            resolve(data);
-          }
-        },
-      );
-    });
-  }
-
-  private static searchJsonp(params: { q: string; limit: number }): Promise<DeezerTrack | null> {
-    const queryString = new URLSearchParams({
-      output: 'jsonp',
-      q: params.q,
-      limit: params.limit.toString(),
-    }).toString();
-    return new Promise((resolve, reject) => {
-      jsonp(
-        `${DEEZER_TRACK_SEARCH_URI}?${queryString}`,
-        { timeout: 2000 }, // ms
-        (error: Error | null, data: { data: DeezerTrack[]; total: number; error?: { message: string } }) => {
-          if (error || data.error) {
-            reject(new Error(`Deezer search error: ${error?.message ?? data.error?.message ?? 'Unknown error'}`));
-          } else {
-            const found = data.total < 1 ? null : data.data[0];
-            resolve(found);
-          }
-        },
-      );
-    });
   }
 
   public static parseId(uri: string): string | null {

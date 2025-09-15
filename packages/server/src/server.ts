@@ -9,9 +9,11 @@ import {
   SpotifyClient,
   YoutubeClient,
   ItunesClient,
+  DeezerClient,
   CachedSpotifyClient,
   CachedYoutubeClient,
   CachedItunesClient,
+  CachedDeezerClient,
 } from '@muc/common';
 import { ApiRouter } from './apiRouter.js';
 import NodeCache from 'node-cache';
@@ -138,7 +140,11 @@ async function start(): Promise<void> {
     const rawItunesClient = new ItunesClient();
     const itunesClient = new CachedItunesClient(rawItunesClient, cache);
 
-    return BackendMediaService.createWithClients(undefined, itunesClient, spotifyClient, youtubeClient);
+    // Deezer client with caching (no API key required)
+    const rawDeezerClient = new DeezerClient();
+    const deezerClient = new CachedDeezerClient(rawDeezerClient, cache);
+
+    return BackendMediaService.createWithClients(deezerClient, itunesClient, spotifyClient, youtubeClient);
   })();
 
   app.get('/health', (_req: Request, res: Response) => {

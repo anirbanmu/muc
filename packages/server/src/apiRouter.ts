@@ -6,10 +6,12 @@ import {
   GetSpotifyTrackDetailsResponse,
   GetYoutubeVideoDetailsResponse,
   GetItunesTrackDetailsResponse,
+  GetDeezerTrackDetailsResponse,
   QueryRequestBody,
   SearchSpotifyTracksResponse,
   SearchYoutubeVideosResponse,
   SearchItunesTracksResponse,
+  SearchDeezerTracksResponse,
   UriRequestBody,
 } from '@muc/common';
 import pLimit from 'p-limit';
@@ -19,6 +21,7 @@ export class ApiRouter {
   private readonly spotifyLimiter = pLimit(10);
   private readonly youtubeLimiter = pLimit(10);
   private readonly itunesLimiter = pLimit(10);
+  private readonly deezerLimiter = pLimit(10);
 
   constructor(private readonly mediaServicePromise: Promise<BackendMediaService>) {
     this.initializeRoutes();
@@ -42,6 +45,8 @@ export class ApiRouter {
     this.router.post(`/${API_ROUTES.youtube.search}`, asyncHandler(this.searchYoutubeVideos));
     this.router.post(`/${API_ROUTES.itunes.track}`, asyncHandler(this.getItunesTrackDetails));
     this.router.post(`/${API_ROUTES.itunes.search}`, asyncHandler(this.searchItunesTracks));
+    this.router.post(`/${API_ROUTES.deezer.track}`, asyncHandler(this.getDeezerTrackDetails));
+    this.router.post(`/${API_ROUTES.deezer.search}`, asyncHandler(this.searchDeezerTracks));
   }
 
   private getSpotifyTrackDetails = async (
@@ -164,6 +169,47 @@ export class ApiRouter {
     } catch (error) {
       console.error('Error searching iTunes tracks:', error instanceof Error ? error.message : error);
       res.status(500).json({ message: 'Failed to search iTunes tracks.' });
+    }
+  };
+
+  private getDeezerTrackDetails = async (
+    req: Request,
+    res: Response<GetDeezerTrackDetailsResponse | ErrorResponse>,
+  ) => {
+    const { uri } = req.body as UriRequestBody;
+    if (!uri) {
+      res.status(400).json({ message: 'Request body must contain a "uri" field.' });
+      return;
+    }
+
+    try {
+      const mediaService = await this.mediaServicePromise;
+      const track = await this.deezerLimiter(() => mediaService.getDeezerTrackDetails(uri));
+      if (!track) {
+        res.status(404).json({ message: 'Deezer track not found or URI invalid.' });
+        return;
+      }
+      res.json(track);
+    } catch (error) {
+      console.error('Error fetching Deezer track details:', error instanceof Error ? error.message : error);
+      res.status(500).json({ message: 'Failed to retrieve Deezer track details.' });
+    }
+  };
+
+  private searchDeezerTracks = async (req: Request, res: Response<SearchDeezerTracksResponse | ErrorResponse>) => {
+    const { query } = req.body as QueryRequestBody;
+    if (!query) {
+      res.status(400).json({ message: 'Request body must contain a "query" field.' });
+      return;
+    }
+
+    try {
+      const mediaService = await this.mediaServicePromise;
+      const track = await this.deezerLimiter(() => mediaService.searchDeezerTracks(query));
+      res.json(track ? [track] : []);
+    } catch (error) {
+      console.error('Error searching Deezer tracks:', error instanceof Error ? error.message : error);
+      res.status(500).json({ message: 'Failed to search Deezer tracks.' });
     }
   };
 }
