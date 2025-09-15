@@ -3,6 +3,7 @@
     <div v-if="isOpen" class="modal-backdrop" @click="handleBackdropClick">
       <div class="modal-container" @click.stop>
         <div class="modal-header">
+          <button type="button" class="close-x-button" aria-label="Close modal" @click="$emit('close')">×</button>
           <h2>MUC<span class="cursor">_</span></h2>
           <p class="subtitle">Music URI converter</p>
         </div>
@@ -149,6 +150,7 @@ onUnmounted(() => {
 }
 
 .modal-header {
+  position: relative;
   padding: var(--space-xl) var(--space-xl) var(--space-lg);
   border-bottom: 1px solid var(--color-border);
   text-align: center;
@@ -182,6 +184,26 @@ onUnmounted(() => {
   color: var(--color-text);
   margin-top: var(--space-sm);
   opacity: 0.8;
+}
+
+.close-x-button {
+  position: absolute;
+  top: var(--space-lg);
+  right: var(--space-lg);
+  background: none;
+  border: none;
+  color: var(--color-text);
+  font-size: calc(var(--font-size-lg) * 1.2);
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: var(--transition-colors);
+}
+
+.close-x-button:hover {
+  color: var(--color-action);
+  opacity: 1;
 }
 
 .modal-content {
