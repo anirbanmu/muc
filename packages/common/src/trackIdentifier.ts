@@ -4,6 +4,7 @@ import { SpotifyClient } from './spotify.js';
 import { DeezerClient } from './deezer.js';
 import { ItunesClient } from './itunes.js';
 import { YoutubeClient } from './youtube.js';
+import type { TrackIdentifierData } from './apiTypes.js';
 
 /**
  * TrackIdentifier provides a unified unique identifier system for tracks across different music platforms.
@@ -174,5 +175,17 @@ export class TrackIdentifier {
       default:
         throw new Error(`Unsupported platform: ${platform}`);
     }
+  }
+
+  toData(): TrackIdentifierData {
+    return {
+      platform: this.platform,
+      platformId: this.platformId,
+      uniqueId: this.uniqueId,
+    };
+  }
+
+  static fromData(data: TrackIdentifierData): TrackIdentifier {
+    return new TrackIdentifier(data.platform, data.platformId);
   }
 }

@@ -11,6 +11,8 @@ import {
   SearchItunesTracksResponse,
   GetDeezerTrackDetailsResponse,
   SearchDeezerTracksResponse,
+  SearchRequest,
+  SearchResponse,
 } from './apiTypes.js';
 import { isHTTPError, isTimeoutError } from './kyErrorUtils.js';
 
@@ -167,6 +169,23 @@ export class ApiClient {
         throw error;
       }
       throw new Error(`Failed to search Deezer tracks: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
+  public async search(uri: string): Promise<SearchResponse> {
+    try {
+      return await this.client
+        .post(API_ROUTES.search, {
+          json: {
+            uri,
+          } as SearchRequest,
+        })
+        .json<SearchResponse>();
+    } catch (error) {
+      if (isHTTPError(error) || isTimeoutError(error)) {
+        throw error;
+      }
+      throw new Error(`Failed to search: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 }

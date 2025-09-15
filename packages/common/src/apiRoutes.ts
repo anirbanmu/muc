@@ -1,4 +1,5 @@
 export const API_ROUTES = {
+  search: 'search',
   spotify: {
     track: 'spotify/track',
     search: 'spotify/search',

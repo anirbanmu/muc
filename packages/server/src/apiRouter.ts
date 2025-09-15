@@ -13,6 +13,8 @@ import {
   SearchItunesTracksResponse,
   SearchDeezerTracksResponse,
   UriRequestBody,
+  SearchResponse,
+  TrackIdentifier,
 } from '@muc/common';
 import pLimit from 'p-limit';
 
@@ -47,6 +49,7 @@ export class ApiRouter {
     this.router.post(`/${API_ROUTES.itunes.search}`, asyncHandler(this.searchItunesTracks));
     this.router.post(`/${API_ROUTES.deezer.track}`, asyncHandler(this.getDeezerTrackDetails));
     this.router.post(`/${API_ROUTES.deezer.search}`, asyncHandler(this.searchDeezerTracks));
+    this.router.post(`/${API_ROUTES.search}`, asyncHandler(this.search));
   }
 
   private getSpotifyTrackDetails = async (
@@ -210,6 +213,42 @@ export class ApiRouter {
     } catch (error) {
       console.error('Error searching Deezer tracks:', error instanceof Error ? error.message : error);
       res.status(500).json({ message: 'Failed to search Deezer tracks.' });
+    }
+  };
+
+  private search = async (req: Request, res: Response<SearchResponse | ErrorResponse>) => {
+    const { uri } = req.body as UriRequestBody;
+    if (!uri) {
+      res.status(400).json({ message: 'Request body must contain a "uri" field.' });
+      return;
+    }
+
+    try {
+      const mediaService = await this.mediaServicePromise;
+
+      // Get the source track details - if this fails, return error
+      const sourceTrack = await mediaService.getTrackDetails(uri);
+      const trackIdentifier = TrackIdentifier.fromNormalizedTrack(sourceTrack);
+
+      // Start with source track in results
+      const results = [sourceTrack];
+
+      // Search other platforms - if individual platforms fail, log but continue
+      try {
+        const otherPlatformTracks = await mediaService.searchOtherPlatforms(sourceTrack);
+        results.push(...otherPlatformTracks);
+      } catch (error) {
+        console.error('Some platform searches failed:', error instanceof Error ? error.message : error);
+        // Continue with just the source track
+      }
+
+      res.json({
+        results,
+        sourceTrack: trackIdentifier.toData(),
+      });
+    } catch (error) {
+      console.error('Failed to get source track details:', error instanceof Error ? error.message : error);
+      res.status(500).json({ message: 'Failed to retrieve track details from the provided URI.' });
     }
   };
 }

@@ -51,5 +51,8 @@ export {
   SearchItunesTracksResponse,
   GetDeezerTrackDetailsResponse,
   SearchDeezerTracksResponse,
+  SearchRequest,
+  SearchResponse,
+  TrackIdentifierData,
   ErrorResponse,
 } from './apiTypes.js';
