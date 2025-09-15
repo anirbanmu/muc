@@ -1,4 +1,9 @@
-import { SpotifyNormalizedTrack, YoutubeNormalizedTrack, ItunesNormalizedTrack } from './normalizedTrack.js';
+import {
+  SpotifyNormalizedTrack,
+  YoutubeNormalizedTrack,
+  ItunesNormalizedTrack,
+  DeezerNormalizedTrack,
+} from './normalizedTrack.js';
 
 export interface UriRequestBody {
   uri: string;
@@ -16,6 +21,9 @@ export type SearchYoutubeVideosResponse = YoutubeNormalizedTrack[];
 
 export type GetItunesTrackDetailsResponse = ItunesNormalizedTrack;
 export type SearchItunesTracksResponse = ItunesNormalizedTrack[];
+
+export type GetDeezerTrackDetailsResponse = DeezerNormalizedTrack;
+export type SearchDeezerTracksResponse = DeezerNormalizedTrack[];
 
 export interface ErrorResponse {
   message: string;

@@ -9,6 +9,8 @@ import {
   SearchYoutubeVideosResponse,
   GetItunesTrackDetailsResponse,
   SearchItunesTracksResponse,
+  GetDeezerTrackDetailsResponse,
+  SearchDeezerTracksResponse,
 } from './apiTypes.js';
 import { isHTTPError, isTimeoutError } from './kyErrorUtils.js';
 
@@ -129,6 +131,42 @@ export class ApiClient {
         throw error;
       }
       throw new Error(`Failed to search iTunes tracks: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
+  public async getDeezerTrackDetails(uri: string): Promise<GetDeezerTrackDetailsResponse> {
+    try {
+      return await this.client
+        .post(API_ROUTES.deezer.track, {
+          json: {
+            uri,
+          } as UriRequestBody,
+        })
+        .json<GetDeezerTrackDetailsResponse>();
+    } catch (error) {
+      if (isHTTPError(error) || isTimeoutError(error)) {
+        throw error;
+      }
+      throw new Error(
+        `Failed to get Deezer track details: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+    }
+  }
+
+  public async searchDeezerTracks(query: string): Promise<SearchDeezerTracksResponse> {
+    try {
+      return await this.client
+        .post(API_ROUTES.deezer.search, {
+          json: {
+            query,
+          } as QueryRequestBody,
+        })
+        .json<SearchDeezerTracksResponse>();
+    } catch (error) {
+      if (isHTTPError(error) || isTimeoutError(error)) {
+        throw error;
+      }
+      throw new Error(`Failed to search Deezer tracks: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 }
