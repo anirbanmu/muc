@@ -7,9 +7,13 @@ import rateLimit from 'express-rate-limit';
 import {
   BackendMediaService,
   SpotifyClient,
+  SpotifyClientInterface,
   YoutubeClient,
+  YoutubeClientInterface,
   ItunesClient,
+  ItunesClientInterface,
   DeezerClient,
+  DeezerClientInterface,
   CachedSpotifyClient,
   CachedYoutubeClient,
   CachedItunesClient,
@@ -125,32 +129,32 @@ async function start(): Promise<void> {
 
     const cache = new NodeCache({ stdTTL: 3600, checkperiod: 600, useClones: false });
 
-    let spotifyClient: ConcurrencyLimitedSpotifyClient | undefined;
+    let spotifyClient: SpotifyClientInterface | undefined;
     if (SPOTIFY_CLIENT_ID && SPOTIFY_CLIENT_SECRET) {
       const rawSpotifyClient = await SpotifyClient.create({
         clientId: SPOTIFY_CLIENT_ID,
         clientSecret: SPOTIFY_CLIENT_SECRET,
       });
-      const cachedSpotifyClient = new CachedSpotifyClient(rawSpotifyClient, cache);
-      spotifyClient = new ConcurrencyLimitedSpotifyClient(cachedSpotifyClient, 10);
+      const limitedSpotifyClient = new ConcurrencyLimitedSpotifyClient(rawSpotifyClient, 10);
+      spotifyClient = new CachedSpotifyClient(limitedSpotifyClient, cache);
     }
 
-    let youtubeClient: ConcurrencyLimitedYoutubeClient | undefined;
+    let youtubeClient: YoutubeClientInterface | undefined;
     if (YOUTUBE_API_KEY) {
       const rawYoutubeClient = new YoutubeClient(YOUTUBE_API_KEY);
-      const cachedYoutubeClient = new CachedYoutubeClient(rawYoutubeClient, cache);
-      youtubeClient = new ConcurrencyLimitedYoutubeClient(cachedYoutubeClient, 10);
+      const limitedYoutubeClient = new ConcurrencyLimitedYoutubeClient(rawYoutubeClient, 10);
+      youtubeClient = new CachedYoutubeClient(limitedYoutubeClient, cache);
     }
 
-    // iTunes client with caching and rate limiting
+    // iTunes client with rate limiting then caching
     const rawItunesClient = new ItunesClient();
-    const cachedItunesClient = new CachedItunesClient(rawItunesClient, cache);
-    const itunesClient = new ConcurrencyLimitedItunesClient(cachedItunesClient, 10);
+    const limitedItunesClient = new ConcurrencyLimitedItunesClient(rawItunesClient, 10);
+    const itunesClient: ItunesClientInterface = new CachedItunesClient(limitedItunesClient, cache);
 
-    // Deezer client with caching and rate limiting
+    // Deezer client with rate limiting then caching
     const rawDeezerClient = new DeezerClient();
-    const cachedDeezerClient = new CachedDeezerClient(rawDeezerClient, cache);
-    const deezerClient = new ConcurrencyLimitedDeezerClient(cachedDeezerClient, 10);
+    const limitedDeezerClient = new ConcurrencyLimitedDeezerClient(rawDeezerClient, 10);
+    const deezerClient: DeezerClientInterface = new CachedDeezerClient(limitedDeezerClient, cache);
 
     return BackendMediaService.createWithClients(deezerClient, itunesClient, spotifyClient, youtubeClient);
   })();
