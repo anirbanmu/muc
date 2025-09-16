@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { CachedSpotifyClient } from '../cachedSpotifyClient.js';
+import { CachedSpotifyClient } from '../cachedClient.js';
 import { SpotifyClientInterface, SpotifyClient, SpotifyTrack } from '../spotify.js';
 import NodeCache from 'node-cache';
 
