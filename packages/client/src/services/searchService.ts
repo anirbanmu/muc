@@ -1,5 +1,4 @@
-import { mediaService } from './mediaService.js';
-import { TrackIdentifier } from '@muc/common';
+import { ApiClient, TrackIdentifier } from '@muc/common';
 import type { AnyNormalizedTrack } from '@muc/common';
 
 export interface SearchResult {
@@ -7,13 +6,14 @@ export interface SearchResult {
   sourceTrack: TrackIdentifier;
 }
 
+const apiClient = new ApiClient('/api');
+
 export class SearchService {
   static async performSearch(uri: string): Promise<SearchResult> {
-    const sourceTrack = await mediaService.getTrackDetails(uri);
-    const trackIdentifier = TrackIdentifier.fromNormalizedTrack(sourceTrack);
-    const searchResults = await mediaService.searchOtherPlatforms(sourceTrack);
+    const searchResponse = await apiClient.search(uri);
+    const trackIdentifier = TrackIdentifier.fromData(searchResponse.sourceTrack);
 
-    const deduplicatedResults = this.deduplicateTracks([sourceTrack, ...searchResults], trackIdentifier.uniqueId);
+    const deduplicatedResults = this.deduplicateTracks(searchResponse.results, trackIdentifier.uniqueId);
 
     return {
       results: deduplicatedResults,

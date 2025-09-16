@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { CachedYoutubeClient } from '../cachedYoutubeClient.js';
+import { CachedYoutubeClient } from '../cachedClient.js';
 import { YoutubeClientInterface, YoutubeClient, YoutubeVideoDetails, YoutubeSearchResultItem } from '../youtube.js';
 import NodeCache from 'node-cache';
 

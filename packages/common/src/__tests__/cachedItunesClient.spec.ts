@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { CachedItunesClient } from '../cachedItunesClient.js';
+import { CachedItunesClient } from '../cachedClient.js';
 import { ItunesClientInterface, ItunesTrack } from '../itunes.js';
 import NodeCache from 'node-cache';
 

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { CachedDeezerClient } from '../cachedDeezerClient.js';
+import { CachedDeezerClient } from '../cachedClient.js';
 import { DeezerClientInterface, DeezerTrack } from '../deezer.js';
 import NodeCache from 'node-cache';
 

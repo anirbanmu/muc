@@ -67,7 +67,7 @@ npm run build && npm run start
   - Thin API layer over common's BackendMediaService
   - Caching and rate limiting
 - **client/** - Vue 3 frontend that imports types and utilities from common
-  - Uses common's ClientMediaService and API client
+  - Uses common's API client directly
   - Shares track identifiers and normalized data types
 - **cli/** - Command-line tools
 
