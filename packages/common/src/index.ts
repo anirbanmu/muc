@@ -22,6 +22,13 @@ export { ItunesClient, ItunesClientInterface, ItunesTrack } from './itunes.js';
 export { CachedItunesClient } from './cachedItunesClient.js';
 
 export {
+  ConcurrencyLimitedSpotifyClient,
+  ConcurrencyLimitedYoutubeClient,
+  ConcurrencyLimitedDeezerClient,
+  ConcurrencyLimitedItunesClient,
+} from './concurrencyLimitedClient.js';
+
+export {
   NormalizedTrack,
   SpotifyNormalizedTrack,
   DeezerNormalizedTrack,

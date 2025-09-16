@@ -16,14 +16,9 @@ import {
   SearchResponse,
   TrackIdentifier,
 } from '@muc/common';
-import pLimit from 'p-limit';
 
 export class ApiRouter {
   private readonly router = express.Router();
-  private readonly spotifyLimiter = pLimit(10);
-  private readonly youtubeLimiter = pLimit(10);
-  private readonly itunesLimiter = pLimit(10);
-  private readonly deezerLimiter = pLimit(10);
 
   constructor(private readonly mediaServicePromise: Promise<BackendMediaService>) {
     this.initializeRoutes();
@@ -64,7 +59,7 @@ export class ApiRouter {
 
     try {
       const mediaService = await this.mediaServicePromise;
-      const track = await this.spotifyLimiter(() => mediaService.getSpotifyTrackDetails(uri));
+      const track = await mediaService.getSpotifyTrackDetails(uri);
       if (!track) {
         res.status(404).json({ message: 'Spotify track not found or URI invalid.' });
         return;
@@ -85,7 +80,7 @@ export class ApiRouter {
 
     try {
       const mediaService = await this.mediaServicePromise;
-      const track = await this.spotifyLimiter(() => mediaService.searchSpotifyTracks(query));
+      const track = await mediaService.searchSpotifyTracks(query);
       res.json(track ? [track] : []);
     } catch (error) {
       console.error('Error searching Spotify tracks:', error instanceof Error ? error.message : error);
@@ -105,7 +100,7 @@ export class ApiRouter {
 
     try {
       const mediaService = await this.mediaServicePromise;
-      const video = await this.youtubeLimiter(() => mediaService.getYoutubeVideoDetails(uri));
+      const video = await mediaService.getYoutubeVideoDetails(uri);
       if (!video) {
         res.status(404).json({ message: 'YouTube video not found or URI invalid.' });
         return;
@@ -126,7 +121,7 @@ export class ApiRouter {
 
     try {
       const mediaService = await this.mediaServicePromise;
-      const video = await this.youtubeLimiter(() => mediaService.searchYoutubeVideos(query));
+      const video = await mediaService.searchYoutubeVideos(query);
       res.json(video ? [video] : []);
     } catch (error) {
       console.error('Error searching YouTube videos:', error instanceof Error ? error.message : error);
@@ -146,7 +141,7 @@ export class ApiRouter {
 
     try {
       const mediaService = await this.mediaServicePromise;
-      const track = await this.itunesLimiter(() => mediaService.getItunesTrackDetails(uri));
+      const track = await mediaService.getItunesTrackDetails(uri);
       if (!track) {
         res.status(404).json({ message: 'iTunes track not found or URI invalid.' });
         return;
@@ -167,7 +162,7 @@ export class ApiRouter {
 
     try {
       const mediaService = await this.mediaServicePromise;
-      const track = await this.itunesLimiter(() => mediaService.searchItunesTracks(query));
+      const track = await mediaService.searchItunesTracks(query);
       res.json(track ? [track] : []);
     } catch (error) {
       console.error('Error searching iTunes tracks:', error instanceof Error ? error.message : error);
@@ -187,7 +182,7 @@ export class ApiRouter {
 
     try {
       const mediaService = await this.mediaServicePromise;
-      const track = await this.deezerLimiter(() => mediaService.getDeezerTrackDetails(uri));
+      const track = await mediaService.getDeezerTrackDetails(uri);
       if (!track) {
         res.status(404).json({ message: 'Deezer track not found or URI invalid.' });
         return;
@@ -208,7 +203,7 @@ export class ApiRouter {
 
     try {
       const mediaService = await this.mediaServicePromise;
-      const track = await this.deezerLimiter(() => mediaService.searchDeezerTracks(query));
+      const track = await mediaService.searchDeezerTracks(query);
       res.json(track ? [track] : []);
     } catch (error) {
       console.error('Error searching Deezer tracks:', error instanceof Error ? error.message : error);
