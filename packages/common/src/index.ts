@@ -37,26 +37,10 @@ export {
 export { BackendMediaService } from './backendMediaService.js';
 export { CacheAccessor } from './cacheAccessor.js';
 
-export { ClientMediaService } from './clientMediaService.js';
 export { MediaPlatform, MediaService } from './mediaService.js';
 export { getNextId } from './idGenerator.js';
 export { TrackIdentifier } from './trackIdentifier.js';
 
 export { ApiClient } from './apiClient.js';
 export { API_ROUTES } from './apiRoutes.js';
-export {
-  UriRequestBody,
-  QueryRequestBody,
-  GetSpotifyTrackDetailsResponse,
-  SearchSpotifyTracksResponse,
-  GetYoutubeVideoDetailsResponse,
-  SearchYoutubeVideosResponse,
-  GetItunesTrackDetailsResponse,
-  SearchItunesTracksResponse,
-  GetDeezerTrackDetailsResponse,
-  SearchDeezerTracksResponse,
-  SearchRequest,
-  SearchResponse,
-  TrackIdentifierData,
-  ErrorResponse,
-} from './apiTypes.js';
+export { UriRequestBody, SearchRequest, SearchResponse, TrackIdentifierData, ErrorResponse } from './apiTypes.js';
