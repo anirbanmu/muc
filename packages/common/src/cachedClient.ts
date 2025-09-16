@@ -67,9 +67,8 @@ export class CachedYoutubeClient extends CachedClient<YoutubeClientInterface> im
 
   constructor(client: YoutubeClientInterface, cache: NodeCache) {
     super(client, cache);
-    const caches = createCacheAccessors<YoutubeVideoDetails, YoutubeSearchResultItem>(cache, 'youtube');
-    this.videoCache = caches.trackCache;
-    this.searchCache = caches.searchCache;
+    this.videoCache = new CacheAccessor<YoutubeVideoDetails>(cache, 'youtube:video');
+    this.searchCache = new CacheAccessor<YoutubeSearchResultItem | null>(cache, 'youtube:search');
   }
 
   async getVideoDetails(uri: string): Promise<YoutubeVideoDetails> {
