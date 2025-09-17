@@ -3,9 +3,13 @@ import { serve } from '@hono/node-server';
 import { serveStatic } from '@hono/node-server/serve-static';
 import { cors } from 'hono/cors';
 import { compress } from 'hono/compress';
-import { logger } from 'hono/logger';
+
 import { secureHeaders } from 'hono/secure-headers';
 import path from 'path';
+
+type Variables = {
+  requestId: string;
+};
 import {
   BackendMediaService,
   SpotifyClient,
@@ -59,21 +63,11 @@ const appPrefix = colorSupported ? '\x1b[32m[APP]\x1b[0m' : '[APP]';
 const errorPrefix = colorSupported ? '\x1b[31m[ERR]\x1b[0m' : '[ERR]';
 
 function logApp(...args: unknown[]) {
-  originalConsoleLog(appPrefix, ...args);
+  originalConsoleLog(timestampPrefix() + appPrefix, ...args);
 }
 function logError(...args: unknown[]) {
-  originalConsoleError(errorPrefix, ...args);
+  originalConsoleError(timestampPrefix() + errorPrefix, ...args);
 }
-
-const originalConsoleLog = console.log;
-const originalConsoleError = console.error;
-
-console.log = (...args: unknown[]) => {
-  originalConsoleLog(appPrefix, ...args);
-};
-console.error = (...args: unknown[]) => {
-  originalConsoleError(errorPrefix, ...args);
-};
 
 interface ServerConfig {
   readonly port: number;
@@ -84,28 +78,57 @@ interface ServerConfig {
   readonly nodeEnv: 'development' | 'production' | 'test';
 }
 
-function getServerConfig(): ServerConfig {
-  return {
-    port: Number(process.env.PORT) || 3000,
-    spotifyClientId: process.env.SPOTIFY_CLIENT_ID,
-    spotifyClientSecret: process.env.SPOTIFY_CLIENT_SECRET,
-    youtubeApiKey: process.env.YOUTUBE_API_KEY,
-    clientDistPath: process.env.CLIENT_DIST_PATH || path.resolve(__dirname, '../../client/dist'),
-    nodeEnv: (process.env.NODE_ENV as ServerConfig['nodeEnv']) || 'development',
-  };
-}
+const config: ServerConfig = {
+  port: Number(process.env.PORT) || 3000,
+  spotifyClientId: process.env.SPOTIFY_CLIENT_ID,
+  spotifyClientSecret: process.env.SPOTIFY_CLIENT_SECRET,
+  youtubeApiKey: process.env.YOUTUBE_API_KEY,
+  clientDistPath: process.env.CLIENT_DIST_PATH || path.resolve(__dirname, '../../client/dist'),
+  nodeEnv: (process.env.NODE_ENV as ServerConfig['nodeEnv']) || 'development',
+};
+
+const originalConsoleLog = console.log;
+const originalConsoleError = console.error;
+
+// Timestamp helper - only enabled in development
+const getTimestamp = config.nodeEnv === 'development' ? () => new Date().toISOString() : () => '';
+
+const timestampPrefix = config.nodeEnv === 'development' ? () => `[${getTimestamp()}] ` : () => '';
+
+console.log = (...args: unknown[]) => {
+  originalConsoleLog(timestampPrefix() + appPrefix, ...args);
+};
+console.error = (...args: unknown[]) => {
+  originalConsoleError(timestampPrefix() + errorPrefix, ...args);
+};
 
 async function start(): Promise<void> {
-  const app = new Hono();
-  const config = getServerConfig();
+  const app = new Hono<{ Variables: Variables }>();
 
-  app.use(
-    '*',
-    logger(message => {
-      const requestPrefix = colorSupported ? '\x1b[36m[REQ]\x1b[0m ' : '[REQ] ';
-      originalConsoleLog(requestPrefix + message);
-    }),
-  );
+  // Add request ID to all API routes FIRST
+  app.use('/api/*', async (c, next) => {
+    const requestId = Math.random().toString(36).substring(2, 8);
+    c.set('requestId', requestId);
+    await next();
+  });
+
+  // Custom logger that includes request IDs for API routes
+  app.use('*', async (c, next) => {
+    const start = Date.now();
+    const method = c.req.method;
+    const path = c.req.path;
+    const requestId = c.get('requestId');
+
+    const requestPrefix = colorSupported ? '\x1b[36m[REQ]\x1b[0m ' : '[REQ] ';
+    const idSuffix = requestId ? ` [${requestId}]` : '';
+    originalConsoleLog(`${timestampPrefix()}${requestPrefix}<-- ${method} ${path}${idSuffix}`);
+
+    await next();
+
+    const ms = Date.now() - start;
+    const status = c.res.status;
+    originalConsoleLog(`${timestampPrefix()}${requestPrefix}--> ${method} ${path} ${status} ${ms}ms${idSuffix}`);
+  });
 
   app.use('*', async (c, next) => {
     if (config.nodeEnv === 'production' && c.req.header('x-forwarded-proto') === 'http') {
