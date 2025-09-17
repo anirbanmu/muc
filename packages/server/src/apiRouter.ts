@@ -1,5 +1,12 @@
 import { Hono, type Context } from 'hono';
-import { API_ROUTES, BackendMediaService, UriRequestBody, TrackIdentifier, SearchResponse } from '@muc/common';
+import {
+  API_ROUTES,
+  BackendMediaService,
+  UriRequestBody,
+  TrackIdentifier,
+  SearchResponse,
+  MediaService,
+} from '@muc/common';
 
 type Variables = {
   requestId: string;
@@ -38,20 +45,28 @@ export class ApiRouter {
       const trimmedUri = uri.trim();
       const requestId = c.get('requestId') as string;
 
+      // Validate URI format before processing
+      if (!MediaService.classifyUri(trimmedUri)) {
+        return c.json(
+          {
+            message:
+              'Invalid or unsupported URI format. Please provide a valid Spotify, YouTube, Apple Music, or Deezer link.',
+          },
+          400,
+        );
+      }
+
       // Check if there's already a pending search for this URI
       let searchPromise = this.pendingSearches.get(trimmedUri);
 
       if (!searchPromise) {
         console.log(`  ↳ Starting search [${requestId}]`);
         // Create new search promise and store it
-        searchPromise = this.performSearch(trimmedUri);
-        this.pendingSearches.set(trimmedUri, searchPromise);
-
-        // Clean up the promise when it completes (success or failure)
-        searchPromise.finally(() => {
+        searchPromise = this.performSearch(trimmedUri).finally(() => {
           console.log(`  ↳ Completed search [${requestId}]`);
           this.pendingSearches.delete(trimmedUri);
         });
+        this.pendingSearches.set(trimmedUri, searchPromise);
       } else {
         console.log(`  ↳ Reusing ongoing search [${requestId}]`);
       }

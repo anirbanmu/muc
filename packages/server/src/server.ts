@@ -69,21 +69,6 @@ function logError(...args: unknown[]) {
   originalConsoleError(timestampPrefix() + errorPrefix, ...args);
 }
 
-const originalConsoleLog = console.log;
-const originalConsoleError = console.error;
-
-// Timestamp helper - only enabled in development
-const getTimestamp = process.env.NODE_ENV === 'development' ? () => new Date().toISOString() : () => '';
-
-const timestampPrefix = process.env.NODE_ENV === 'development' ? () => `[${getTimestamp()}] ` : () => '';
-
-console.log = (...args: unknown[]) => {
-  originalConsoleLog(timestampPrefix() + appPrefix, ...args);
-};
-console.error = (...args: unknown[]) => {
-  originalConsoleError(timestampPrefix() + errorPrefix, ...args);
-};
-
 interface ServerConfig {
   readonly port: number;
   readonly spotifyClientId?: string;
@@ -93,20 +78,32 @@ interface ServerConfig {
   readonly nodeEnv: 'development' | 'production' | 'test';
 }
 
-function getServerConfig(): ServerConfig {
-  return {
-    port: Number(process.env.PORT) || 3000,
-    spotifyClientId: process.env.SPOTIFY_CLIENT_ID,
-    spotifyClientSecret: process.env.SPOTIFY_CLIENT_SECRET,
-    youtubeApiKey: process.env.YOUTUBE_API_KEY,
-    clientDistPath: process.env.CLIENT_DIST_PATH || path.resolve(__dirname, '../../client/dist'),
-    nodeEnv: (process.env.NODE_ENV as ServerConfig['nodeEnv']) || 'development',
-  };
-}
+const config: ServerConfig = {
+  port: Number(process.env.PORT) || 3000,
+  spotifyClientId: process.env.SPOTIFY_CLIENT_ID,
+  spotifyClientSecret: process.env.SPOTIFY_CLIENT_SECRET,
+  youtubeApiKey: process.env.YOUTUBE_API_KEY,
+  clientDistPath: process.env.CLIENT_DIST_PATH || path.resolve(__dirname, '../../client/dist'),
+  nodeEnv: (process.env.NODE_ENV as ServerConfig['nodeEnv']) || 'development',
+};
+
+const originalConsoleLog = console.log;
+const originalConsoleError = console.error;
+
+// Timestamp helper - only enabled in development
+const getTimestamp = config.nodeEnv === 'development' ? () => new Date().toISOString() : () => '';
+
+const timestampPrefix = config.nodeEnv === 'development' ? () => `[${getTimestamp()}] ` : () => '';
+
+console.log = (...args: unknown[]) => {
+  originalConsoleLog(timestampPrefix() + appPrefix, ...args);
+};
+console.error = (...args: unknown[]) => {
+  originalConsoleError(timestampPrefix() + errorPrefix, ...args);
+};
 
 async function start(): Promise<void> {
   const app = new Hono<{ Variables: Variables }>();
-  const config = getServerConfig();
 
   // Add request ID to all API routes FIRST
   app.use('/api/*', async (c, next) => {
