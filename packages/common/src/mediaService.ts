@@ -59,7 +59,7 @@ export abstract class MediaService {
   public abstract getItunesTrackDetails(uri: string): Promise<ItunesNormalizedTrack>;
   public abstract searchItunesTracks(query: string): Promise<ItunesNormalizedTrack | null>;
 
-  private static classifyUri(uri: string): MediaPlatform | null {
+  public static classifyUri(uri: string): MediaPlatform | null {
     if (uri.includes('spotify.com') || uri.startsWith('spotify:')) {
       if (SpotifyClient.isUriParsable(uri)) return 'spotify';
     }

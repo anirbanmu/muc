@@ -7,7 +7,7 @@ const search = useSearch();
 const session = useSession();
 
 const uri = ref('');
-const { isLoading } = search;
+const { isLoading, startPrefetch } = search;
 const { showOnlyCurrentSession } = session;
 
 const handleSearch = async () => {
@@ -15,6 +15,10 @@ const handleSearch = async () => {
   if (searchId) {
     uri.value = '';
   }
+};
+
+const handleInputChange = () => {
+  startPrefetch(uri.value);
 };
 </script>
 
@@ -29,6 +33,7 @@ const handleSearch = async () => {
           class="search-input"
           placeholder="Enter a music track URI..."
           :disabled="isLoading"
+          @input="handleInputChange"
         />
         <button
           type="submit"
