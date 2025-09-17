@@ -27,6 +27,8 @@ import {
   ConcurrencyLimitedDeezerClient,
   ConcurrencyLimitedItunesClient,
 } from '@muc/common';
+import { TimedSpotifyClient, TimedYoutubeClient, TimedDeezerClient, TimedItunesClient } from './timedClient.js';
+import { AsyncLocalStorage } from 'async_hooks';
 import { ApiRouter } from './apiRouter.js';
 import NodeCache from 'node-cache';
 import supportsColor from 'supports-color';
@@ -105,11 +107,19 @@ console.error = (...args: unknown[]) => {
 async function start(): Promise<void> {
   const app = new Hono<{ Variables: Variables }>();
 
+  // Request context for timing logs
+  const requestContext = new AsyncLocalStorage<{ requestId: string }>();
+  const getCurrentRequestId = () => requestContext.getStore()?.requestId || '';
+
   // Add request ID to all API routes FIRST
   app.use('/api/*', async (c, next) => {
     const requestId = Math.random().toString(36).substring(2, 8);
     c.set('requestId', requestId);
-    await next();
+
+    // Set up AsyncLocalStorage context for timing logs
+    await requestContext.run({ requestId }, async () => {
+      await next();
+    });
   });
 
   // Custom logger that includes request IDs for API routes
@@ -208,25 +218,29 @@ async function start(): Promise<void> {
         clientId: config.spotifyClientId,
         clientSecret: config.spotifyClientSecret,
       });
-      const limitedSpotifyClient = new ConcurrencyLimitedSpotifyClient(rawSpotifyClient, 10);
+      const timedSpotifyClient = new TimedSpotifyClient(rawSpotifyClient, getCurrentRequestId);
+      const limitedSpotifyClient = new ConcurrencyLimitedSpotifyClient(timedSpotifyClient, 10);
       spotifyClient = new CachedSpotifyClient(limitedSpotifyClient, cache);
     }
 
     let youtubeClient: YoutubeClientInterface | undefined;
     if (config.youtubeApiKey) {
       const rawYoutubeClient = new YoutubeClient(config.youtubeApiKey);
-      const limitedYoutubeClient = new ConcurrencyLimitedYoutubeClient(rawYoutubeClient, 10);
+      const timedYoutubeClient = new TimedYoutubeClient(rawYoutubeClient, getCurrentRequestId);
+      const limitedYoutubeClient = new ConcurrencyLimitedYoutubeClient(timedYoutubeClient, 10);
       youtubeClient = new CachedYoutubeClient(limitedYoutubeClient, cache);
     }
 
-    // iTunes client with rate limiting then caching
+    // iTunes client with timing, rate limiting, then caching
     const rawItunesClient = new ItunesClient();
-    const limitedItunesClient = new ConcurrencyLimitedItunesClient(rawItunesClient, 10);
+    const timedItunesClient = new TimedItunesClient(rawItunesClient, getCurrentRequestId);
+    const limitedItunesClient = new ConcurrencyLimitedItunesClient(timedItunesClient, 10);
     const itunesClient = new CachedItunesClient(limitedItunesClient, cache);
 
-    // Deezer client with rate limiting then caching
+    // Deezer client with timing, rate limiting, then caching
     const rawDeezerClient = new DeezerClient();
-    const limitedDeezerClient = new ConcurrencyLimitedDeezerClient(rawDeezerClient, 10);
+    const timedDeezerClient = new TimedDeezerClient(rawDeezerClient, getCurrentRequestId);
+    const limitedDeezerClient = new ConcurrencyLimitedDeezerClient(timedDeezerClient, 10);
     const deezerClient = new CachedDeezerClient(limitedDeezerClient, cache);
 
     return BackendMediaService.createWithClients(deezerClient, itunesClient, spotifyClient, youtubeClient);

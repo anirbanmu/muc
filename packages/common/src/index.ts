@@ -10,7 +10,13 @@ export {
   SpotifyAlbum,
   SpotifyExternalUrls,
 } from './spotify.js';
-export { YoutubeClient, YoutubeClientInterface, YoutubeVideoSnippet, YoutubeVideoDetails } from './youtube.js';
+export {
+  YoutubeClient,
+  YoutubeClientInterface,
+  YoutubeVideoSnippet,
+  YoutubeVideoDetails,
+  YoutubeSearchResultItem,
+} from './youtube.js';
 
 export { DeezerTrack, DeezerClient, DeezerClientInterface } from './deezer.js';
 
