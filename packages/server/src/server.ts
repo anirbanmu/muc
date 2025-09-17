@@ -3,9 +3,13 @@ import { serve } from '@hono/node-server';
 import { serveStatic } from '@hono/node-server/serve-static';
 import { cors } from 'hono/cors';
 import { compress } from 'hono/compress';
-import { logger } from 'hono/logger';
+
 import { secureHeaders } from 'hono/secure-headers';
 import path from 'path';
+
+type Variables = {
+  requestId: string;
+};
 import {
   BackendMediaService,
   SpotifyClient,
@@ -59,20 +63,25 @@ const appPrefix = colorSupported ? '\x1b[32m[APP]\x1b[0m' : '[APP]';
 const errorPrefix = colorSupported ? '\x1b[31m[ERR]\x1b[0m' : '[ERR]';
 
 function logApp(...args: unknown[]) {
-  originalConsoleLog(appPrefix, ...args);
+  originalConsoleLog(timestampPrefix() + appPrefix, ...args);
 }
 function logError(...args: unknown[]) {
-  originalConsoleError(errorPrefix, ...args);
+  originalConsoleError(timestampPrefix() + errorPrefix, ...args);
 }
 
 const originalConsoleLog = console.log;
 const originalConsoleError = console.error;
 
+// Timestamp helper - only enabled in development
+const getTimestamp = process.env.NODE_ENV === 'development' ? () => new Date().toISOString() : () => '';
+
+const timestampPrefix = process.env.NODE_ENV === 'development' ? () => `[${getTimestamp()}] ` : () => '';
+
 console.log = (...args: unknown[]) => {
-  originalConsoleLog(appPrefix, ...args);
+  originalConsoleLog(timestampPrefix() + appPrefix, ...args);
 };
 console.error = (...args: unknown[]) => {
-  originalConsoleError(errorPrefix, ...args);
+  originalConsoleError(timestampPrefix() + errorPrefix, ...args);
 };
 
 interface ServerConfig {
@@ -96,16 +105,33 @@ function getServerConfig(): ServerConfig {
 }
 
 async function start(): Promise<void> {
-  const app = new Hono();
+  const app = new Hono<{ Variables: Variables }>();
   const config = getServerConfig();
 
-  app.use(
-    '*',
-    logger(message => {
-      const requestPrefix = colorSupported ? '\x1b[36m[REQ]\x1b[0m ' : '[REQ] ';
-      originalConsoleLog(requestPrefix + message);
-    }),
-  );
+  // Add request ID to all API routes FIRST
+  app.use('/api/*', async (c, next) => {
+    const requestId = Math.random().toString(36).substring(2, 8);
+    c.set('requestId', requestId);
+    await next();
+  });
+
+  // Custom logger that includes request IDs for API routes
+  app.use('*', async (c, next) => {
+    const start = Date.now();
+    const method = c.req.method;
+    const path = c.req.path;
+    const requestId = c.get('requestId');
+
+    const requestPrefix = colorSupported ? '\x1b[36m[REQ]\x1b[0m ' : '[REQ] ';
+    const idSuffix = requestId ? ` [${requestId}]` : '';
+    originalConsoleLog(`${timestampPrefix()}${requestPrefix}<-- ${method} ${path}${idSuffix}`);
+
+    await next();
+
+    const ms = Date.now() - start;
+    const status = c.res.status;
+    originalConsoleLog(`${timestampPrefix()}${requestPrefix}--> ${method} ${path} ${status} ${ms}ms${idSuffix}`);
+  });
 
   app.use('*', async (c, next) => {
     if (config.nodeEnv === 'production' && c.req.header('x-forwarded-proto') === 'http') {

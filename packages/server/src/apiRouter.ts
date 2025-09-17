@@ -1,14 +1,19 @@
 import { Hono, type Context } from 'hono';
-import { API_ROUTES, BackendMediaService, UriRequestBody, TrackIdentifier } from '@muc/common';
+import { API_ROUTES, BackendMediaService, UriRequestBody, TrackIdentifier, SearchResponse } from '@muc/common';
+
+type Variables = {
+  requestId: string;
+};
 
 export class ApiRouter {
-  private readonly router = new Hono();
+  private readonly router = new Hono<{ Variables: Variables }>();
+  private readonly pendingSearches = new Map<string, Promise<SearchResponse>>();
 
   constructor(private readonly mediaServicePromise: Promise<BackendMediaService>) {
     this.initializeRoutes();
   }
 
-  public getRouter(): Hono {
+  public getRouter(): Hono<{ Variables: Variables }> {
     return this.router;
   }
 
@@ -16,7 +21,7 @@ export class ApiRouter {
     this.router.post(`/${API_ROUTES.search}`, this.search);
   }
 
-  private search = async (c: Context) => {
+  private search = async (c: Context<{ Variables: Variables }>) => {
     try {
       const body = (await c.req.json()) as UriRequestBody;
       const { uri } = body;
@@ -30,24 +35,29 @@ export class ApiRouter {
         );
       }
 
-      const mediaService = await this.mediaServicePromise;
+      const trimmedUri = uri.trim();
+      const requestId = c.get('requestId') as string;
 
-      const sourceTrack = await mediaService.getTrackDetails(uri);
-      const trackIdentifier = TrackIdentifier.fromNormalizedTrack(sourceTrack);
+      // Check if there's already a pending search for this URI
+      let searchPromise = this.pendingSearches.get(trimmedUri);
 
-      const results = [sourceTrack];
+      if (!searchPromise) {
+        console.log(`  ↳ Starting search [${requestId}]`);
+        // Create new search promise and store it
+        searchPromise = this.performSearch(trimmedUri);
+        this.pendingSearches.set(trimmedUri, searchPromise);
 
-      try {
-        const otherPlatformTracks = await mediaService.searchOtherPlatforms(sourceTrack);
-        results.push(...otherPlatformTracks);
-      } catch (error) {
-        console.error('Some platform searches failed:', error instanceof Error ? error.message : error);
+        // Clean up the promise when it completes (success or failure)
+        searchPromise.finally(() => {
+          console.log(`  ↳ Completed search [${requestId}]`);
+          this.pendingSearches.delete(trimmedUri);
+        });
+      } else {
+        console.log(`  ↳ Reusing ongoing search [${requestId}]`);
       }
 
-      return c.json({
-        results,
-        sourceTrack: trackIdentifier.toData(),
-      });
+      const result = await searchPromise;
+      return c.json(result);
     } catch (error) {
       console.error('Failed to get source track details:', error instanceof Error ? error.message : error);
       return c.json(
@@ -58,4 +68,25 @@ export class ApiRouter {
       );
     }
   };
+
+  private async performSearch(uri: string): Promise<SearchResponse> {
+    const mediaService = await this.mediaServicePromise;
+
+    const sourceTrack = await mediaService.getTrackDetails(uri);
+    const trackIdentifier = TrackIdentifier.fromNormalizedTrack(sourceTrack);
+
+    const results = [sourceTrack];
+
+    try {
+      const otherPlatformTracks = await mediaService.searchOtherPlatforms(sourceTrack);
+      results.push(...otherPlatformTracks);
+    } catch (error) {
+      console.error('Some platform searches failed:', error instanceof Error ? error.message : error);
+    }
+
+    return {
+      results,
+      sourceTrack: trackIdentifier.toData(),
+    };
+  }
 }
