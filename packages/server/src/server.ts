@@ -1,9 +1,11 @@
-import express, { Request, Response, NextFunction } from 'express';
+import { Hono } from 'hono';
+import { serve } from '@hono/node-server';
+import { serveStatic } from '@hono/node-server/serve-static';
+import { cors } from 'hono/cors';
+import { compress } from 'hono/compress';
+import { logger } from 'hono/logger';
+import { secureHeaders } from 'hono/secure-headers';
 import path from 'path';
-import cors from 'cors';
-import helmet from 'helmet';
-import compression from 'compression';
-import rateLimit from 'express-rate-limit';
 import {
   BackendMediaService,
   SpotifyClient,
@@ -11,9 +13,7 @@ import {
   YoutubeClient,
   YoutubeClientInterface,
   ItunesClient,
-  ItunesClientInterface,
   DeezerClient,
-  DeezerClientInterface,
   CachedSpotifyClient,
   CachedYoutubeClient,
   CachedItunesClient,
@@ -25,14 +25,38 @@ import {
 } from '@muc/common';
 import { ApiRouter } from './apiRouter.js';
 import NodeCache from 'node-cache';
-import morgan from 'morgan';
 import supportsColor from 'supports-color';
 
-// Global log helpers and color setup
+// Map of time windows -> Map of IPs -> request count
+const rateLimitWindows = new Map<number, Map<string, number>>();
+
+function isRateLimited(ip: string): boolean {
+  const windowKey = Math.floor(Date.now() / (15 * 60 * 1000));
+
+  let currentWindow = rateLimitWindows.get(windowKey);
+  if (!currentWindow) {
+    currentWindow = new Map();
+    rateLimitWindows.set(windowKey, currentWindow);
+  }
+
+  const count = currentWindow.get(ip) || 0;
+  if (count >= 100) return true;
+
+  currentWindow.set(ip, count + 1);
+
+  // Cleanup old windows (keep only current and previous)
+  for (const [key] of rateLimitWindows) {
+    if (key < windowKey - 1) {
+      rateLimitWindows.delete(key);
+    }
+  }
+
+  return false;
+}
+
 const colorSupported = supportsColor.stdout;
 const appPrefix = colorSupported ? '\x1b[32m[APP]\x1b[0m' : '[APP]';
 const errorPrefix = colorSupported ? '\x1b[31m[ERR]\x1b[0m' : '[ERR]';
-const requestPrefix = colorSupported ? '\x1b[36m[REQ]\x1b[0m ' : '[REQ] ';
 
 function logApp(...args: unknown[]) {
   originalConsoleLog(appPrefix, ...args);
@@ -51,97 +75,123 @@ console.error = (...args: unknown[]) => {
   originalConsoleError(errorPrefix, ...args);
 };
 
+interface ServerConfig {
+  readonly port: number;
+  readonly spotifyClientId?: string;
+  readonly spotifyClientSecret?: string;
+  readonly youtubeApiKey?: string;
+  readonly clientDistPath: string;
+  readonly nodeEnv: 'development' | 'production' | 'test';
+}
+
+function getServerConfig(): ServerConfig {
+  return {
+    port: Number(process.env.PORT) || 3000,
+    spotifyClientId: process.env.SPOTIFY_CLIENT_ID,
+    spotifyClientSecret: process.env.SPOTIFY_CLIENT_SECRET,
+    youtubeApiKey: process.env.YOUTUBE_API_KEY,
+    clientDistPath: process.env.CLIENT_DIST_PATH || path.resolve(__dirname, '../../client/dist'),
+    nodeEnv: (process.env.NODE_ENV as ServerConfig['nodeEnv']) || 'development',
+  };
+}
+
 async function start(): Promise<void> {
-  const app = express();
-  const port = process.env.PORT || 3000;
-
-  // Trust proxy headers (needed for HTTPS enforcement behind Fly.io proxy)
-  // Set to 1 to trust only the first proxy (Fly.io)
-  app.set('trust proxy', 1);
-
-  app.use(morgan(requestPrefix + ':method :url :status :res[content-length] - :response-time ms :user-agent'));
-
-  app.use((req, res, next) => {
-    if (process.env.NODE_ENV === 'production' && req.headers['x-forwarded-proto'] === 'http') {
-      return res.redirect(301, `https://${req.headers.host}${req.url}`);
-    }
-    next();
-  });
-
-  const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
-  const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
-  const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
-  const CLIENT_DIST_PATH = process.env.CLIENT_DIST_PATH || path.resolve(__dirname, '../../client/dist');
+  const app = new Hono();
+  const config = getServerConfig();
 
   app.use(
-    helmet({
+    '*',
+    logger(message => {
+      const requestPrefix = colorSupported ? '\x1b[36m[REQ]\x1b[0m ' : '[REQ] ';
+      originalConsoleLog(requestPrefix + message);
+    }),
+  );
+
+  app.use('*', async (c, next) => {
+    if (config.nodeEnv === 'production' && c.req.header('x-forwarded-proto') === 'http') {
+      const host = c.req.header('host');
+      if (!host) {
+        return c.json({ message: 'Host header missing' }, 400);
+      }
+      const httpsUrl = `https://${host}${c.req.url}`;
+      return c.redirect(httpsUrl, 301);
+    }
+    await next();
+  });
+
+  app.use(
+    '*',
+    secureHeaders({
       contentSecurityPolicy: {
-        directives: {
-          'script-src': ["'self'", 'https://api.deezer.com'],
-        },
+        scriptSrc: ["'self'", 'https://api.deezer.com'],
       },
     }),
   );
-  app.use(compression());
-  app.use(express.json());
 
-  // CORS configuration - only needed in development for Vite dev server
-  if (process.env.NODE_ENV === 'development') {
+  app.use('*', compress());
+  if (config.nodeEnv === 'development') {
     logApp('Development mode: Enabling CORS for Vite dev server');
     app.use(
+      '*',
       cors({
-        origin: [`http://localhost:5173`, `https://localhost:5173`, `http://127.0.0.1:5173`, `https://127.0.0.1:5173`],
+        origin: ['http://localhost:5173', 'https://localhost:5173', 'http://127.0.0.1:5173', 'https://127.0.0.1:5173'],
       }),
     );
   } else {
     logApp('Production mode: CORS disabled (same-origin deployment)');
   }
 
-  app.use(
-    '/api/',
-    rateLimit({
-      windowMs: 15 * 60 * 1000,
-      max: 100,
-      message: 'Too many requests from this IP, please try again after 15 minutes.',
-      standardHeaders: true,
-      legacyHeaders: false,
-    }),
-  );
+  // Rate limiting for API routes
+  app.use('/api/*', async (c, next) => {
+    const ip = c.req.header('x-forwarded-for') || c.req.header('x-real-ip') || 'unknown';
 
-  // Enforce JSON content type for POST requests to API endpoints.
-  app.use('/api/', (req: Request, res: Response, next: NextFunction) => {
-    if (req.method === 'POST' && !req.is('application/json')) {
-      res.status(415).json({
-        message: 'Content-Type must be application/json for POST requests to this endpoint.',
-      });
-      return;
+    if (isRateLimited(ip)) {
+      return c.json(
+        {
+          message: 'Too many requests from this IP, please try again after 15 minutes.',
+        },
+        429,
+      );
     }
-    next();
+
+    await next();
+  });
+
+  app.use('/api/*', async (c, next) => {
+    if (c.req.method === 'POST' && c.req.header('content-type') !== 'application/json') {
+      return c.json(
+        {
+          message: 'Content-Type must be application/json for POST requests to this endpoint.',
+        },
+        415,
+      );
+    }
+    await next();
   });
 
   const mediaServicePromise = (async (): Promise<BackendMediaService> => {
-    if (!SPOTIFY_CLIENT_ID || !SPOTIFY_CLIENT_SECRET) {
+    if (!config.spotifyClientId || !config.spotifyClientSecret) {
       console.warn('Spotify API credentials not fully configured. Spotify features might be unavailable.');
     }
-    if (!YOUTUBE_API_KEY) {
+    if (!config.youtubeApiKey) {
       console.warn('YouTube API key not configured. YouTube features might be unavailable.');
     }
 
     const cache = new NodeCache({ stdTTL: 3600, checkperiod: 600, useClones: false });
 
     let spotifyClient: SpotifyClientInterface | undefined;
-    if (SPOTIFY_CLIENT_ID && SPOTIFY_CLIENT_SECRET) {
+    if (config.spotifyClientId && config.spotifyClientSecret) {
       const rawSpotifyClient = await SpotifyClient.create({
-        clientId: SPOTIFY_CLIENT_ID,
-        clientSecret: SPOTIFY_CLIENT_SECRET,
+        clientId: config.spotifyClientId,
+        clientSecret: config.spotifyClientSecret,
       });
       const limitedSpotifyClient = new ConcurrencyLimitedSpotifyClient(rawSpotifyClient, 10);
       spotifyClient = new CachedSpotifyClient(limitedSpotifyClient, cache);
     }
 
     let youtubeClient: YoutubeClientInterface | undefined;
-    if (YOUTUBE_API_KEY) {
-      const rawYoutubeClient = new YoutubeClient(YOUTUBE_API_KEY);
+    if (config.youtubeApiKey) {
+      const rawYoutubeClient = new YoutubeClient(config.youtubeApiKey);
       const limitedYoutubeClient = new ConcurrencyLimitedYoutubeClient(rawYoutubeClient, 10);
       youtubeClient = new CachedYoutubeClient(limitedYoutubeClient, cache);
     }
@@ -149,51 +199,72 @@ async function start(): Promise<void> {
     // iTunes client with rate limiting then caching
     const rawItunesClient = new ItunesClient();
     const limitedItunesClient = new ConcurrencyLimitedItunesClient(rawItunesClient, 10);
-    const itunesClient: ItunesClientInterface = new CachedItunesClient(limitedItunesClient, cache);
+    const itunesClient = new CachedItunesClient(limitedItunesClient, cache);
 
     // Deezer client with rate limiting then caching
     const rawDeezerClient = new DeezerClient();
     const limitedDeezerClient = new ConcurrencyLimitedDeezerClient(rawDeezerClient, 10);
-    const deezerClient: DeezerClientInterface = new CachedDeezerClient(limitedDeezerClient, cache);
+    const deezerClient = new CachedDeezerClient(limitedDeezerClient, cache);
 
     return BackendMediaService.createWithClients(deezerClient, itunesClient, spotifyClient, youtubeClient);
   })();
 
-  app.get('/health', (_req: Request, res: Response) => {
-    res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+  app.get('/health', c => {
+    return c.json({
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+    });
   });
 
   const apiRouter = new ApiRouter(mediaServicePromise);
-  app.use('/api', apiRouter.getRouter());
+  app.route('/api', apiRouter.getRouter());
+  app.use(
+    '/*',
+    serveStatic({
+      root: config.clientDistPath,
+      index: 'index.html',
+    }),
+  );
 
-  app.use(express.static(CLIENT_DIST_PATH));
+  app.get(
+    '*',
+    serveStatic({
+      path: path.join(config.clientDistPath, 'index.html'),
+    }),
+  );
 
-  // For all other GET requests not handled by API or static routes, serve the client's index.html
-  app.get(/.*/, (req, res) => {
-    res.sendFile(path.join(CLIENT_DIST_PATH, 'index.html'));
-  });
-
-  // Centralized error handling middleware.
-  // Catches errors passed from async handlers or other middleware.
-  // Parameters are typed with `_` prefix to indicate they are unused in this specific handler, improving readability.
-  app.use((err: Error, _req: Request, res: Response) => {
+  app.onError((err, c) => {
     logError('Unhandled server error:', err instanceof Error ? err.message : err);
-    res.status(500).json({ message: 'An unexpected internal server error occurred.' });
+    return c.json(
+      {
+        message: 'An unexpected internal server error occurred.',
+      },
+      500,
+    );
   });
 
-  const server = app.listen(port, () => {
-    logApp(`Server running on http://localhost:${port}`);
-    logApp(`Serving client assets from: ${CLIENT_DIST_PATH}`);
-    if (process.env.NODE_ENV !== 'production' && (!SPOTIFY_CLIENT_ID || !SPOTIFY_CLIENT_SECRET || !YOUTUBE_API_KEY)) {
-      logError('\n--- WARNING: API credentials unconfigured ---');
-      logError(
-        '  Some media service features (Spotify, YouTube) may be unavailable until you configure the following environment variables:',
-      );
-      logError('  SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, YOUTUBE_API_KEY');
-      logError('  You can set these in a `.env` file in the `packages/server` directory.');
-      logError('--------------------------------------------\n');
-    }
+  const server = serve({
+    fetch: app.fetch,
+    port: config.port,
   });
+
+  logApp(`Server running on http://localhost:${config.port}`);
+  logApp(`Environment: ${config.nodeEnv}`);
+  logApp(`Serving client assets from: ${config.clientDistPath}`);
+  logApp(`Node.js version: ${process.version}`);
+
+  if (
+    config.nodeEnv !== 'production' &&
+    (!config.spotifyClientId || !config.spotifyClientSecret || !config.youtubeApiKey)
+  ) {
+    logError('\n--- WARNING: API credentials unconfigured ---');
+    logError(
+      '  Some media service features (Spotify, YouTube) may be unavailable until you configure the following environment variables:',
+    );
+    logError('  SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, YOUTUBE_API_KEY');
+    logError('  You can set these in a `.env` file in the `packages/server` directory.');
+    logError('--------------------------------------------\n');
+  }
 
   // graceful shutdown handling for Docker containers
   const gracefulShutdown = (signal: string) => {
