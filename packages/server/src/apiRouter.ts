@@ -7,6 +7,7 @@ import {
   SearchResponse,
   MediaService,
 } from '@muc/common';
+import { getLogger } from './logger.js';
 
 type Variables = {
   requestId: string;
@@ -60,21 +61,21 @@ export class ApiRouter {
       let searchPromise = this.pendingSearches.get(trimmedUri);
 
       if (!searchPromise) {
-        console.log(`  ↳ Starting search [${requestId}]`);
+        getLogger().app(`  ↳ Starting search [${requestId}]`);
         // Create new search promise and store it
         searchPromise = this.performSearch(trimmedUri).finally(() => {
-          console.log(`  ↳ Completed search [${requestId}]`);
+          getLogger().app(`  ↳ Completed search [${requestId}]`);
           this.pendingSearches.delete(trimmedUri);
         });
         this.pendingSearches.set(trimmedUri, searchPromise);
       } else {
-        console.log(`  ↳ Reusing ongoing search [${requestId}]`);
+        getLogger().app(`  ↳ Reusing ongoing search [${requestId}]`);
       }
 
       const result = await searchPromise;
       return c.json(result);
     } catch (error) {
-      console.error('Failed to get source track details:', error instanceof Error ? error.message : error);
+      getLogger().error('Failed to get source track details:', error instanceof Error ? error.message : error);
       return c.json(
         {
           message: 'Failed to retrieve track details from the provided URI.',
@@ -96,7 +97,7 @@ export class ApiRouter {
       const otherPlatformTracks = await mediaService.searchOtherPlatforms(sourceTrack);
       results.push(...otherPlatformTracks);
     } catch (error) {
-      console.error('Some platform searches failed:', error instanceof Error ? error.message : error);
+      getLogger().error('Some platform searches failed:', error instanceof Error ? error.message : error);
     }
 
     return {
