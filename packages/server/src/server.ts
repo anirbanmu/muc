@@ -123,7 +123,7 @@ async function start(): Promise<void> {
     '*',
     secureHeaders({
       contentSecurityPolicy: {
-        scriptSrc: ["'self'", 'https://api.deezer.com'],
+        scriptSrc: ["'self'"],
       },
     }),
   );
