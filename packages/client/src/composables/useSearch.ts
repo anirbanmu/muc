@@ -30,7 +30,7 @@ export function useSearch() {
         prefetchState = null;
       }
     }
-  }, 200);
+  }, 50);
 
   function startPrefetch(uri: string): void {
     debouncedPrefetch(uri);
