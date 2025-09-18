@@ -19,7 +19,8 @@ const error = ref<string | null>(null);
 
 export function useSearch() {
   let prefetchState: PrefetchState | null = null;
-  const debouncedPrefetch = debounce(async (uri: string) => {
+
+  const { fn: debouncedPrefetch, cancel: cancelPrefetch } = debounce(async (uri: string) => {
     const trimmedUri = uri.trim();
     if (MediaService.classifyUri(trimmedUri)) {
       try {
@@ -38,6 +39,10 @@ export function useSearch() {
 
   async function search(uri: string): Promise<string | undefined> {
     if (!uri.trim()) return;
+
+    // Cancel any pending prefetch
+    cancelPrefetch();
+
     window.scrollTo({ top: 0, behavior: 'smooth' });
     isLoading.value = true;
     error.value = null;
