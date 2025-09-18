@@ -2,6 +2,7 @@ import { SpotifyClientInterface, SpotifyTrack } from '@muc/common';
 import { YoutubeClientInterface, YoutubeVideoDetails, YoutubeSearchResultItem } from '@muc/common';
 import { DeezerClientInterface, DeezerTrack } from '@muc/common';
 import { ItunesClientInterface, ItunesTrack } from '@muc/common';
+import { getLogger } from './logger.js';
 
 abstract class TimedClient<T> {
   constructor(
@@ -15,21 +16,13 @@ abstract class TimedClient<T> {
     try {
       const result = await operation();
       const duration = performance.now() - start;
-      this.logTiming(operationName, duration);
+      getLogger().timing(operationName, duration, this.getRequestId());
       return result;
     } catch (error) {
       const duration = performance.now() - start;
-      this.logTiming(operationName, duration, true);
+      getLogger().timing(operationName, duration, this.getRequestId(), true);
       throw error;
     }
-  }
-
-  private logTiming(operationName: string, duration: number, isError = false): void {
-    const requestId = this.getRequestId();
-    const errorSuffix = isError ? ' (ERROR)' : '';
-    const idSuffix = requestId ? ` [${requestId}]` : '';
-
-    console.log(`    ↳ ${operationName}: ${duration.toFixed(2)}ms${errorSuffix}${idSuffix}`);
   }
 }
 

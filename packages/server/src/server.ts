@@ -31,7 +31,7 @@ import { TimedSpotifyClient, TimedYoutubeClient, TimedDeezerClient, TimedItunesC
 import { AsyncLocalStorage } from 'async_hooks';
 import { ApiRouter } from './apiRouter.js';
 import NodeCache from 'node-cache';
-import supportsColor from 'supports-color';
+import { initializeLogger, getLogger } from './logger.js';
 
 // Map of time windows -> Map of IPs -> request count
 const rateLimitWindows = new Map<number, Map<string, number>>();
@@ -60,17 +60,6 @@ function isRateLimited(ip: string): boolean {
   return false;
 }
 
-const colorSupported = supportsColor.stdout;
-const appPrefix = colorSupported ? '\x1b[32m[APP]\x1b[0m' : '[APP]';
-const errorPrefix = colorSupported ? '\x1b[31m[ERR]\x1b[0m' : '[ERR]';
-
-function logApp(...args: unknown[]) {
-  originalConsoleLog(timestampPrefix() + appPrefix, ...args);
-}
-function logError(...args: unknown[]) {
-  originalConsoleError(timestampPrefix() + errorPrefix, ...args);
-}
-
 interface ServerConfig {
   readonly port: number;
   readonly spotifyClientId?: string;
@@ -89,23 +78,12 @@ const config: ServerConfig = {
   nodeEnv: (process.env.NODE_ENV as ServerConfig['nodeEnv']) || 'development',
 };
 
-const originalConsoleLog = console.log;
-const originalConsoleError = console.error;
-
-// Timestamp helper - only enabled in development
-const getTimestamp = config.nodeEnv === 'development' ? () => new Date().toISOString() : () => '';
-
-const timestampPrefix = config.nodeEnv === 'development' ? () => `[${getTimestamp()}] ` : () => '';
-
-console.log = (...args: unknown[]) => {
-  originalConsoleLog(timestampPrefix() + appPrefix, ...args);
-};
-console.error = (...args: unknown[]) => {
-  originalConsoleError(timestampPrefix() + errorPrefix, ...args);
-};
+// Initialize logger
+initializeLogger(config.nodeEnv === 'development');
 
 async function start(): Promise<void> {
   const app = new Hono<{ Variables: Variables }>();
+  const logger = getLogger();
 
   // Request context for timing logs
   const requestContext = new AsyncLocalStorage<{ requestId: string }>();
@@ -129,15 +107,13 @@ async function start(): Promise<void> {
     const path = c.req.path;
     const requestId = c.get('requestId');
 
-    const requestPrefix = colorSupported ? '\x1b[36m[REQ]\x1b[0m ' : '[REQ] ';
-    const idSuffix = requestId ? ` [${requestId}]` : '';
-    originalConsoleLog(`${timestampPrefix()}${requestPrefix}<-- ${method} ${path}${idSuffix}`);
+    logger.request(`<-- ${method} ${path}`, requestId);
 
     await next();
 
     const ms = Date.now() - start;
     const status = c.res.status;
-    originalConsoleLog(`${timestampPrefix()}${requestPrefix}--> ${method} ${path} ${status} ${ms}ms${idSuffix}`);
+    logger.request(`--> ${method} ${path} ${status} ${ms}ms`, requestId);
   });
 
   app.use('*', async (c, next) => {
@@ -163,7 +139,7 @@ async function start(): Promise<void> {
 
   app.use('*', compress());
   if (config.nodeEnv === 'development') {
-    logApp('Development mode: Enabling CORS for Vite dev server');
+    logger.app('Development mode: Enabling CORS for Vite dev server');
     app.use(
       '*',
       cors({
@@ -171,7 +147,7 @@ async function start(): Promise<void> {
       }),
     );
   } else {
-    logApp('Production mode: CORS disabled (same-origin deployment)');
+    logger.app('Production mode: CORS disabled (same-origin deployment)');
   }
 
   // Rate limiting for API routes
@@ -271,7 +247,7 @@ async function start(): Promise<void> {
   );
 
   app.onError((err, c) => {
-    logError('Unhandled server error:', err instanceof Error ? err.message : err);
+    logger.error('Unhandled server error:', err instanceof Error ? err.message : err);
     return c.json(
       {
         message: 'An unexpected internal server error occurred.',
@@ -285,35 +261,35 @@ async function start(): Promise<void> {
     port: config.port,
   });
 
-  logApp(`Server running on http://localhost:${config.port}`);
-  logApp(`Environment: ${config.nodeEnv}`);
-  logApp(`Serving client assets from: ${config.clientDistPath}`);
-  logApp(`Node.js version: ${process.version}`);
+  logger.app(`Server running on http://localhost:${config.port}`);
+  logger.app(`Environment: ${config.nodeEnv}`);
+  logger.app(`Serving client assets from: ${config.clientDistPath}`);
+  logger.app(`Node.js version: ${process.version}`);
 
   if (
     config.nodeEnv !== 'production' &&
     (!config.spotifyClientId || !config.spotifyClientSecret || !config.youtubeApiKey)
   ) {
-    logError('\n--- WARNING: API credentials unconfigured ---');
-    logError(
+    logger.error('\n--- WARNING: API credentials unconfigured ---');
+    logger.error(
       '  Some media service features (Spotify, YouTube) may be unavailable until you configure the following environment variables:',
     );
-    logError('  SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, YOUTUBE_API_KEY');
-    logError('  You can set these in a `.env` file in the `packages/server` directory.');
-    logError('--------------------------------------------\n');
+    logger.error('  SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, YOUTUBE_API_KEY');
+    logger.error('  You can set these in a `.env` file in the `packages/server` directory.');
+    logger.error('--------------------------------------------\n');
   }
 
   // graceful shutdown handling for Docker containers
   const gracefulShutdown = (signal: string) => {
-    logApp(`Received ${signal}, shutting down gracefully...`);
+    logger.app(`Received ${signal}, shutting down gracefully...`);
     server.close(() => {
-      logApp('Server closed. Exiting process.');
+      logger.app('Server closed. Exiting process.');
       process.exit(0);
     });
 
     // force close after 10 seconds
     setTimeout(() => {
-      logError('Could not close connections in time, forcefully shutting down');
+      logger.error('Could not close connections in time, forcefully shutting down');
       process.exit(1);
     }, 10000);
   };
@@ -324,6 +300,7 @@ async function start(): Promise<void> {
 }
 
 start().catch(error => {
-  logError('Error starting server:', error instanceof Error ? error.message : error);
+  // Logger might not be initialized yet, so use console directly
+  console.error('Error starting server:', error instanceof Error ? error.message : error);
   process.exit(1);
 });
