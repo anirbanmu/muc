@@ -1,0 +1,53 @@
+version: 2
+updates:
+  # Root workspace - handles all npm dependencies across workspaces
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'daily'
+      time: '09:00'
+    # This will detect updates in ALL workspace packages and update root lock file
+    open-pull-requests-limit: 25
+    versioning-strategy: 'increase'
+    commit-message:
+      prefix: 'deps'
+      include: 'scope'
+    labels:
+      - 'dependencies'
+    # Group related updates to reduce PR noise
+    groups:
+      vue-ecosystem:
+        patterns:
+          - 'vue*'
+          - '@vue/*'
+          - 'vite*'
+          - '@vitejs/*'
+      typescript-ecosystem:
+        patterns:
+          - 'typescript'
+          - '@types/*'
+          - 'ts-*'
+      testing-ecosystem:
+        patterns:
+          - 'vitest*'
+          - '@vitest/*'
+          - 'jest*'
+          - '@jest/*'
+      build-tools:
+        patterns:
+          - 'esbuild*'
+          - 'rollup*'
+          - 'webpack*'
+
+  # GitHub Actions dependencies
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '09:00'
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: 'ci'
+    labels:
+      - 'github-actions'
