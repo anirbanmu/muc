@@ -22,8 +22,5 @@
     "node-cache": "^5.1.2",
     "p-limit": "^7.1.1",
     "supports-color": "^10.2.2"
-  },
-  "devDependencies": {
-    "@types/supports-color": "^8.1.3"
   }
 }
