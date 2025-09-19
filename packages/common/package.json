@@ -29,6 +29,8 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "ky": "^1.10.0"
+    "ky": "^1.10.0",
+    "node-cache": "^5.1.2",
+    "p-limit": "^7.1.1"
   }
 }
