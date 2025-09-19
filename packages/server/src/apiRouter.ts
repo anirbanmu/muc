@@ -46,7 +46,6 @@ export class ApiRouter {
       const trimmedUri = uri.trim();
       const requestId = c.get('requestId') as string;
 
-      // Validate URI format before processing
       if (!MediaService.classifyUri(trimmedUri)) {
         return c.json(
           {
@@ -57,12 +56,10 @@ export class ApiRouter {
         );
       }
 
-      // Check if there's already a pending search for this URI
       let searchPromise = this.pendingSearches.get(trimmedUri);
 
       if (!searchPromise) {
         getLogger().app(`  ↳ Starting search [${requestId}]`);
-        // Create new search promise and store it
         searchPromise = this.performSearch(trimmedUri).finally(() => {
           getLogger().app(`  ↳ Completed search [${requestId}]`);
           this.pendingSearches.delete(trimmedUri);
@@ -78,9 +75,9 @@ export class ApiRouter {
       getLogger().error('Failed to get source track details:', error instanceof Error ? error.message : error);
       return c.json(
         {
-          message: 'Failed to retrieve track details from the provided URI.',
+          message: 'Track not found or unavailable.',
         },
-        500,
+        404,
       );
     }
   };
