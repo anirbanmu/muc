@@ -1,6 +1,3 @@
-import ky from 'ky';
-import { isHTTPError } from './kyErrorUtils.js';
-
 const YOUTUBE_BASE_URI = 'https://www.googleapis.com/youtube/v3';
 const YOUTUBE_VIDEOS_URI = YOUTUBE_BASE_URI + '/videos';
 const YOUTUBE_SEARCH_URI = YOUTUBE_BASE_URI + '/search';
@@ -46,26 +43,27 @@ export class YoutubeClient implements YoutubeClientInterface {
       throw new Error('Invalid YouTube URI format.');
     }
 
-    try {
-      const response = await ky
-        .get(YOUTUBE_VIDEOS_URI, {
-          searchParams: this.addKey({ id: id, part: 'snippet' }),
-        })
-        .json<{ items: YoutubeVideoDetails[] }>();
+    const url = new URL(YOUTUBE_VIDEOS_URI);
+    const params = this.addKey({ id: id, part: 'snippet' });
+    Object.entries(params).forEach(([key, value]) => url.searchParams.set(key, value));
 
-      if (response.items.length < 1) {
-        throw new Error('Bad YouTube URI: No video found for the given ID.');
-      }
-      return response.items[0];
-    } catch (error) {
-      if (isHTTPError(error)) {
-        throw new Error(`Failed to get YouTube video details: ${error.response.status} ${error.response.statusText}`);
-      }
-      throw error;
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`Failed to get YouTube video details: ${response.status} ${response.statusText}`);
     }
+
+    const data = (await response.json()) as { items: YoutubeVideoDetails[] };
+
+    if (data.items.length < 1) {
+      throw new Error('Bad YouTube URI: No video found for the given ID.');
+    }
+
+    return data.items[0];
   }
 
   public async searchVideos(query: string): Promise<YoutubeSearchResultItem | null> {
+    const url = new URL(YOUTUBE_SEARCH_URI);
     const params = this.addKey({
       q: query,
       type: 'video',
@@ -73,32 +71,20 @@ export class YoutubeClient implements YoutubeClientInterface {
       part: 'snippet', // 'snippet' part is required to get the title for the search result item
     });
 
-    try {
-      const response = await ky
-        .get(YOUTUBE_SEARCH_URI, {
-          searchParams: params,
-        })
-        .json<{ items: YoutubeSearchResultItem[] }>();
+    Object.entries(params).forEach(([key, value]) => url.searchParams.set(key, String(value)));
 
-      return response.items.length > 0 ? response.items[0] : null;
-    } catch (error) {
-      if (isHTTPError(error)) {
-        throw new Error(`Failed to search YouTube videos: ${error.response.status} ${error.response.statusText}`);
-      }
-      throw error;
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`Failed to search YouTube videos: ${response.status} ${response.statusText}`);
     }
+
+    const data = (await response.json()) as { items: YoutubeSearchResultItem[] };
+    return data.items.length > 0 ? data.items[0] : null;
   }
 
   public static parseId(uri: string): string | null {
-    let id = YoutubeClient.parseRegularLinkId(uri);
-    if (id) {
-      return id;
-    }
-    id = YoutubeClient.parseShortLinkId(uri);
-    if (id) {
-      return id;
-    }
-    return null;
+    return YoutubeClient.parseRegularLinkId(uri) || YoutubeClient.parseShortLinkId(uri);
   }
 
   private static parseRegularLinkId(uri: string): string | null {
@@ -123,10 +109,6 @@ export class YoutubeClient implements YoutubeClientInterface {
       }
     }
     return null;
-  }
-
-  public static async getToken(apiKey: string): Promise<string> {
-    return apiKey;
   }
 
   public static isUriParsable(uri: string): boolean {
