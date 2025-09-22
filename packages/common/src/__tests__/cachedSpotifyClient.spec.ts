@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { CachedSpotifyClient } from '../cachedClient.js';
+import { CachedSpotifyClient, CacheStorageValue, NULL_MARKER } from '../cachedClient.js';
 import { SpotifyClientInterface, SpotifyClient, SpotifyTrack } from '../spotify.js';
-import NodeCache from 'node-cache';
+import { LRUCache } from 'lru-cache';
 
 describe('CachedSpotifyClient', () => {
   let mockClient: SpotifyClientInterface;
-  let mockCache: NodeCache;
+  let mockCache: LRUCache<string, CacheStorageValue>;
   let cachedClient: CachedSpotifyClient;
 
   const mockTrack: SpotifyTrack = {
@@ -26,8 +26,8 @@ describe('CachedSpotifyClient', () => {
       get: vi.fn(),
       set: vi.fn(),
       has: vi.fn(),
-      del: vi.fn(),
-    } as unknown as NodeCache;
+      delete: vi.fn(),
+    } as unknown as LRUCache<string, CacheStorageValue>;
 
     cachedClient = new CachedSpotifyClient(mockClient, mockCache);
   });
@@ -44,6 +44,16 @@ describe('CachedSpotifyClient', () => {
       expect(mockClient.getTrackDetails).not.toHaveBeenCalled();
     });
 
+    it('throws error when cached negative result is found', async () => {
+      vi.mocked(mockCache.get).mockReturnValue(NULL_MARKER);
+      vi.spyOn(SpotifyClient, 'parseTrackId').mockReturnValue('track123');
+
+      await expect(cachedClient.getTrackDetails('spotify:track:track123')).rejects.toThrow();
+
+      expect(mockCache.get).toHaveBeenCalledWith('spotify:track:track123');
+      expect(mockClient.getTrackDetails).not.toHaveBeenCalled();
+    });
+
     it('fetches and caches track when not cached', async () => {
       vi.mocked(mockCache.get).mockReturnValue(undefined);
       vi.mocked(mockClient.getTrackDetails).mockResolvedValue(mockTrack);
@@ -56,20 +66,30 @@ describe('CachedSpotifyClient', () => {
       expect(mockCache.set).toHaveBeenCalledWith('spotify:track:track123', mockTrack);
     });
 
-    it('throws error and does not cache when API returns null', async () => {
+    it('caches negative result when API returns null', async () => {
       vi.mocked(mockCache.get).mockReturnValue(undefined);
       vi.mocked(mockClient.getTrackDetails).mockResolvedValue(null as unknown as SpotifyTrack);
       vi.spyOn(SpotifyClient, 'parseTrackId').mockReturnValue('track123');
 
       await expect(cachedClient.getTrackDetails('spotify:track:track123')).rejects.toThrow();
 
-      expect(mockCache.set).not.toHaveBeenCalled();
+      expect(mockCache.set).toHaveBeenCalledWith('spotify:track:track123', NULL_MARKER);
+    });
+
+    it('caches negative result when API throws error', async () => {
+      const apiError = new Error('API Error');
+      vi.mocked(mockCache.get).mockReturnValue(undefined);
+      vi.mocked(mockClient.getTrackDetails).mockRejectedValue(apiError);
+      vi.spyOn(SpotifyClient, 'parseTrackId').mockReturnValue('track123');
+
+      await expect(cachedClient.getTrackDetails('spotify:track:track123')).rejects.toThrow();
+
+      expect(mockCache.set).toHaveBeenCalledWith('spotify:track:track123', NULL_MARKER);
     });
   });
 
   describe('searchTracks', () => {
     it('returns cached search result when available', async () => {
-      vi.mocked(mockCache.has).mockReturnValue(true);
       vi.mocked(mockCache.get).mockReturnValue(mockTrack);
 
       const result = await cachedClient.searchTracks('test query');
@@ -79,8 +99,18 @@ describe('CachedSpotifyClient', () => {
       expect(mockClient.searchTracks).not.toHaveBeenCalled();
     });
 
+    it('returns cached null result when available', async () => {
+      vi.mocked(mockCache.get).mockReturnValue(NULL_MARKER);
+
+      const result = await cachedClient.searchTracks('test query');
+
+      expect(result).toBe(null);
+      expect(mockCache.get).toHaveBeenCalledWith('spotify:search:test query');
+      expect(mockClient.searchTracks).not.toHaveBeenCalled();
+    });
+
     it('fetches and caches search result when not cached', async () => {
-      vi.mocked(mockCache.has).mockReturnValue(false);
+      vi.mocked(mockCache.get).mockReturnValue(undefined);
       vi.mocked(mockClient.searchTracks).mockResolvedValue(mockTrack);
 
       const result = await cachedClient.searchTracks('test query');
@@ -88,6 +118,17 @@ describe('CachedSpotifyClient', () => {
       expect(result).toBe(mockTrack);
       expect(mockClient.searchTracks).toHaveBeenCalledWith('test query');
       expect(mockCache.set).toHaveBeenCalledWith('spotify:search:test query', mockTrack);
+    });
+
+    it('fetches and caches null result when not cached', async () => {
+      vi.mocked(mockCache.get).mockReturnValue(undefined);
+      vi.mocked(mockClient.searchTracks).mockResolvedValue(null);
+
+      const result = await cachedClient.searchTracks('test query');
+
+      expect(result).toBe(null);
+      expect(mockClient.searchTracks).toHaveBeenCalledWith('test query');
+      expect(mockCache.set).toHaveBeenCalledWith('spotify:search:test query', NULL_MARKER);
     });
   });
 });

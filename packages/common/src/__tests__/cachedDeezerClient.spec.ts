@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { CachedDeezerClient } from '../cachedClient.js';
+import { CachedDeezerClient, CacheStorageValue } from '../cachedClient.js';
 import { DeezerClientInterface, DeezerTrack } from '../deezer.js';
-import NodeCache from 'node-cache';
+import { LRUCache } from 'lru-cache';
 
 describe('CachedDeezerClient', () => {
   let mockClient: DeezerClientInterface;
-  let cache: NodeCache;
+  let cache: LRUCache<string, CacheStorageValue>;
   let cachedClient: CachedDeezerClient;
 
   const mockTrack: DeezerTrack = {
@@ -26,7 +26,7 @@ describe('CachedDeezerClient', () => {
       getTrackDetails: vi.fn(),
       searchTracks: vi.fn(),
     };
-    cache = new NodeCache();
+    cache = new LRUCache<string, CacheStorageValue>({ max: 100 });
     cachedClient = new CachedDeezerClient(mockClient, cache);
   });
 

@@ -30,7 +30,7 @@
   "license": "MIT",
   "dependencies": {
     "ky": "^1.10.0",
-    "node-cache": "^5.1.2",
+    "lru-cache": "^11.2.1",
     "p-limit": "^7.1.1"
   }
 }

@@ -22,6 +22,7 @@ import {
   CachedYoutubeClient,
   CachedItunesClient,
   CachedDeezerClient,
+  CacheStorageValue,
   ConcurrencyLimitedSpotifyClient,
   ConcurrencyLimitedYoutubeClient,
   ConcurrencyLimitedDeezerClient,
@@ -30,7 +31,7 @@ import {
 import { TimedSpotifyClient, TimedYoutubeClient, TimedDeezerClient, TimedItunesClient } from './timedClient.js';
 import { AsyncLocalStorage } from 'async_hooks';
 import { ApiRouter } from './apiRouter.js';
-import NodeCache from 'node-cache';
+import { LRUCache } from 'lru-cache';
 import { initializeLogger, getLogger } from './logger.js';
 
 // Map of time windows -> Map of IPs -> request count
@@ -186,7 +187,12 @@ async function start(): Promise<void> {
       console.warn('YouTube API key not configured. YouTube features might be unavailable.');
     }
 
-    const cache = new NodeCache({ stdTTL: 3600, checkperiod: 600, useClones: false });
+    const cache = new LRUCache<string, CacheStorageValue>({
+      max: 10000,
+      ttl: 3600000, // 1 hour in milliseconds (converted from 3600 seconds)
+      updateAgeOnGet: true,
+      allowStale: true,
+    });
 
     let spotifyClient: SpotifyClientInterface | undefined;
     if (config.spotifyClientId && config.spotifyClientSecret) {

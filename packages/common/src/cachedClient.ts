@@ -1,33 +1,59 @@
-import NodeCache from 'node-cache';
-import { CacheAccessor } from './cacheAccessor.js';
+import { LRUCache } from 'lru-cache';
 import { SpotifyClientInterface, SpotifyClient, SpotifyTrack } from './spotify.js';
 import { YoutubeClientInterface, YoutubeClient, YoutubeVideoDetails, YoutubeSearchResultItem } from './youtube.js';
 import { DeezerClient, DeezerClientInterface, DeezerTrack } from './deezer.js';
 import { ItunesClient, ItunesClientInterface, ItunesTrack } from './itunes.js';
 
-function createCacheAccessors<TrackType, SearchType>(cache: NodeCache, platform: string) {
-  return {
-    trackCache: new CacheAccessor<TrackType>(cache, `${platform}:track`),
-    searchCache: new CacheAccessor<SearchType | null>(cache, `${platform}:search`),
-  };
+// Simple cache types - just store objects and handle null with a marker
+export const NULL_MARKER = Symbol('null');
+export type CacheStorageValue = object | typeof NULL_MARKER;
+
+class CacheAccessor<T> {
+  constructor(
+    private readonly cache: LRUCache<string, CacheStorageValue>,
+    private readonly keyPrefix: string,
+  ) {}
+
+  public get(key: string): T | null | undefined {
+    const value = this.cache.get(`${this.keyPrefix}:${key}`);
+    if (value === undefined) {
+      return undefined;
+    }
+    if (value === NULL_MARKER) {
+      return null;
+    }
+    return value as T;
+  }
+
+  public set(key: string, value: T | null): void {
+    const storageValue = value === null ? NULL_MARKER : value;
+    this.cache.set(`${this.keyPrefix}:${key}`, storageValue);
+  }
+
+  public has(key: string): boolean {
+    return this.cache.has(`${this.keyPrefix}:${key}`);
+  }
+
+  public delete(key: string): void {
+    this.cache.delete(`${this.keyPrefix}:${key}`);
+  }
 }
 
 abstract class CachedClient<T> {
   constructor(
     protected readonly client: T,
-    protected readonly cache: NodeCache,
+    protected readonly cache: LRUCache<string, CacheStorageValue>,
   ) {}
 }
 
 export class CachedSpotifyClient extends CachedClient<SpotifyClientInterface> implements SpotifyClientInterface {
   private readonly trackCache: CacheAccessor<SpotifyTrack>;
-  private readonly searchCache: CacheAccessor<SpotifyTrack | null>;
+  private readonly searchCache: CacheAccessor<SpotifyTrack>;
 
-  constructor(client: SpotifyClientInterface, cache: NodeCache) {
+  constructor(client: SpotifyClientInterface, cache: LRUCache<string, CacheStorageValue>) {
     super(client, cache);
-    const caches = createCacheAccessors<SpotifyTrack, SpotifyTrack>(cache, 'spotify');
-    this.trackCache = caches.trackCache;
-    this.searchCache = caches.searchCache;
+    this.trackCache = new CacheAccessor<SpotifyTrack>(cache, 'spotify:track');
+    this.searchCache = new CacheAccessor<SpotifyTrack>(cache, 'spotify:search');
   }
 
   async getTrackDetails(uri: string): Promise<SpotifyTrack> {
@@ -37,22 +63,32 @@ export class CachedSpotifyClient extends CachedClient<SpotifyClientInterface> im
     }
 
     const cached = this.trackCache.get(trackId);
-    if (cached) {
+    if (cached !== undefined) {
+      if (cached === null) {
+        throw new Error('Spotify API returned invalid track data');
+      }
       return cached;
     }
 
-    const track = await this.client.getTrackDetails(uri);
-    if (!track) {
-      throw new Error('Spotify API returned invalid track data');
-    }
+    try {
+      const track = await this.client.getTrackDetails(uri);
+      if (!track) {
+        this.trackCache.set(trackId, null);
+        throw new Error('Spotify API returned invalid track data');
+      }
 
-    this.trackCache.set(trackId, track);
-    return track;
+      this.trackCache.set(trackId, track);
+      return track;
+    } catch (error) {
+      this.trackCache.set(trackId, null);
+      throw error;
+    }
   }
 
   async searchTracks(query: string): Promise<SpotifyTrack | null> {
-    if (this.searchCache.has(query)) {
-      return this.searchCache.get(query) ?? null;
+    const cached = this.searchCache.get(query);
+    if (cached !== undefined) {
+      return cached;
     }
 
     const track = await this.client.searchTracks(query);
@@ -63,12 +99,12 @@ export class CachedSpotifyClient extends CachedClient<SpotifyClientInterface> im
 
 export class CachedYoutubeClient extends CachedClient<YoutubeClientInterface> implements YoutubeClientInterface {
   private readonly videoCache: CacheAccessor<YoutubeVideoDetails>;
-  private readonly searchCache: CacheAccessor<YoutubeSearchResultItem | null>;
+  private readonly searchCache: CacheAccessor<YoutubeSearchResultItem>;
 
-  constructor(client: YoutubeClientInterface, cache: NodeCache) {
+  constructor(client: YoutubeClientInterface, cache: LRUCache<string, CacheStorageValue>) {
     super(client, cache);
     this.videoCache = new CacheAccessor<YoutubeVideoDetails>(cache, 'youtube:video');
-    this.searchCache = new CacheAccessor<YoutubeSearchResultItem | null>(cache, 'youtube:search');
+    this.searchCache = new CacheAccessor<YoutubeSearchResultItem>(cache, 'youtube:search');
   }
 
   async getVideoDetails(uri: string): Promise<YoutubeVideoDetails> {
@@ -78,22 +114,32 @@ export class CachedYoutubeClient extends CachedClient<YoutubeClientInterface> im
     }
 
     const cached = this.videoCache.get(videoId);
-    if (cached) {
+    if (cached !== undefined) {
+      if (cached === null) {
+        throw new Error('YouTube API returned invalid video data');
+      }
       return cached;
     }
 
-    const video = await this.client.getVideoDetails(uri);
-    if (!video) {
-      throw new Error('YouTube API returned invalid video data');
-    }
+    try {
+      const video = await this.client.getVideoDetails(uri);
+      if (!video) {
+        this.videoCache.set(videoId, null);
+        throw new Error('YouTube API returned invalid video data');
+      }
 
-    this.videoCache.set(videoId, video);
-    return video;
+      this.videoCache.set(videoId, video);
+      return video;
+    } catch (error) {
+      this.videoCache.set(videoId, null);
+      throw error;
+    }
   }
 
   async searchVideos(query: string): Promise<YoutubeSearchResultItem | null> {
-    if (this.searchCache.has(query)) {
-      return this.searchCache.get(query) ?? null;
+    const cached = this.searchCache.get(query);
+    if (cached !== undefined) {
+      return cached;
     }
 
     const video = await this.client.searchVideos(query);
@@ -104,13 +150,12 @@ export class CachedYoutubeClient extends CachedClient<YoutubeClientInterface> im
 
 export class CachedDeezerClient extends CachedClient<DeezerClientInterface> implements DeezerClientInterface {
   private readonly trackCache: CacheAccessor<DeezerTrack>;
-  private readonly searchCache: CacheAccessor<DeezerTrack | null>;
+  private readonly searchCache: CacheAccessor<DeezerTrack>;
 
-  constructor(client: DeezerClientInterface, cache: NodeCache) {
+  constructor(client: DeezerClientInterface, cache: LRUCache<string, CacheStorageValue>) {
     super(client, cache);
-    const caches = createCacheAccessors<DeezerTrack, DeezerTrack>(cache, 'deezer');
-    this.trackCache = caches.trackCache;
-    this.searchCache = caches.searchCache;
+    this.trackCache = new CacheAccessor<DeezerTrack>(cache, 'deezer:track');
+    this.searchCache = new CacheAccessor<DeezerTrack>(cache, 'deezer:search');
   }
 
   async getTrackDetails(uri: string): Promise<DeezerTrack> {
@@ -120,22 +165,32 @@ export class CachedDeezerClient extends CachedClient<DeezerClientInterface> impl
     }
 
     const cached = this.trackCache.get(trackId);
-    if (cached) {
+    if (cached !== undefined) {
+      if (cached === null) {
+        throw new Error('Deezer API returned invalid track data');
+      }
       return cached;
     }
 
-    const track = await this.client.getTrackDetails(uri);
-    if (!track) {
-      throw new Error('Deezer API returned invalid track data');
-    }
+    try {
+      const track = await this.client.getTrackDetails(uri);
+      if (!track) {
+        this.trackCache.set(trackId, null);
+        throw new Error('Deezer API returned invalid track data');
+      }
 
-    this.trackCache.set(trackId, track);
-    return track;
+      this.trackCache.set(trackId, track);
+      return track;
+    } catch (error) {
+      this.trackCache.set(trackId, null);
+      throw error;
+    }
   }
 
   async searchTracks(query: string): Promise<DeezerTrack | null> {
-    if (this.searchCache.has(query)) {
-      return this.searchCache.get(query) ?? null;
+    const cached = this.searchCache.get(query);
+    if (cached !== undefined) {
+      return cached;
     }
 
     const track = await this.client.searchTracks(query);
@@ -146,13 +201,12 @@ export class CachedDeezerClient extends CachedClient<DeezerClientInterface> impl
 
 export class CachedItunesClient extends CachedClient<ItunesClientInterface> implements ItunesClientInterface {
   private readonly trackCache: CacheAccessor<ItunesTrack>;
-  private readonly searchCache: CacheAccessor<ItunesTrack | null>;
+  private readonly searchCache: CacheAccessor<ItunesTrack>;
 
-  constructor(client: ItunesClientInterface, cache: NodeCache) {
+  constructor(client: ItunesClientInterface, cache: LRUCache<string, CacheStorageValue>) {
     super(client, cache);
-    const caches = createCacheAccessors<ItunesTrack, ItunesTrack>(cache, 'itunes');
-    this.trackCache = caches.trackCache;
-    this.searchCache = caches.searchCache;
+    this.trackCache = new CacheAccessor<ItunesTrack>(cache, 'itunes:track');
+    this.searchCache = new CacheAccessor<ItunesTrack>(cache, 'itunes:search');
   }
 
   async getTrackDetails(uri: string): Promise<ItunesTrack> {
@@ -162,22 +216,32 @@ export class CachedItunesClient extends CachedClient<ItunesClientInterface> impl
     }
 
     const cached = this.trackCache.get(trackId);
-    if (cached) {
+    if (cached !== undefined) {
+      if (cached === null) {
+        throw new Error('iTunes API returned invalid track data');
+      }
       return cached;
     }
 
-    const track = await this.client.getTrackDetails(uri);
-    if (!track) {
-      throw new Error('iTunes API returned invalid track data');
-    }
+    try {
+      const track = await this.client.getTrackDetails(uri);
+      if (!track) {
+        this.trackCache.set(trackId, null);
+        throw new Error('iTunes API returned invalid track data');
+      }
 
-    this.trackCache.set(trackId, track);
-    return track;
+      this.trackCache.set(trackId, track);
+      return track;
+    } catch (error) {
+      this.trackCache.set(trackId, null);
+      throw error;
+    }
   }
 
   async searchTracks(query: string): Promise<ItunesTrack | null> {
-    if (this.searchCache.has(query)) {
-      return this.searchCache.get(query) ?? null;
+    const cached = this.searchCache.get(query);
+    if (cached !== undefined) {
+      return cached;
     }
 
     const track = await this.client.searchTracks(query);

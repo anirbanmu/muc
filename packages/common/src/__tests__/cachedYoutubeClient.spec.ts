@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { CachedYoutubeClient } from '../cachedClient.js';
+import { CachedYoutubeClient, CacheStorageValue, NULL_MARKER } from '../cachedClient.js';
 import { YoutubeClientInterface, YoutubeClient, YoutubeVideoDetails, YoutubeSearchResultItem } from '../youtube.js';
-import NodeCache from 'node-cache';
+import { LRUCache } from 'lru-cache';
 
 describe('CachedYoutubeClient', () => {
   let mockClient: YoutubeClientInterface;
-  let mockCache: NodeCache;
+  let mockCache: LRUCache<string, CacheStorageValue>;
   let cachedClient: CachedYoutubeClient;
 
   const mockVideo: YoutubeVideoDetails = {
@@ -31,8 +31,8 @@ describe('CachedYoutubeClient', () => {
       get: vi.fn(),
       set: vi.fn(),
       has: vi.fn(),
-      del: vi.fn(),
-    } as unknown as NodeCache;
+      delete: vi.fn(),
+    } as unknown as LRUCache<string, CacheStorageValue>;
 
     cachedClient = new CachedYoutubeClient(mockClient, mockCache);
   });
@@ -49,6 +49,18 @@ describe('CachedYoutubeClient', () => {
       expect(mockClient.getVideoDetails).not.toHaveBeenCalled();
     });
 
+    it('throws error when cached negative result is found', async () => {
+      vi.mocked(mockCache.get).mockReturnValue(NULL_MARKER);
+      vi.spyOn(YoutubeClient, 'parseId').mockReturnValue('video123');
+
+      await expect(cachedClient.getVideoDetails('https://youtube.com/watch?v=video123')).rejects.toThrow(
+        'YouTube API returned invalid video data',
+      );
+
+      expect(mockCache.get).toHaveBeenCalledWith('youtube:video:video123');
+      expect(mockClient.getVideoDetails).not.toHaveBeenCalled();
+    });
+
     it('fetches and caches video when not cached', async () => {
       vi.mocked(mockCache.get).mockReturnValue(undefined);
       vi.mocked(mockClient.getVideoDetails).mockResolvedValue(mockVideo);
@@ -61,20 +73,32 @@ describe('CachedYoutubeClient', () => {
       expect(mockCache.set).toHaveBeenCalledWith('youtube:video:video123', mockVideo);
     });
 
-    it('throws error and does not cache when API returns null', async () => {
+    it('caches negative result when API returns null', async () => {
       vi.mocked(mockCache.get).mockReturnValue(undefined);
       vi.mocked(mockClient.getVideoDetails).mockResolvedValue(null as unknown as YoutubeVideoDetails);
       vi.spyOn(YoutubeClient, 'parseId').mockReturnValue('video123');
 
+      await expect(cachedClient.getVideoDetails('https://youtube.com/watch?v=video123')).rejects.toThrow(
+        'YouTube API returned invalid video data',
+      );
+
+      expect(mockCache.set).toHaveBeenCalledWith('youtube:video:video123', NULL_MARKER);
+    });
+
+    it('caches negative result when API throws error', async () => {
+      const apiError = new Error('API Error');
+      vi.mocked(mockCache.get).mockReturnValue(undefined);
+      vi.mocked(mockClient.getVideoDetails).mockRejectedValue(apiError);
+      vi.spyOn(YoutubeClient, 'parseId').mockReturnValue('video123');
+
       await expect(cachedClient.getVideoDetails('https://youtube.com/watch?v=video123')).rejects.toThrow();
 
-      expect(mockCache.set).not.toHaveBeenCalled();
+      expect(mockCache.set).toHaveBeenCalledWith('youtube:video:video123', NULL_MARKER);
     });
   });
 
   describe('searchVideos', () => {
     it('returns cached search result when available', async () => {
-      vi.mocked(mockCache.has).mockReturnValue(true);
       vi.mocked(mockCache.get).mockReturnValue(mockSearchResult);
 
       const result = await cachedClient.searchVideos('test query');
@@ -84,8 +108,18 @@ describe('CachedYoutubeClient', () => {
       expect(mockClient.searchVideos).not.toHaveBeenCalled();
     });
 
+    it('returns cached null result when available', async () => {
+      vi.mocked(mockCache.get).mockReturnValue(NULL_MARKER);
+
+      const result = await cachedClient.searchVideos('test query');
+
+      expect(result).toBe(null);
+      expect(mockCache.get).toHaveBeenCalledWith('youtube:search:test query');
+      expect(mockClient.searchVideos).not.toHaveBeenCalled();
+    });
+
     it('fetches and caches search result when not cached', async () => {
-      vi.mocked(mockCache.has).mockReturnValue(false);
+      vi.mocked(mockCache.get).mockReturnValue(undefined);
       vi.mocked(mockClient.searchVideos).mockResolvedValue(mockSearchResult);
 
       const result = await cachedClient.searchVideos('test query');
@@ -93,6 +127,17 @@ describe('CachedYoutubeClient', () => {
       expect(result).toBe(mockSearchResult);
       expect(mockClient.searchVideos).toHaveBeenCalledWith('test query');
       expect(mockCache.set).toHaveBeenCalledWith('youtube:search:test query', mockSearchResult);
+    });
+
+    it('fetches and caches null result when not cached', async () => {
+      vi.mocked(mockCache.get).mockReturnValue(undefined);
+      vi.mocked(mockClient.searchVideos).mockResolvedValue(null);
+
+      const result = await cachedClient.searchVideos('test query');
+
+      expect(result).toBe(null);
+      expect(mockClient.searchVideos).toHaveBeenCalledWith('test query');
+      expect(mockCache.set).toHaveBeenCalledWith('youtube:search:test query', NULL_MARKER);
     });
   });
 });
