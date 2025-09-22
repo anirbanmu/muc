@@ -53,7 +53,7 @@
     "packages/*"
   ],
   "devDependencies": {
-    "@eslint/js": "^9.35.0",
+    "@eslint/js": "^9.36.0",
     "@types/eslint": "^9.6.1",
     "@types/node": "^24.5.2",
     "esbuild": "^0.25.10",
