@@ -39,6 +39,51 @@ class CacheAccessor<T> {
   }
 }
 
+// Utility functions for common caching patterns
+async function cacheGetOperation<T>(
+  cache: CacheAccessor<T>,
+  key: string,
+  operation: () => Promise<T>,
+  errorMessage: string,
+): Promise<T> {
+  const cached = cache.get(key);
+  if (cached !== undefined) {
+    if (cached === null) {
+      throw new Error(errorMessage);
+    }
+    return cached;
+  }
+
+  try {
+    const result = await operation();
+    if (!result) {
+      cache.set(key, null);
+      throw new Error(errorMessage);
+    }
+
+    cache.set(key, result);
+    return result;
+  } catch (error) {
+    cache.set(key, null);
+    throw error;
+  }
+}
+
+async function cacheSearchOperation<T>(
+  cache: CacheAccessor<T>,
+  key: string,
+  operation: () => Promise<T | null>,
+): Promise<T | null> {
+  const cached = cache.get(key);
+  if (cached !== undefined) {
+    return cached;
+  }
+
+  const result = await operation();
+  cache.set(key, result);
+  return result;
+}
+
 abstract class CachedClient<T> {
   constructor(
     protected readonly client: T,
@@ -62,38 +107,16 @@ export class CachedSpotifyClient extends CachedClient<SpotifyClientInterface> im
       throw new Error('Invalid Spotify track URI format.');
     }
 
-    const cached = this.trackCache.get(trackId);
-    if (cached !== undefined) {
-      if (cached === null) {
-        throw new Error('Spotify API returned invalid track data');
-      }
-      return cached;
-    }
-
-    try {
-      const track = await this.client.getTrackDetails(uri);
-      if (!track) {
-        this.trackCache.set(trackId, null);
-        throw new Error('Spotify API returned invalid track data');
-      }
-
-      this.trackCache.set(trackId, track);
-      return track;
-    } catch (error) {
-      this.trackCache.set(trackId, null);
-      throw error;
-    }
+    return cacheGetOperation(
+      this.trackCache,
+      trackId,
+      () => this.client.getTrackDetails(uri),
+      'Spotify API returned invalid track data',
+    );
   }
 
   async searchTracks(query: string): Promise<SpotifyTrack | null> {
-    const cached = this.searchCache.get(query);
-    if (cached !== undefined) {
-      return cached;
-    }
-
-    const track = await this.client.searchTracks(query);
-    this.searchCache.set(query, track);
-    return track;
+    return cacheSearchOperation(this.searchCache, query, () => this.client.searchTracks(query));
   }
 }
 
@@ -113,38 +136,16 @@ export class CachedYoutubeClient extends CachedClient<YoutubeClientInterface> im
       throw new Error('Invalid YouTube URI format.');
     }
 
-    const cached = this.videoCache.get(videoId);
-    if (cached !== undefined) {
-      if (cached === null) {
-        throw new Error('YouTube API returned invalid video data');
-      }
-      return cached;
-    }
-
-    try {
-      const video = await this.client.getVideoDetails(uri);
-      if (!video) {
-        this.videoCache.set(videoId, null);
-        throw new Error('YouTube API returned invalid video data');
-      }
-
-      this.videoCache.set(videoId, video);
-      return video;
-    } catch (error) {
-      this.videoCache.set(videoId, null);
-      throw error;
-    }
+    return cacheGetOperation(
+      this.videoCache,
+      videoId,
+      () => this.client.getVideoDetails(uri),
+      'YouTube API returned invalid video data',
+    );
   }
 
   async searchVideos(query: string): Promise<YoutubeSearchResultItem | null> {
-    const cached = this.searchCache.get(query);
-    if (cached !== undefined) {
-      return cached;
-    }
-
-    const video = await this.client.searchVideos(query);
-    this.searchCache.set(query, video);
-    return video;
+    return cacheSearchOperation(this.searchCache, query, () => this.client.searchVideos(query));
   }
 }
 
@@ -164,38 +165,16 @@ export class CachedDeezerClient extends CachedClient<DeezerClientInterface> impl
       throw new Error('Invalid Deezer track URI format.');
     }
 
-    const cached = this.trackCache.get(trackId);
-    if (cached !== undefined) {
-      if (cached === null) {
-        throw new Error('Deezer API returned invalid track data');
-      }
-      return cached;
-    }
-
-    try {
-      const track = await this.client.getTrackDetails(uri);
-      if (!track) {
-        this.trackCache.set(trackId, null);
-        throw new Error('Deezer API returned invalid track data');
-      }
-
-      this.trackCache.set(trackId, track);
-      return track;
-    } catch (error) {
-      this.trackCache.set(trackId, null);
-      throw error;
-    }
+    return cacheGetOperation(
+      this.trackCache,
+      trackId,
+      () => this.client.getTrackDetails(uri),
+      'Deezer API returned invalid track data',
+    );
   }
 
   async searchTracks(query: string): Promise<DeezerTrack | null> {
-    const cached = this.searchCache.get(query);
-    if (cached !== undefined) {
-      return cached;
-    }
-
-    const track = await this.client.searchTracks(query);
-    this.searchCache.set(query, track);
-    return track;
+    return cacheSearchOperation(this.searchCache, query, () => this.client.searchTracks(query));
   }
 }
 
@@ -215,37 +194,15 @@ export class CachedItunesClient extends CachedClient<ItunesClientInterface> impl
       throw new Error('Invalid iTunes track URI format.');
     }
 
-    const cached = this.trackCache.get(trackId);
-    if (cached !== undefined) {
-      if (cached === null) {
-        throw new Error('iTunes API returned invalid track data');
-      }
-      return cached;
-    }
-
-    try {
-      const track = await this.client.getTrackDetails(uri);
-      if (!track) {
-        this.trackCache.set(trackId, null);
-        throw new Error('iTunes API returned invalid track data');
-      }
-
-      this.trackCache.set(trackId, track);
-      return track;
-    } catch (error) {
-      this.trackCache.set(trackId, null);
-      throw error;
-    }
+    return cacheGetOperation(
+      this.trackCache,
+      trackId,
+      () => this.client.getTrackDetails(uri),
+      'iTunes API returned invalid track data',
+    );
   }
 
   async searchTracks(query: string): Promise<ItunesTrack | null> {
-    const cached = this.searchCache.get(query);
-    if (cached !== undefined) {
-      return cached;
-    }
-
-    const track = await this.client.searchTracks(query);
-    this.searchCache.set(query, track);
-    return track;
+    return cacheSearchOperation(this.searchCache, query, () => this.client.searchTracks(query));
   }
 }
