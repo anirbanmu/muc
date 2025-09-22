@@ -22,7 +22,13 @@ export { DeezerTrack, DeezerClient, DeezerClientInterface } from './deezer.js';
 
 export { ItunesClient, ItunesClientInterface, ItunesTrack } from './itunes.js';
 
-export { CachedSpotifyClient, CachedYoutubeClient, CachedDeezerClient, CachedItunesClient } from './cachedClient.js';
+export {
+  CachedSpotifyClient,
+  CachedYoutubeClient,
+  CachedDeezerClient,
+  CachedItunesClient,
+  CacheStorageValue,
+} from './cachedClient.js';
 
 export {
   ConcurrencyLimitedSpotifyClient,
@@ -41,7 +47,6 @@ export {
 } from './normalizedTrack.js';
 
 export { BackendMediaService } from './backendMediaService.js';
-export { CacheAccessor } from './cacheAccessor.js';
 
 export { MediaPlatform, MediaService } from './mediaService.js';
 export { getNextId } from './idGenerator.js';
