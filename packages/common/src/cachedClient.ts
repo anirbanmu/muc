@@ -40,13 +40,15 @@ class CacheAccessor<T> {
 }
 
 // Utility functions for common caching patterns
-async function cacheGetOperation<T>(
+async function cachedGetOperation<T>(
   cache: CacheAccessor<T>,
   key: string,
   operation: () => Promise<T>,
   errorMessage: string,
 ): Promise<T> {
   const cached = cache.get(key);
+
+  // Return cached result if available
   if (cached !== undefined) {
     if (cached === null) {
       throw new Error(errorMessage);
@@ -54,22 +56,26 @@ async function cacheGetOperation<T>(
     return cached;
   }
 
+  // Execute operation and handle result
+  let result: T;
   try {
-    const result = await operation();
-    if (!result) {
-      cache.set(key, null);
-      throw new Error(errorMessage);
-    }
-
-    cache.set(key, result);
-    return result;
+    result = await operation();
   } catch (error) {
     cache.set(key, null);
     throw error;
   }
+
+  // Check if result is valid
+  if (!result) {
+    cache.set(key, null);
+    throw new Error(errorMessage);
+  }
+
+  cache.set(key, result);
+  return result;
 }
 
-async function cacheSearchOperation<T>(
+async function cachedSearchOperation<T>(
   cache: CacheAccessor<T>,
   key: string,
   operation: () => Promise<T | null>,
@@ -107,7 +113,7 @@ export class CachedSpotifyClient extends CachedClient<SpotifyClientInterface> im
       throw new Error('Invalid Spotify track URI format.');
     }
 
-    return cacheGetOperation(
+    return cachedGetOperation(
       this.trackCache,
       trackId,
       () => this.client.getTrackDetails(uri),
@@ -116,7 +122,7 @@ export class CachedSpotifyClient extends CachedClient<SpotifyClientInterface> im
   }
 
   async searchTracks(query: string): Promise<SpotifyTrack | null> {
-    return cacheSearchOperation(this.searchCache, query, () => this.client.searchTracks(query));
+    return cachedSearchOperation(this.searchCache, query, () => this.client.searchTracks(query));
   }
 }
 
@@ -136,7 +142,7 @@ export class CachedYoutubeClient extends CachedClient<YoutubeClientInterface> im
       throw new Error('Invalid YouTube URI format.');
     }
 
-    return cacheGetOperation(
+    return cachedGetOperation(
       this.videoCache,
       videoId,
       () => this.client.getVideoDetails(uri),
@@ -145,7 +151,7 @@ export class CachedYoutubeClient extends CachedClient<YoutubeClientInterface> im
   }
 
   async searchVideos(query: string): Promise<YoutubeSearchResultItem | null> {
-    return cacheSearchOperation(this.searchCache, query, () => this.client.searchVideos(query));
+    return cachedSearchOperation(this.searchCache, query, () => this.client.searchVideos(query));
   }
 }
 
@@ -165,7 +171,7 @@ export class CachedDeezerClient extends CachedClient<DeezerClientInterface> impl
       throw new Error('Invalid Deezer track URI format.');
     }
 
-    return cacheGetOperation(
+    return cachedGetOperation(
       this.trackCache,
       trackId,
       () => this.client.getTrackDetails(uri),
@@ -174,7 +180,7 @@ export class CachedDeezerClient extends CachedClient<DeezerClientInterface> impl
   }
 
   async searchTracks(query: string): Promise<DeezerTrack | null> {
-    return cacheSearchOperation(this.searchCache, query, () => this.client.searchTracks(query));
+    return cachedSearchOperation(this.searchCache, query, () => this.client.searchTracks(query));
   }
 }
 
@@ -194,7 +200,7 @@ export class CachedItunesClient extends CachedClient<ItunesClientInterface> impl
       throw new Error('Invalid iTunes track URI format.');
     }
 
-    return cacheGetOperation(
+    return cachedGetOperation(
       this.trackCache,
       trackId,
       () => this.client.getTrackDetails(uri),
@@ -203,6 +209,6 @@ export class CachedItunesClient extends CachedClient<ItunesClientInterface> impl
   }
 
   async searchTracks(query: string): Promise<ItunesTrack | null> {
-    return cacheSearchOperation(this.searchCache, query, () => this.client.searchTracks(query));
+    return cachedSearchOperation(this.searchCache, query, () => this.client.searchTracks(query));
   }
 }
