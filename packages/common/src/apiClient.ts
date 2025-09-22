@@ -1,34 +1,26 @@
-import ky from 'ky';
 import { API_ROUTES } from './apiRoutes.js';
 import { SearchRequest, SearchResponse } from './apiTypes.js';
-import { isHTTPError, isTimeoutError } from './kyErrorUtils.js';
 
 export class ApiClient {
-  private readonly client: typeof ky;
+  private readonly baseURL: string;
 
   constructor(baseURL: string) {
-    this.client = ky.create({
-      prefixUrl: baseURL,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    this.baseURL = baseURL.endsWith('/') ? baseURL : `${baseURL}/`;
   }
 
   public async search(uri: string): Promise<SearchResponse> {
-    try {
-      return await this.client
-        .post(API_ROUTES.search, {
-          json: {
-            uri,
-          } as SearchRequest,
-        })
-        .json<SearchResponse>();
-    } catch (error) {
-      if (isHTTPError(error) || isTimeoutError(error)) {
-        throw error;
-      }
-      throw new Error(`Failed to search: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    const response = await fetch(`${this.baseURL}${API_ROUTES.search}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ uri } as SearchRequest),
+    });
+
+    if (!response.ok) {
+      throw new Error(`API search failed: ${response.status} ${response.statusText}`);
     }
+
+    return response.json();
   }
 }
