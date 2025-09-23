@@ -31,7 +31,7 @@ import {
 import { TimedSpotifyClient, TimedYoutubeClient, TimedDeezerClient, TimedItunesClient } from './timedClient.js';
 import { AsyncLocalStorage } from 'async_hooks';
 import { ApiRouter } from './apiRouter.js';
-import { LRUCache } from 'lru-cache';
+import { Cache } from '@muc/common';
 import { initializeLogger, getLogger } from './logger.js';
 
 // Map of time windows -> Map of IPs -> request count
@@ -187,12 +187,10 @@ async function start(): Promise<void> {
       console.warn('YouTube API key not configured. YouTube features might be unavailable.');
     }
 
-    const cache = new LRUCache<string, CacheStorageValue>({
-      max: 10000,
-      ttl: 3600000, // 1 hour in milliseconds (converted from 3600 seconds)
-      updateAgeOnGet: true,
-      allowStale: true,
-    });
+    const cache = new Cache<CacheStorageValue>(
+      3600000, // 1 hour TTL in milliseconds
+      300000, // 5 minute eviction interval
+    );
 
     let spotifyClient: SpotifyClientInterface | undefined;
     if (config.spotifyClientId && config.spotifyClientSecret) {

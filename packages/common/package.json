@@ -29,7 +29,6 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "lru-cache": "^11.2.1",
     "p-limit": "^7.1.1"
   }
 }
