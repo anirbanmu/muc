@@ -55,3 +55,5 @@ export { TrackIdentifier } from './trackIdentifier.js';
 export { ApiClient } from './apiClient.js';
 export { API_ROUTES } from './apiRoutes.js';
 export { UriRequestBody, SearchRequest, SearchResponse, TrackIdentifierData, ErrorResponse } from './apiTypes.js';
+
+export { Cache } from './cache.js';

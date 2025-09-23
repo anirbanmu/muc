@@ -1,4 +1,4 @@
-import { LRUCache } from 'lru-cache';
+import { Cache } from './cache.js';
 import { SpotifyClientInterface, SpotifyClient, SpotifyTrack } from './spotify.js';
 import { YoutubeClientInterface, YoutubeClient, YoutubeVideoDetails, YoutubeSearchResultItem } from './youtube.js';
 import { DeezerClient, DeezerClientInterface, DeezerTrack } from './deezer.js';
@@ -8,9 +8,9 @@ import { ItunesClient, ItunesClientInterface, ItunesTrack } from './itunes.js';
 export const NULL_MARKER = Symbol('null');
 export type CacheStorageValue = object | typeof NULL_MARKER;
 
-class CacheAccessor<T> {
+class CacheAccessor<T extends object> {
   constructor(
-    private readonly cache: LRUCache<string, CacheStorageValue>,
+    private readonly cache: Cache<CacheStorageValue>,
     private readonly keyPrefix: string,
   ) {}
 
@@ -40,7 +40,7 @@ class CacheAccessor<T> {
 }
 
 // Utility functions for common caching patterns
-async function cachedGetOperation<T>(
+async function cachedGetOperation<T extends object>(
   cache: CacheAccessor<T>,
   key: string,
   operation: () => Promise<T>,
@@ -75,7 +75,7 @@ async function cachedGetOperation<T>(
   return result;
 }
 
-async function cachedSearchOperation<T>(
+async function cachedSearchOperation<T extends object>(
   cache: CacheAccessor<T>,
   key: string,
   operation: () => Promise<T | null>,
@@ -93,7 +93,7 @@ async function cachedSearchOperation<T>(
 abstract class CachedClient<T> {
   constructor(
     protected readonly client: T,
-    protected readonly cache: LRUCache<string, CacheStorageValue>,
+    protected readonly cache: Cache<CacheStorageValue>,
   ) {}
 }
 
@@ -101,7 +101,7 @@ export class CachedSpotifyClient extends CachedClient<SpotifyClientInterface> im
   private readonly trackCache: CacheAccessor<SpotifyTrack>;
   private readonly searchCache: CacheAccessor<SpotifyTrack>;
 
-  constructor(client: SpotifyClientInterface, cache: LRUCache<string, CacheStorageValue>) {
+  constructor(client: SpotifyClientInterface, cache: Cache<CacheStorageValue>) {
     super(client, cache);
     this.trackCache = new CacheAccessor<SpotifyTrack>(cache, 'spotify:track');
     this.searchCache = new CacheAccessor<SpotifyTrack>(cache, 'spotify:search');
@@ -130,7 +130,7 @@ export class CachedYoutubeClient extends CachedClient<YoutubeClientInterface> im
   private readonly videoCache: CacheAccessor<YoutubeVideoDetails>;
   private readonly searchCache: CacheAccessor<YoutubeSearchResultItem>;
 
-  constructor(client: YoutubeClientInterface, cache: LRUCache<string, CacheStorageValue>) {
+  constructor(client: YoutubeClientInterface, cache: Cache<CacheStorageValue>) {
     super(client, cache);
     this.videoCache = new CacheAccessor<YoutubeVideoDetails>(cache, 'youtube:video');
     this.searchCache = new CacheAccessor<YoutubeSearchResultItem>(cache, 'youtube:search');
@@ -159,7 +159,7 @@ export class CachedDeezerClient extends CachedClient<DeezerClientInterface> impl
   private readonly trackCache: CacheAccessor<DeezerTrack>;
   private readonly searchCache: CacheAccessor<DeezerTrack>;
 
-  constructor(client: DeezerClientInterface, cache: LRUCache<string, CacheStorageValue>) {
+  constructor(client: DeezerClientInterface, cache: Cache<CacheStorageValue>) {
     super(client, cache);
     this.trackCache = new CacheAccessor<DeezerTrack>(cache, 'deezer:track');
     this.searchCache = new CacheAccessor<DeezerTrack>(cache, 'deezer:search');
@@ -188,7 +188,7 @@ export class CachedItunesClient extends CachedClient<ItunesClientInterface> impl
   private readonly trackCache: CacheAccessor<ItunesTrack>;
   private readonly searchCache: CacheAccessor<ItunesTrack>;
 
-  constructor(client: ItunesClientInterface, cache: LRUCache<string, CacheStorageValue>) {
+  constructor(client: ItunesClientInterface, cache: Cache<CacheStorageValue>) {
     super(client, cache);
     this.trackCache = new CacheAccessor<ItunesTrack>(cache, 'itunes:track');
     this.searchCache = new CacheAccessor<ItunesTrack>(cache, 'itunes:search');

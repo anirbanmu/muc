@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { CachedYoutubeClient, CacheStorageValue, NULL_MARKER } from '../cachedClient.js';
 import { YoutubeClientInterface, YoutubeClient, YoutubeVideoDetails, YoutubeSearchResultItem } from '../youtube.js';
-import { LRUCache } from 'lru-cache';
+import { Cache } from '../cache.js';
 
 describe('CachedYoutubeClient', () => {
   let mockClient: YoutubeClientInterface;
-  let mockCache: LRUCache<string, CacheStorageValue>;
+  let mockCache: Cache<CacheStorageValue>;
   let cachedClient: CachedYoutubeClient;
 
   const mockVideo: YoutubeVideoDetails = {
@@ -32,7 +32,7 @@ describe('CachedYoutubeClient', () => {
       set: vi.fn(),
       has: vi.fn(),
       delete: vi.fn(),
-    } as unknown as LRUCache<string, CacheStorageValue>;
+    } as unknown as Cache<CacheStorageValue>;
 
     cachedClient = new CachedYoutubeClient(mockClient, mockCache);
   });
