@@ -4,9 +4,7 @@ import { YoutubeClientInterface, YoutubeClient, YoutubeVideoDetails, YoutubeSear
 import { DeezerClient, DeezerClientInterface, DeezerTrack } from './deezer.js';
 import { ItunesClient, ItunesClientInterface, ItunesTrack } from './itunes.js';
 
-// Simple cache types - just store objects and handle null with a marker
-export const NULL_MARKER = Symbol('null');
-export type CacheStorageValue = object | typeof NULL_MARKER;
+export type CacheStorageValue = object | null;
 
 class CacheAccessor<T extends object> {
   constructor(
@@ -15,19 +13,11 @@ class CacheAccessor<T extends object> {
   ) {}
 
   public get(key: string): T | null | undefined {
-    const value = this.cache.get(`${this.keyPrefix}:${key}`);
-    if (value === undefined) {
-      return undefined;
-    }
-    if (value === NULL_MARKER) {
-      return null;
-    }
-    return value as T;
+    return this.cache.get(`${this.keyPrefix}:${key}`) as T | null | undefined;
   }
 
   public set(key: string, value: T | null): void {
-    const storageValue = value === null ? NULL_MARKER : value;
-    this.cache.set(`${this.keyPrefix}:${key}`, storageValue);
+    this.cache.set(`${this.keyPrefix}:${key}`, value);
   }
 
   public has(key: string): boolean {
