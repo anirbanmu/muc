@@ -190,6 +190,7 @@ async function start(): Promise<void> {
     const cache = new Cache<CacheStorageValue>(
       3600000, // 1 hour TTL in milliseconds
       300000, // 5 minute eviction interval
+      16384,
     );
 
     let spotifyClient: SpotifyClientInterface | undefined;
