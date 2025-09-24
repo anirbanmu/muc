@@ -1,17 +1,17 @@
-import pLimit from 'p-limit';
+import Limiter from './limiter.js';
 import { SpotifyClientInterface, SpotifyTrack } from './spotify.js';
 import { YoutubeClientInterface, YoutubeVideoDetails, YoutubeSearchResultItem } from './youtube.js';
 import { DeezerClientInterface, DeezerTrack } from './deezer.js';
 import { ItunesClientInterface, ItunesTrack } from './itunes.js';
 
 abstract class ConcurrencyLimitedClient<T> {
-  protected readonly limit: <T>(fn: () => Promise<T>) => Promise<T>;
+  protected readonly limiter: Limiter;
 
   constructor(
     protected readonly client: T,
     concurrency: number = 10,
   ) {
-    this.limit = pLimit(concurrency);
+    this.limiter = new Limiter(concurrency);
   }
 }
 
@@ -20,11 +20,11 @@ export class ConcurrencyLimitedSpotifyClient
   implements SpotifyClientInterface
 {
   async getTrackDetails(uri: string): Promise<SpotifyTrack> {
-    return this.limit(() => this.client.getTrackDetails(uri));
+    return this.limiter.run(() => this.client.getTrackDetails(uri));
   }
 
   async searchTracks(query: string): Promise<SpotifyTrack | null> {
-    return this.limit(() => this.client.searchTracks(query));
+    return this.limiter.run(() => this.client.searchTracks(query));
   }
 }
 
@@ -33,11 +33,11 @@ export class ConcurrencyLimitedYoutubeClient
   implements YoutubeClientInterface
 {
   async getVideoDetails(uri: string): Promise<YoutubeVideoDetails> {
-    return this.limit(() => this.client.getVideoDetails(uri));
+    return this.limiter.run(() => this.client.getVideoDetails(uri));
   }
 
   async searchVideos(query: string): Promise<YoutubeSearchResultItem | null> {
-    return this.limit(() => this.client.searchVideos(query));
+    return this.limiter.run(() => this.client.searchVideos(query));
   }
 }
 
@@ -46,11 +46,11 @@ export class ConcurrencyLimitedDeezerClient
   implements DeezerClientInterface
 {
   async getTrackDetails(uri: string): Promise<DeezerTrack> {
-    return this.limit(() => this.client.getTrackDetails(uri));
+    return this.limiter.run(() => this.client.getTrackDetails(uri));
   }
 
   async searchTracks(query: string): Promise<DeezerTrack | null> {
-    return this.limit(() => this.client.searchTracks(query));
+    return this.limiter.run(() => this.client.searchTracks(query));
   }
 }
 
@@ -59,10 +59,10 @@ export class ConcurrencyLimitedItunesClient
   implements ItunesClientInterface
 {
   async getTrackDetails(uri: string): Promise<ItunesTrack> {
-    return this.limit(() => this.client.getTrackDetails(uri));
+    return this.limiter.run(() => this.client.getTrackDetails(uri));
   }
 
   async searchTracks(query: string): Promise<ItunesTrack | null> {
-    return this.limit(() => this.client.searchTracks(query));
+    return this.limiter.run(() => this.client.searchTracks(query));
   }
 }
