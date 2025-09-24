@@ -27,8 +27,5 @@
   },
   "keywords": [],
   "author": "",
-  "license": "MIT",
-  "dependencies": {
-    "p-limit": "^7.1.1"
-  }
+  "license": "MIT"
 }
