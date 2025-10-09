@@ -44,7 +44,9 @@
     "format:check:common": "npm run format:check --workspace=@muc/common",
     "format:check:server": "npm run format:check --workspace=@muc/server",
     "license:check": "npx license-compliance --allow 'MIT;Apache-2.0;BSD-2-Clause;BSD-3-Clause;ISC;0BSD;CC0-1.0;Unlicense;BlueOak-1.0.0;Python-2.0'",
-    "license:check:strict": "npx license-compliance --allow 'MIT;Apache-2.0;BSD-2-Clause;BSD-3-Clause;ISC;0BSD;CC0-1.0;Unlicense;BlueOak-1.0.0'"
+    "license:check:strict": "npx license-compliance --allow 'MIT;Apache-2.0;BSD-2-Clause;BSD-3-Clause;ISC;0BSD;CC0-1.0;Unlicense;BlueOak-1.0.0'",
+    "taze": "npx taze@latest major -r",
+    "taze:w": "npx taze@latest major -r -w"
   },
   "keywords": [],
   "author": "",
