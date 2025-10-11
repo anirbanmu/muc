@@ -57,7 +57,7 @@ describe('SearchService', () => {
 
     const result = await SearchService.performSearch('spotify:track:123');
 
-    expect(mockSearch).toHaveBeenCalledWith('spotify:track:123');
+    expect(mockSearch).toHaveBeenCalledExactlyOnceWith('spotify:track:123');
     expect(result.results).toHaveLength(2);
     expect(result.sourceTrack).toBeInstanceOf(TrackIdentifier);
     expect(result.results.some(track => track.platform === 'spotify')).toBe(true);
