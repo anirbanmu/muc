@@ -19,15 +19,9 @@ export class Cache<T> {
     const entry = this.cache.get(key);
     if (!entry) return undefined;
 
-    const now = Date.now();
-    if (now > entry.expireTs) {
-      this.cache.delete(key);
-      return entry.value;
-    }
-
-    // move to end for LRU behavior
+    const expireTs = Date.now() + this.ttlMillis;
     this.cache.delete(key);
-    this.cache.set(key, entry);
+    this.cache.set(key, { value: entry.value, expireTs });
     return entry.value;
   }
 
@@ -45,11 +39,9 @@ export class Cache<T> {
     const entry = this.cache.get(key);
     if (!entry) return false;
 
-    const now = Date.now();
-    if (now > entry.expireTs) {
-      this.cache.delete(key);
-      return false;
-    }
+    const expireTs = Date.now() + this.ttlMillis;
+    this.cache.delete(key);
+    this.cache.set(key, { value: entry.value, expireTs });
     return true;
   }
 
