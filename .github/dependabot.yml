@@ -14,30 +14,11 @@ updates:
       include: 'scope'
     labels:
       - 'dependencies'
-    # Group related updates to reduce PR noise
+    # Group all updates into a single PR
     groups:
-      vue-ecosystem:
+      all-dependencies:
         patterns:
-          - 'vue*'
-          - '@vue/*'
-          - 'vite*'
-          - '@vitejs/*'
-      typescript-ecosystem:
-        patterns:
-          - 'typescript'
-          - '@types/*'
-          - 'ts-*'
-      testing-ecosystem:
-        patterns:
-          - 'vitest*'
-          - '@vitest/*'
-          - 'jest*'
-          - '@jest/*'
-      build-tools:
-        patterns:
-          - 'esbuild*'
-          - 'rollup*'
-          - 'webpack*'
+          - '*'
 
   # GitHub Actions dependencies
   - package-ecosystem: 'github-actions'
@@ -51,3 +32,7 @@ updates:
       prefix: 'ci'
     labels:
       - 'github-actions'
+    groups:
+      all-actions:
+        patterns:
+          - '*'
