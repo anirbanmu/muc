@@ -5,11 +5,14 @@ const mockSearch = vi.fn();
 
 vi.mock('@muc/common', async () => {
   const actual = await vi.importActual('@muc/common');
+
+  class MockApiClient {
+    search = mockSearch;
+  }
+
   return {
     ...actual,
-    ApiClient: vi.fn().mockImplementation(() => ({
-      search: mockSearch,
-    })),
+    ApiClient: MockApiClient,
   };
 });
 
