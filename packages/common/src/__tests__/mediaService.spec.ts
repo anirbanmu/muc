@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach, type MockInstance } from 'vitest';
 import { MediaService } from '../mediaService.js';
 import {
   SpotifyNormalizedTrack,
@@ -21,12 +21,12 @@ class MockMediaService extends MediaService {
 
 describe('MediaService', () => {
   let mediaService: MockMediaService;
-  let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
+  let consoleErrorSpy: MockInstance;
 
   beforeEach(() => {
     mediaService = new MockMediaService();
     vi.clearAllMocks();
-    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
   });
 
   afterEach(() => {
