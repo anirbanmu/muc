@@ -55,18 +55,18 @@
     "packages/*"
   ],
   "devDependencies": {
-    "@eslint/js": "^9.38.0",
+    "@eslint/js": "^9.39.0",
     "@types/eslint": "^9.6.1",
-    "@types/node": "^24.9.1",
-    "esbuild": "^0.25.11",
-    "eslint": "^9.38.0",
-    "globals": "^16.4.0",
+    "@types/node": "^24.10.0",
+    "esbuild": "^0.25.12",
+    "eslint": "^9.39.0",
+    "globals": "^16.5.0",
     "jiti": "^2.6.1",
     "prettier": "^3.6.2",
-    "rimraf": "^6.0.1",
+    "rimraf": "^6.1.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.46.2",
     "vite": "^7.1.12",
-    "vitest": "^4.0.3"
+    "vitest": "^4.0.6"
   }
 }
