@@ -62,7 +62,7 @@
     "@eslint/js": "^9.39.1",
     "@types/eslint": "^9.6.1",
     "@types/node": "^24.10.0",
-    "esbuild": "^0.25.12",
+    "esbuild": "^0.27.0",
     "eslint": "^9.39.1",
     "globals": "^16.5.0",
     "jiti": "^2.6.1",
@@ -70,7 +70,7 @@
     "rimraf": "^6.1.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.46.3",
-    "vite": "^7.1.12",
-    "vitest": "^4.0.7"
+    "vite": "^7.2.2",
+    "vitest": "^4.0.8"
   }
 }
