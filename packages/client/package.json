@@ -20,13 +20,13 @@
     "@muc/common": "*",
     "pinia": "^3.0.4",
     "pinia-plugin-persistedstate": "^4.7.1",
-    "vue": "^3.5.25"
+    "vue": "^3.5.26"
   },
   "devDependencies": {
     "@tsconfig/node22": "^22.0.5",
     "@types/jsdom": "^27.0.0",
     "@vitejs/plugin-vue": "^6.0.3",
-    "@vitest/eslint-plugin": "^1.5.2",
+    "@vitest/eslint-plugin": "^1.5.4",
     "@vue/tsconfig": "^0.8.1",
     "eslint-plugin-vue": "^10.6.2",
     "jsdom": "^27.3.0",
