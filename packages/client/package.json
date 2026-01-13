@@ -26,11 +26,11 @@
     "@tsconfig/node22": "^22.0.5",
     "@types/jsdom": "^27.0.0",
     "@vitejs/plugin-vue": "^6.0.3",
-    "@vitest/eslint-plugin": "^1.6.4",
+    "@vitest/eslint-plugin": "^1.6.6",
     "@vue/tsconfig": "^0.8.1",
     "eslint-plugin-vue": "^10.6.2",
     "jsdom": "^27.4.0",
     "vite-plugin-vue-devtools": "^8.0.5",
-    "vue-tsc": "^3.2.1"
+    "vue-tsc": "^3.2.2"
   }
 }
