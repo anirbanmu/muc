@@ -26,7 +26,9 @@ export class ShareLinkEncoder {
       const decoded = atob(base64);
       return TrackIdentifier.fromUniqueId(decoded);
     } catch (error) {
-      throw new Error(`Failed to decode share link: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(`Failed to decode share link: ${error instanceof Error ? error.message : 'Unknown error'}`, {
+        cause: error,
+      });
     }
   }
 
