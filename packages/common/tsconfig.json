@@ -12,7 +12,8 @@
     "moduleResolution": "nodenext",
     "allowSyntheticDefaultImports": true,
     "composite": true,
-    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.tsbuildinfo"
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.tsbuildinfo",
+    "types": ["node"]
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist"]
