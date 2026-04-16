@@ -18,7 +18,7 @@
   "dependencies": {
     "@hono/node-server": "^1.19.13",
     "@muc/common": "*",
-    "hono": "^4.12.12",
+    "hono": "^4.12.14",
     "supports-color": "^10.2.2"
   }
 }
