@@ -28,7 +28,7 @@
     "@vitejs/plugin-vue": "^6.0.7",
     "@vitest/eslint-plugin": "^1.6.19",
     "@vue/tsconfig": "^0.9.1",
-    "eslint-plugin-vue": "^10.9.1",
+    "eslint-plugin-vue": "^10.9.2",
     "jsdom": "^29.1.1",
     "vite-plugin-vue-devtools": "^8.1.2",
     "vue-tsc": "^3.3.3"
