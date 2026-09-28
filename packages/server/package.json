@@ -19,6 +19,6 @@
     "@hono/node-server": "^2.1.1",
     "@muc/common": "*",
     "hono": "^4.13.9",
-    "supports-color": "^10.2.2"
+    "supports-color": "^11.0.0"
   }
 }
