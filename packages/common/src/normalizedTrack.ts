@@ -38,10 +38,7 @@ export interface YoutubeNormalizedTrack extends NormalizedTrack {
 }
 
 export type AnyNormalizedTrack =
-  | SpotifyNormalizedTrack
-  | DeezerNormalizedTrack
-  | ItunesNormalizedTrack
-  | YoutubeNormalizedTrack;
+  SpotifyNormalizedTrack | DeezerNormalizedTrack | ItunesNormalizedTrack | YoutubeNormalizedTrack;
 
 export function mapSpotifyTrackToNormalizedTrack(track: SpotifyTrack): SpotifyNormalizedTrack {
   return {
