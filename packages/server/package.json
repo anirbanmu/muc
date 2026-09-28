@@ -16,9 +16,9 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@hono/node-server": "^2.0.5",
+    "@hono/node-server": "^2.1.1",
     "@muc/common": "*",
-    "hono": "^4.12.26",
+    "hono": "^4.13.9",
     "supports-color": "^10.2.2"
   }
 }
